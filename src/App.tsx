@@ -1,35 +1,74 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "./App.css";
+import AuthLayout from "./components/AuthLayout/AuthLayout";
+import NotFound from "./Pages/NotFound/NotFound";
+import Login from "./Pages/Auth/Login/Login";
+import Register from "./Pages/Auth/Register/Register";
+import MasterLayout from "./components/MasterLayout/MasterLayout";
+import Home from "./Pages/Student/Home/Home";
 function App() {
-  const [count, setCount] = useState(0)
+  const routes = createBrowserRouter([
+    {
+      path: "/",
+      element: <AuthLayout />,
+      errorElement: <NotFound />,
+      children: [
+        {
+          index: true,
+          element: <Login />,
+        },
+        {
+          path: "login",
+          element: <Login />,
+        },
+        {
+          path: "register",
+          element: <Register />,
+        },
 
+        // {
+        //   path: "reset-Password",
+        //   element: <ResetPassword />,
+        // },
+        // {
+        //   path: "change-Password",
+        //   element: <ChangePassword />,
+        // },
+        // {
+        //   path: "forget-Password",
+        //   element: <ForgetPassword />,
+        // },
+      ],
+    },
+    {
+      path: "home",
+      element: <MasterLayout />,
+      errorElement: <NotFound />,
+      children: [
+        {
+          index: true,
+          element: <Home />,
+        },
+        {
+          path: "home",
+          element: <Home />,
+        },
+        //THIS IS AN EXAMPLE OF NESTED ROUTING , WE MAY USE IT LATER INSHALLAH
+        // {
+        //   path: "books",
+        //   children: [
+        //     { index: true, element: <Books /> },
+        //     // {path:":bookId",element:<Book/>}
+        //   ],
+        // },
+      ],
+    },
+  ]);
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <RouterProvider router={routes}></RouterProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
