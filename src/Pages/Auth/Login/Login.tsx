@@ -76,28 +76,63 @@ const navigate = useNavigate();
           />
 
           {/* Remember Me */}
-          <div className="flex items-center gap-2 mb-6">
-            <input type="checkbox" className="accent-purple-500" />
-            <span className="text-[var(--color-accent)] text-sm">Remember me</span>
-          </div>
+          <div className="flex items-center justify-between mb-6">
+  {/* Remember me */}
+  <label className="flex items-center gap-2">
+    <input type="checkbox" className="accent-purple-500" />
+    <span className="text-[var(--color-accent)] text-sm">Remember me</span>
+  </label>
+
+  {/* Forgot password */}
+  <button 
+    type="button" 
+    className="text-[var(--color-accent)] text-sm hover:underline"
+  >
+    Forgot password?
+  </button>
+</div>
+
 
           {/* Submit Button */}
          <div className="flex flex-col w-full">
   {/* Login Button */}
   <Button
     type="submit"
-    className="w-full py-4 bg-[var(--color-primary-dark)] hover:bg-[var(--color-primary)] text-white"
+    className="w-full py-4 bg-[var(--color-primary-dark)] hover:bg-[var(--color-primary)] cursor-pointer text-white"
   >
     Login
   </Button>
 
   {/* Register Button */}
-  <Button onClick={() => navigate("/register")}
-    type="button"
-    className="w-full py-4 mt-2 border-[2px] border-[var(--color-accent)] text-[var(--color-accent)] bg-transparent hover:bg-[var(--color-accent)] hover:text-white"
+  {/* Sign in with Google */}
+<Button
+  type="button"
+  className="w-full py-4 flex items-center justify-center gap-2
+             border-2 border-[var(--color-accent)]
+             text-[var(--color-accent)]
+             bg-transparent
+             hover:bg-transparent hover:text-[var(--color-accent)] hover:border-[var(--color-accent)]
+             cursor-pointer mt-3"
+>
+  <img
+    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+    alt="Google"
+    className="w-5 h-5"
+  />
+  Sign in with Google
+</Button>
+
+{/* Don't have an account? Sign up */}
+<div className="text-center mt-3 text-sm">
+  <span className="text-gray-600">Don't have an account? </span>
+  <button
+    onClick={() => navigate("/register")}
+    className="text-[var(--color-accent)] font-semibold hover:underline"
   >
-    Register
-  </Button>
+    Sign up
+  </button>
+</div>
+
 </div>
 
         </form>
