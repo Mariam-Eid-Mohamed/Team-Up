@@ -123,7 +123,22 @@ const navigate = useNavigate();
 </Button>
 
 {/* Don't have an account? Sign up */}
-<div className="text-center mt-3 text-sm">
+{/* <div className="text-center mt-3 text-sm">
+  <span className="text-gray-600">Don't have an account? </span>
+  <button
+    onClick={() => navigate("/register")}
+    className="text-[var(--color-accent)] font-semibold hover:underline"
+  >
+    Sign up
+  </button>
+</div> */}
+
+</div>
+
+        </form>
+      </Form>
+      {/* Don't have an account? Sign up */}
+      <div className="text-center mt-3 text-sm">
   <span className="text-gray-600">Don't have an account? </span>
   <button
     onClick={() => navigate("/register")}
@@ -132,11 +147,6 @@ const navigate = useNavigate();
     Sign up
   </button>
 </div>
-
-</div>
-
-        </form>
-      </Form>
     </div>
   );
 };

@@ -198,7 +198,12 @@ const Register = () => {
               Sign up with Google
             </Button>
 
-            {/* Already have an account? */}
+            
+
+          </div>
+        </form>
+      </Form>
+      {/* Already have an account? */}
             <div className="text-center mt-2 text-xs">
               <span className="text-gray-600">Already have an account? </span>
               <button
@@ -208,10 +213,6 @@ const Register = () => {
                 Sign in
               </button>
             </div>
-
-          </div>
-        </form>
-      </Form>
     </div>
   );
 };
