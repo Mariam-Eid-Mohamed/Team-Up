@@ -175,7 +175,7 @@ const Register = () => {
             <Button
               type="submit"
               className="w-full py-2.5 bg-[var(--color-primary-dark)]
-                         hover:bg-[var(--color-primary)] text-white text-sm"
+                         hover:bg-[var(--color-primary)] cursor-pointer text-white text-sm"
             >
               Register
             </Button>
@@ -208,7 +208,7 @@ const Register = () => {
               <span className="text-gray-600">Already have an account? </span>
               <button
                 onClick={() => navigate("/login")}
-                className="text-[var(--color-accent)] font-semibold hover:underline"
+                className="text-[var(--color-accent)] cursor-pointer font-semibold hover:underline"
               >
                 Sign in
               </button>

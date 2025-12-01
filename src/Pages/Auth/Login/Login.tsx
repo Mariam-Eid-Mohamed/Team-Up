@@ -142,7 +142,7 @@ const navigate = useNavigate();
   <span className="text-gray-600">Don't have an account? </span>
   <button
     onClick={() => navigate("/register")}
-    className="text-[var(--color-accent)] font-semibold hover:underline"
+    className="text-[var(--color-accent)] cursor-pointer font-semibold hover:underline"
   >
     Sign up
   </button>
