@@ -1,0 +1,37 @@
+import Api from "./Api";
+
+//REGISTER USER
+export const registerUser = async (data: {
+  first_name: string;
+  last_name: string;
+  email: string;
+  username: string;
+  password: string;
+  role: "Student" | "Instructor";
+  rememberMe?: boolean;
+}) => {
+  const res = await Api.post("/auth/register", data);
+  return res.data;
+};
+
+//LOGIN USER
+export const loginUser = async (data: {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}) => {
+  const res = await Api.post("/auth/login", data);
+  return res.data;
+};
+
+//SIGN IN WITH GOOGLE
+export const googleAuth = async (data: {
+  token: string;
+  role?: "Student" | "Instructor";
+  first_name?: string;
+  last_name?: string;
+  username?: string;
+}) => {
+  const res = await Api.post("/auth/google", data);
+  return res.data;
+};

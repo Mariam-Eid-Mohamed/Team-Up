@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { registerUser, googleAuth } from "../../../Services/Auth.service";
 
 const Register = () => {
   const form = useForm<RegisterInputs>({
@@ -32,8 +33,54 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-  const onSubmit = (data: RegisterInputs) => {
-    console.log("✅ Register Data:", data);
+  const handleGoogleSignUp = async () => {
+    try {
+      // TODO: Replace this prompt with a real Google OAuth flow that returns an ID token
+      const token = window.prompt("Paste Google ID token (for testing):");
+      if (!token) return;
+
+      const role = form.getValues("role");
+
+      const response = await googleAuth({
+        token,
+        role,
+      });
+
+      // After a successful Google signup/login, you may want to route by role
+      const userRole = response.data.user.role;
+      if (userRole === "Student") {
+        navigate("/student/home");
+      } else {
+        navigate("/instructor/home");
+      }
+    } catch (error: any) {
+      form.setError("email", {
+        message:
+          error.response?.data?.message ||
+          "Google sign up failed. Please try again.",
+      });
+      console.error("Google sign up failed:", error);
+    }
+  };
+
+  const onSubmit = async (data: RegisterInputs) => {
+    try {
+      await registerUser({
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        username: data.email.split("@")[0],
+        password: data.password,
+        role: data.role,
+        rememberMe: false,
+      });
+
+      navigate("/login");
+    } catch (error: any) {
+      form.setError("email", {
+        message: error.response?.data?.message || "Registration failed",
+      });
+    }
   };
 
   return (
@@ -47,8 +94,10 @@ const Register = () => {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2.5 w-full">
-
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-2.5 w-full"
+        >
           {/* First Name & Last Name */}
           <div className="flex gap-2">
             <FormField
@@ -170,7 +219,6 @@ const Register = () => {
 
           {/* Buttons */}
           <div className="flex flex-col w-full pt-1">
-
             {/* Register Button */}
             <Button
               type="submit"
@@ -183,6 +231,7 @@ const Register = () => {
             {/* Google signup */}
             <Button
               type="button"
+              onClick={handleGoogleSignUp}
               className="w-full py-2.5 flex items-center justify-center gap-2
                          border-2 border-[var(--color-accent)]
                          text-[var(--color-accent)]
@@ -208,7 +257,6 @@ const Register = () => {
                 Sign in
               </button>
             </div>
-
           </div>
         </form>
       </Form>
