@@ -84,7 +84,7 @@ const Register = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full ">
       {/* Header */}
       <div className="mb-3 text-left">
         <p className="text-[var(--color-neutral-700)] text-sm mb-0.5">

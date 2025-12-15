@@ -24,7 +24,8 @@ export default function InstructorLayout() {
         <InstructorNavbar />
 
         {/* Content */}
-        <main className="pt-14 p-6 bg-gray-50 min-h-screen md:ml-64">
+        <main className="pt-14 bg-gray-50 min-h-screen ml-16 lg:ml-64 p-4">
+
           <Outlet />
         </main>
       </div>

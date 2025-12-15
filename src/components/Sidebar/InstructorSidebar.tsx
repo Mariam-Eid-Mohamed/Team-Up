@@ -23,12 +23,15 @@ function SidebarItem({ icon, label, to }: SidebarItemProps) {
     <Link
       to={to}
       className={`
-        flex items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-md cursor-pointer transition-colors
+        flex items-center justify-center lg:justify-start gap-3 px-3 py-3 rounded-md
+        transition-colors cursor-pointer
         ${isActive ? "bg-[#83CDC4] text-white" : "text-gray-800 hover:bg-gray-100"}
       `}
     >
       {icon}
-      <span className="hidden md:inline text-sm font-medium">{label}</span>
+      <span className="hidden lg:inline text-sm font-medium">
+        {label}
+      </span>
     </Link>
   );
 }
@@ -38,8 +41,11 @@ export default function InstructorSidebar() {
     <aside
       className="
         bg-gray-50 border-r flex flex-col justify-between
-        fixed top-14 left-0 w-16 md:w-64 h-[calc(100vh-3.5rem)] p-2
-        transition-width duration-300 ease-in-out
+        fixed top-14 left-0
+        w-16 lg:w-64
+        h-[calc(100vh-3.5rem)]
+        p-2
+        transition-all duration-300 ease-in-out
       "
     >
       {/* Top menu */}
