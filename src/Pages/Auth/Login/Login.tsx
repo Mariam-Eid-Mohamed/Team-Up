@@ -184,7 +184,11 @@ const Login = () => {
             </Button>
 
             {/* Don't have an account? Sign up */}
-            <div className="text-center mt-3 text-sm">
+           
+          </div>
+        </form>
+      </Form>
+       <div className="text-center mt-3 text-sm">
               <span className="text-gray-600">Don't have an account? </span>
               <button
                 onClick={() => navigate("/register")}
@@ -193,9 +197,6 @@ const Login = () => {
                 Sign up
               </button>
             </div>
-          </div>
-        </form>
-      </Form>
     </div>
   );
 };

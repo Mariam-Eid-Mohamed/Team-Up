@@ -248,7 +248,11 @@ const Register = () => {
             </Button>
 
             {/* Already have an account? */}
-            <div className="text-center mt-2 text-xs">
+           
+          </div>
+        </form>
+      </Form>
+       <div className="text-center mt-2 text-xs">
               <span className="text-gray-600">Already have an account? </span>
               <button
                 onClick={() => navigate("/login")}
@@ -257,9 +261,6 @@ const Register = () => {
                 Sign in
               </button>
             </div>
-          </div>
-        </form>
-      </Form>
     </div>
   );
 };

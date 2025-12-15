@@ -1,16 +1,17 @@
 import { Outlet } from "react-router-dom";
 import AuthImg from "@/assets/images/authImg_resized.png";
 import logo from "@/assets/images/Logo.jpg";
+// import "./App.css";
 
 export default function AuthLayout() {
   return (
-    <div className="grid md:grid-cols-2 min-h-screen">
+    <div className="grid md:grid-cols-2  h-screen">
       {/* LEFT IMAGE */}
-      <div className="order-2 md:order-1 hidden md:block">
-        <img 
-          src={AuthImg} 
+      <div className="order-2 md:order-1 hidden md:block w-full">
+        <img
+          src={AuthImg}
           alt="auth image"
-          className="w-full h-screen object-cover"
+          className="w-full  object-cover Auth-IMG"
         />
       </div>
       {/* RIGHT CONTENT */}
@@ -26,4 +27,3 @@ export default function AuthLayout() {
     </div>
   );
 }
-
