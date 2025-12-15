@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import InstructorNavbar from "../Navbar/InstructorNavbar";
 import InstructorSidebar from "../Sidebar/InstructorSidebar";
@@ -9,10 +8,7 @@ export default function InstructorLayout() {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <InstructorSidebar
-      
-    
-      />
+      <InstructorSidebar />
 
       {/* Overlay for mobile */}
       {/* {sidebarOpen && (

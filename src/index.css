@@ -3,7 +3,6 @@
 
 body {
   margin: 0;
- 
 }
 /* Custom dark selector */
 @custom-variant dark (&:is(.dark *));
@@ -12,6 +11,7 @@ body {
 @theme inline {
   --color-primary: #58a8a7;
   --color-primary-dark: #084a49;
+  /* --color-classCard-background: */
   --color-secondary: #b7e3e3;
   --color-accent: #8c80d9;
   --color-soft-background: #f6faf9;
@@ -133,7 +133,12 @@ body {
     @apply bg-background text-foreground font-sans;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading;
   }
 }

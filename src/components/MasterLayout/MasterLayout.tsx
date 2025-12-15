@@ -1,5 +1,5 @@
 const MasterLayout = () => {
-  return <div>MasterLayout</div>;
+  return <></>;
 };
 
 export default MasterLayout;
