@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ClassCard } from "../../../components/ClassCard/ClassCard";
 import type { Class } from "../../../App";
 import { CreateClassForm } from "../../../components/CreateClassForm/CreateClassForm"; // import the new component
+// import { CreateClassModal } from "../../../components/CreateClassModal/CreateClassModal";
 
 export function InstructorDashboard() {
   const navigate = useNavigate();
