@@ -3,6 +3,7 @@ import { Plus, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ClassCard } from "../../../components/ClassCard/ClassCard";
 import type { Class } from "../../../App";
+import { CreateClassForm } from "../../../components/CreateClassForm/CreateClassForm"; // import the new component
 
 export function InstructorDashboard() {
   const navigate = useNavigate();
@@ -43,21 +44,65 @@ export function InstructorDashboard() {
     },
   ]);
 
-  return (
-    <div className="flex h-screen bg-[#FAFAFA]">
-      <main className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl mx-auto px-4 my-3 sm:px-8 py-8">
-        {/* Buttons */} <div className="mb-6 flex gap-3 justify-end flex-nowrap"> <button className=" px-2 sm:px-4 /* smaller horizontal padding on mobile */ py-1.5 sm:py-2 /* smaller vertical padding on mobile */ text-xs sm:text-sm /* smaller font on mobile */ bg-[#9B87F5] text-white rounded-md sm:rounded-lg flex items-center gap-1.5 sm:gap-2 /* smaller gap on mobile */ hover:bg-[#8B77E5] transition-colors "> <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> {/* smaller icon on mobile */} Invite Students </button> <button className=" px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#9B87F5] text-white rounded-md sm:rounded-lg flex items-center gap-1.5 sm:gap-2 hover:bg-[#8B77E5] transition-colors "> <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Create Class </button> </div>
+  const [isCreating, setIsCreating] = useState(false);
+  const [newClass, setNewClass] = useState<Class>({
+    id: "",
+    name: "",
+    code: "",
+    description: "",
+    semester: "",
+    studentsCount: 0,
+    teamsCount: 0,
+    instructorsCount: 1,
+    color: "bg-blue-500",
+  });
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-            {classes.map((classData) => (
-              <ClassCard
-                key={classData.id}
-                classData={classData}
-                onClick={() => navigate(`/instructor/classes/${classData.id}`)}
-              />
-            ))}
-          </div>
+  return (
+    <div className="flex min-h-screen bg-[#FAFAFA]">
+      <main className="flex-1 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6">
+          {/* HEADER BUTTONS */}
+          {!isCreating && (
+            <div className="mb-6 flex gap-3 justify-end flex-nowrap">
+              <button
+                className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#9B87F5] text-white rounded-md sm:rounded-lg flex items-center gap-1.5 sm:gap-2 hover:bg-[#8B77E5] transition-colors"
+              >
+                <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                Invite Students
+              </button>
+
+              <button
+                onClick={() => setIsCreating(true)}
+                className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#9B87F5] text-white rounded-md sm:rounded-lg flex items-center gap-1.5 sm:gap-2 hover:bg-[#8B77E5] transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                Create Class
+              </button>
+            </div>
+          )}
+
+          {/* SHOW CREATE FORM OR CLASS CARDS */}
+          {isCreating ? (
+            <CreateClassForm
+              newClass={newClass}
+              setNewClass={setNewClass}
+              onCancel={() => setIsCreating(false)}
+              onCreate={() => {
+                console.log("Create class:", newClass);
+                setIsCreating(false);
+              }}
+            />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {classes.map((classData) => (
+                <ClassCard
+                  key={classData.id}
+                  classData={classData}
+                  onClick={() => navigate(`/instructor/classes/${classData.id}`)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>

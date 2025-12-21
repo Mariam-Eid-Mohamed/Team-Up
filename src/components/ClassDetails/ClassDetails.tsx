@@ -115,7 +115,7 @@ export function ClassDetails({
                 <>
                   <button
                     onClick={handleSave}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#58a8a7] text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
                   >
                     <Save size={18} />
                     Save
