@@ -6,10 +6,12 @@ import Login from "./Pages/Auth/Login/Login";
 import Register from "./Pages/Auth/Register/Register";
 // import MasterLayout from "./components/MasterLayout/MasterLayout";
 // import Home from "./Pages/Student/Home/Home";
-// import StudentLayout from "./components/StudentLayout/StudentLayout";
+import StudentLayout from "./components/StudentLayout/StudentLayout";
 import InstructorLayout from "./components/InstructorLayout/InstructorLayout";
 import { InstructorDashboard } from "./Pages/Instructor/Home/Home";
-// import StudentHome from "./Pages/Student/Home/Home";
+import ClassDetailsPage from "./components/ClassDetailsPage/ClassDetailsPage";
+import {StudentDashboard} from "./Pages/Student/Home/Home";
+
 
 export interface Class {
   id: string;
@@ -19,7 +21,9 @@ export interface Class {
   semester: string;
   studentsCount: number;
   teamsCount: number;
+  instructorsCount:number;
   color: string;
+  // role:string;
 }
 
 export default function App() {
@@ -87,20 +91,21 @@ export default function App() {
       children: [
         { index: true, element: <InstructorDashboard /> },
         { path: "dashboard", element: <InstructorDashboard /> },
-        { path: "classes/:id", element: <div>Class Details Page</div> },
+        { path: "classes/:id", element: <ClassDetailsPage/>},
         // Add more instructor pages here
       ],
     },
-    //  {
-    //     path: "/student",
-    //     element: <StudentLayout />,
-    //     errorElement: <NotFound />,
-    //     children: [
-    //       { index: true, element: <StudentHome /> },
-    //       { path: "home", element: <StudentHome /> },
-    //       // Add more student pages here
-    //     ],
-    //   },
+     {
+        path: "/student",
+        element: <StudentLayout />,
+        errorElement: <NotFound />,
+        children: [
+          { index: true, element: <StudentDashboard /> },
+          { path: "dashboard", element: <StudentDashboard /> },
+          { path: "classes/:id", element: <ClassDetailsPage /> },
+          // Add more student pages here
+        ],
+      },
   ]);
   return (
     <>

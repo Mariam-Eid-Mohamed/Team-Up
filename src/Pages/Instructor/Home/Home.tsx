@@ -16,6 +16,7 @@ export function InstructorDashboard() {
       semester: "Fall 2025",
       studentsCount: 45,
       teamsCount: 9,
+      instructorsCount: 1,
       color: "bg-blue-500",
     },
     {
@@ -26,6 +27,7 @@ export function InstructorDashboard() {
       semester: "Fall 2025",
       studentsCount: 38,
       teamsCount: 8,
+      instructorsCount: 1,
       color: "bg-purple-500",
     },
     {
@@ -36,6 +38,7 @@ export function InstructorDashboard() {
       semester: "Fall 2025",
       studentsCount: 32,
       teamsCount: 6,
+       instructorsCount: 1,
       color: "bg-green-500",
     },
   ]);
@@ -44,62 +47,19 @@ export function InstructorDashboard() {
     <div className="flex h-screen bg-[#FAFAFA]">
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-7xl mx-auto px-4 my-3 sm:px-8 py-8">
-          {/* Buttons */}
-          <div className="mb-6 flex gap-3 justify-end flex-nowrap">
-  <button className="
-    px-2 sm:px-4        /* smaller horizontal padding on mobile */
-    py-1.5 sm:py-2      /* smaller vertical padding on mobile */
-    text-xs sm:text-sm   /* smaller font on mobile */
-    bg-[#9B87F5] text-white
-    rounded-md sm:rounded-lg
-    flex items-center gap-1.5 sm:gap-2   /* smaller gap on mobile */
-    hover:bg-[#8B77E5] transition-colors
-  ">
-    <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />  {/* smaller icon on mobile */}
-    Invite Students
-  </button>
+        {/* Buttons */} <div className="mb-6 flex gap-3 justify-end flex-nowrap"> <button className=" px-2 sm:px-4 /* smaller horizontal padding on mobile */ py-1.5 sm:py-2 /* smaller vertical padding on mobile */ text-xs sm:text-sm /* smaller font on mobile */ bg-[#9B87F5] text-white rounded-md sm:rounded-lg flex items-center gap-1.5 sm:gap-2 /* smaller gap on mobile */ hover:bg-[#8B77E5] transition-colors "> <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> {/* smaller icon on mobile */} Invite Students </button> <button className=" px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#9B87F5] text-white rounded-md sm:rounded-lg flex items-center gap-1.5 sm:gap-2 hover:bg-[#8B77E5] transition-colors "> <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Create Class </button> </div>
 
-  <button className="
-    px-2 sm:px-4
-    py-1.5 sm:py-2
-    text-xs sm:text-sm
-    bg-[#9B87F5] text-white
-    rounded-md sm:rounded-lg
-    flex items-center gap-1.5 sm:gap-2
-    hover:bg-[#8B77E5] transition-colors
-  ">
-    <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-    Create Class
-  </button>
-</div>
-
-
-        
-
-          {/* My Classes */}
-          <div>
-            {/* <h2 className="text-[#171717] mb-4 text-lg font-semibold">My Classes</h2> */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-              {classes.map((classData) => (
-                <ClassCard
-                  key={classData.id}
-                  classData={classData}
-                  onClick={() => navigate(`/instructor/classes/${classData.id}`)}
-                />
-              ))}
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+            {classes.map((classData) => (
+              <ClassCard
+                key={classData.id}
+                classData={classData}
+                onClick={() => navigate(`/instructor/classes/${classData.id}`)}
+              />
+            ))}
           </div>
         </div>
       </main>
     </div>
   );
 }
-
-
-//  <button
-//               onClick={() => setShowAnnouncement(true)}
-//               className="px-4 py-2 bg-[#7DD3FC] text-white rounded-lg hover:bg-[#38BDF8] transition-colors flex items-center gap-2"
-//             >
-//               <Megaphone className="w-4 h-4" />
-//               New Announcement
-//             </button>
