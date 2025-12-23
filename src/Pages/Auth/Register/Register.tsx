@@ -210,6 +210,9 @@ const Register = () => {
                   >
                     <option value="Instructor">Instructor</option>
                     <option value="Student">Student</option>
+                    {/* <option value="Admin" >
+                      Admin
+                    </option> */}
                   </select>
                 </FormControl>
                 <FormMessage className="text-xs" />
@@ -248,19 +251,18 @@ const Register = () => {
             </Button>
 
             {/* Already have an account? */}
-           
           </div>
         </form>
       </Form>
-       <div className="text-center mt-2 text-xs">
-              <span className="text-gray-600">Already have an account? </span>
-              <button
-                onClick={() => navigate("/login")}
-                className="text-[var(--color-accent)] font-semibold hover:underline"
-              >
-                Sign in
-              </button>
-            </div>
+      <div className="text-center mt-2 text-xs">
+        <span className="text-gray-600">Already have an account? </span>
+        <button
+          onClick={() => navigate("/login")}
+          className="text-[var(--color-accent)] font-semibold hover:underline"
+        >
+          Sign in
+        </button>
+      </div>
     </div>
   );
 };

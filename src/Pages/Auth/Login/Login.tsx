@@ -48,7 +48,8 @@ const Login = () => {
     } catch (error: any) {
       form.setError("email", {
         message:
-          error.response?.data?.message || "Google sign in failed. Please try again.",
+          error.response?.data?.message ||
+          "Google sign in failed. Please try again.",
       });
       console.error("Google sign in failed:", error);
     }
@@ -184,19 +185,18 @@ const Login = () => {
             </Button>
 
             {/* Don't have an account? Sign up */}
-           
           </div>
         </form>
       </Form>
-       <div className="text-center mt-3 text-sm">
-              <span className="text-gray-600">Don't have an account? </span>
-              <button
-                onClick={() => navigate("/register")}
-                className="text-[var(--color-accent)] font-semibold hover:underline"
-              >
-                Sign up
-              </button>
-            </div>
+      <div className="text-center mt-3 text-sm">
+        <span className="text-gray-600">Don't have an account? </span>
+        <button
+          onClick={() => navigate("/register")}
+          className="text-[var(--color-accent)] font-semibold hover:underline"
+        >
+          Sign up
+        </button>
+      </div>
     </div>
   );
 };
