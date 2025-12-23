@@ -16,12 +16,16 @@ export default function PostCard({ withFile }: PostCardProps) {
             <p className="text-xs text-gray-500">21/12/2025 - 8:00 AM</p>
           </div>
         </div>
+       
 
         <div className="flex gap-2 text-gray-500">
           <Pencil size={16} className="cursor-pointer hover:text-black" />
           <Trash size={16} className="cursor-pointer hover:text-red-600" />
         </div>
+        
       </div>
+
+      <hr className="border-t border-gray-300 mt-4" />
 
       {/* Content */}
       <div className="mt-4 space-y-2 text-sm">
