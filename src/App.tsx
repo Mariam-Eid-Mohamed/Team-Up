@@ -11,6 +11,8 @@ import InstructorLayout from "./components/InstructorLayout/InstructorLayout";
 import { InstructorDashboard } from "./Pages/Instructor/Home/Home";
 import ClassDetailsPage from "./components/ClassDetailsPage/ClassDetailsPage";
 import {StudentDashboard} from "./Pages/Student/Home/Home";
+import ClassStream from "./Pages/Instructor/Home/ClassStream";
+import SectionStream from "./Pages/Instructor/Home/SectionStream";
 
 
 export interface Class {
@@ -91,7 +93,10 @@ export default function App() {
       children: [
         { index: true, element: <InstructorDashboard /> },
         { path: "dashboard", element: <InstructorDashboard /> },
-        { path: "classes/:id", element: <ClassDetailsPage/>},
+        { path: "classes/:id", element: <ClassStream/>},
+        { path: "classes/:id/details", element: <ClassDetailsPage/>},
+        {path: "/instructor/classes/:id/sections/:sectionId",
+  element: <SectionStream />},
         // Add more instructor pages here
       ],
     },
@@ -102,7 +107,10 @@ export default function App() {
         children: [
           { index: true, element: <StudentDashboard /> },
           { path: "dashboard", element: <StudentDashboard /> },
-          { path: "classes/:id", element: <ClassDetailsPage /> },
+           { path: "classes/:id", element: <ClassStream/>},
+        { path: "classes/:id/details", element: <ClassDetailsPage/>},
+  //         {path: "/instructor/classes/:id/sections/:sectionId",
+  // element: <SectionStream />},
           // Add more student pages here
         ],
       },
