@@ -109,8 +109,7 @@ export default function App() {
           { path: "dashboard", element: <StudentDashboard /> },
            { path: "classes/:id", element: <ClassStream/>},
         { path: "classes/:id/details", element: <ClassDetailsPage/>},
-  //         {path: "/instructor/classes/:id/sections/:sectionId",
-  // element: <SectionStream />},
+  { path: "classes/:id/sections/:sectionId", element: <SectionStream /> },
           // Add more student pages here
         ],
       },
