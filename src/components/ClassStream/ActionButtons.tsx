@@ -19,7 +19,7 @@ export default function ActionButtons({
   return (
     <>
       <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
-        <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700 text-sm">
+        <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white hover:bg-purple-700 text-sm">
           <Pencil size={16} />
           <span className="hidden sm:inline">New post</span>
         </button>
@@ -27,7 +27,7 @@ export default function ActionButtons({
         {role === "instructor" && !hideCoursework && (
           <button
             onClick={() => setOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-700 text-sm"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white hover:bg-purple-700 text-sm"
           >
             <FileText size={16} />
             <span className="hidden sm:inline">New Coursework</span>
@@ -38,7 +38,7 @@ export default function ActionButtons({
           onClick={() =>
             navigate(`/instructor/classes/${id}/details`)
           }
-          className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-purple-600 text-white text-sm"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white text-sm"
         >
           <Eye size={16} />
         </button>
