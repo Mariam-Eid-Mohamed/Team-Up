@@ -28,7 +28,7 @@ export interface Class {
   name: string;
   code: string;
   description: string;
-  semester: string;
+  year: string;
   studentsCount: number;
   teamsCount: number;
   instructorsCount: number;

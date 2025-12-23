@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Plus, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ClassCard } from "../../../components/ClassCard/ClassCard";
-import type { Class } from "../../../App";
+import type { Class } from "../../../interfaces/interfaces";
 import { CreateClassForm } from "../../../components/CreateClassForm/CreateClassForm";
 import { InviteStudentsModal } from "../../../components/InviteStudentModal/InviteStudentModal";
 
@@ -63,12 +63,13 @@ export function InstructorDashboard() {
     <div className="flex min-h-screen bg-[#FAFAFA]">
       <main className="flex-1 overflow-x-hidden overflow-y-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          
           {/* HEADER ACTIONS */}
           {!isCreating && (
             <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <h1 className="text-2xl font-bold text-gray-800">Instructor Dashboard</h1>
-              
+              <h1 className="text-2xl font-bold text-gray-800">
+                Instructor Dashboard
+              </h1>
+
               <div className="flex gap-3 w-full sm:w-auto">
                 <button
                   onClick={() => setIsInviteModalOpen(true)}
@@ -107,7 +108,9 @@ export function InstructorDashboard() {
                   <ClassCard
                     key={classData.id}
                     classData={classData}
-                    onClick={() => navigate(`/instructor/classes/${classData.id}`)}
+                    onClick={() =>
+                      navigate(`/instructor/classes/${classData.id}`)
+                    }
                   />
                 ))}
               </div>
@@ -117,7 +120,7 @@ export function InstructorDashboard() {
       </main>
 
       {/* INVITE STUDENTS MODAL */}
-      <InviteStudentsModal 
+      <InviteStudentsModal
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
         classes={classes}
