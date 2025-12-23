@@ -14,7 +14,7 @@ export default function AuthLayout() {
       {/* RIGHT SIDE (single scroll container) */}
       <div className="h-screen overflow-y-auto">
         {/* Logo sticky at top */}
-        <div className=" bg-white z-10 p-6 flex justify-center">
+        <div className="sticky top-0 bg-white z-10 p-6 flex justify-center">
           <img src={logo} alt="logo" className="w-48" />
         </div>
 
