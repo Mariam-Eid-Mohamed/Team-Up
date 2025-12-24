@@ -30,3 +30,6 @@ export const RegisterSchema = z
 /* TYPES */
 export type LoginInputs = z.infer<typeof LoginSchema>;
 export type RegisterInputs = z.infer<typeof RegisterSchema>;
+
+// Modals schema
+// 1)create new coursework

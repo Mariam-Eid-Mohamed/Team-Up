@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Plus, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ClassCard } from "../../../components/ClassCard/ClassCard";
-import type { Class } from "../../../App";
-import { CreateClassForm } from "../../../components/CreateClassForm/CreateClassForm"; // import the new component
+import type { Class } from "../../../interfaces/interfaces";
+import { CreateClassForm } from "../../../components/CreateClassForm/CreateClassForm";
+import { InviteStudentsModal } from "../../../components/InviteStudentModal/InviteStudentModal";
 
 export function InstructorDashboard() {
   const navigate = useNavigate();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const [classes] = useState<Class[]>([
     {
@@ -39,12 +42,11 @@ export function InstructorDashboard() {
       semester: "Fall 2025",
       studentsCount: 32,
       teamsCount: 6,
-       instructorsCount: 1,
+      instructorsCount: 1,
       color: "bg-green-500",
     },
   ]);
 
-  const [isCreating, setIsCreating] = useState(false);
   const [newClass, setNewClass] = useState<Class>({
     id: "",
     name: "",
@@ -59,52 +61,70 @@ export function InstructorDashboard() {
 
   return (
     <div className="flex min-h-screen bg-[#FAFAFA]">
-      <main className="flex-1 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6">
-          {/* HEADER BUTTONS */}
+      <main className="flex-1 overflow-x-hidden overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* HEADER ACTIONS */}
           {!isCreating && (
-            <div className="mb-6 flex gap-3 justify-end flex-nowrap">
-              <button
-                className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#9B87F5] text-white rounded-md sm:rounded-lg flex items-center gap-1.5 sm:gap-2 hover:bg-[#8B77E5] transition-colors"
-              >
-                <UserPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Invite Students
-              </button>
+            <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h1 className="text-2xl font-bold text-gray-800">
+                Instructor Dashboard
+              </h1>
 
-              <button
-                onClick={() => setIsCreating(true)}
-                className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-[#9B87F5] text-white rounded-md sm:rounded-lg flex items-center gap-1.5 sm:gap-2 hover:bg-[#8B77E5] transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Create Class
-              </button>
+              <div className="flex gap-3 w-full sm:w-auto">
+                <button
+                  onClick={() => setIsInviteModalOpen(true)}
+                  className="flex-1 sm:flex-none px-4 py-2.5 text-sm bg-[#9B87F5] hover:bg-[#8B77E5] text-white rounded-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span>Invite Students</span>
+                </button>
+
+                <button
+                  onClick={() => setIsCreating(true)}
+                  className="flex-1 sm:flex-none px-4 py-2.5 text-sm bg-[#9B87F5] hover:bg-[#8B77E5] text-white rounded-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create Class</span>
+                </button>
+              </div>
             </div>
           )}
 
-          {/* SHOW CREATE FORM OR CLASS CARDS */}
-          {isCreating ? (
-            <CreateClassForm
-              newClass={newClass}
-              setNewClass={setNewClass}
-              onCancel={() => setIsCreating(false)}
-              onCreate={() => {
-                console.log("Create class:", newClass);
-                setIsCreating(false);
-              }}
-            />
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {classes.map((classData) => (
-                <ClassCard
-                  key={classData.id}
-                  classData={classData}
-                  onClick={() => navigate(`/instructor/classes/${classData.id}`)}
-                />
-              ))}
-            </div>
-          )}
+          {/* DYNAMIC CONTENT AREA */}
+          <div className="transition-all duration-300">
+            {isCreating ? (
+              <CreateClassForm
+                newClass={newClass}
+                setNewClass={setNewClass}
+                onCancel={() => setIsCreating(false)}
+                onCreate={() => {
+                  console.log("Create class:", newClass);
+                  setIsCreating(false);
+                }}
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                {classes.map((classData) => (
+                  <ClassCard
+                    key={classData.id}
+                    classData={classData}
+                    onClick={() =>
+                      navigate(`/instructor/classes/${classData.id}`)
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </main>
+
+      {/* INVITE STUDENTS MODAL */}
+      <InviteStudentsModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        classes={classes}
+      />
     </div>
   );
 }

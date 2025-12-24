@@ -10,21 +10,22 @@ import StudentLayout from "./components/StudentLayout/StudentLayout";
 import InstructorLayout from "./components/InstructorLayout/InstructorLayout";
 import { InstructorDashboard } from "./Pages/Instructor/Home/Home";
 import ClassDetailsPage from "./components/ClassDetailsPage/ClassDetailsPage";
-import {StudentDashboard} from "./Pages/Student/Home/Home";
-import {GoogleOAuthProvider} from '@react-oauth/google'
-
-export interface Class {
-  id: string;
-  name: string;
-  code: string;
-  description: string;
-  semester: string;
-  studentsCount: number;
-  teamsCount: number;
-  instructorsCount:number;
-  color: string;
-  // role:string;
-}
+import { StudentDashboard } from "./Pages/Student/Home/Home";
+import ClassStream from "./Pages/Instructor/Home/ClassStream";
+import SectionStream from "./Pages/Instructor/Home/SectionStream";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+// export interface Class {
+//   id: string;
+//   name: string;
+//   code: string;
+//   description: string;
+//   semester: string;
+//   studentsCount: number;
+//   teamsCount: number;
+//   instructorsCount: number;
+//   color: string;
+//   // role:string;
+// }
 
 export default function App() {
   const routes = createBrowserRouter([
@@ -91,28 +92,34 @@ export default function App() {
       children: [
         { index: true, element: <InstructorDashboard /> },
         { path: "dashboard", element: <InstructorDashboard /> },
-        { path: "classes/:id", element: <ClassDetailsPage/>},
+        { path: "classes/:id", element: <ClassStream /> },
+        { path: "classes/:id/details", element: <ClassDetailsPage /> },
+        {
+          path: "/instructor/classes/:id/sections/:sectionId",
+          element: <SectionStream />,
+        },
         // Add more instructor pages here
       ],
     },
-     {
-        path: "/student",
-        element: <StudentLayout />,
-        errorElement: <NotFound />,
-        children: [
-          { index: true, element: <StudentDashboard /> },
-          { path: "dashboard", element: <StudentDashboard /> },
-          { path: "classes/:id", element: <ClassDetailsPage /> },
-          // Add more student pages here
-        ],
-      },
+    {
+      path: "/student",
+      element: <StudentLayout />,
+      errorElement: <NotFound />,
+      children: [
+        { index: true, element: <StudentDashboard /> },
+        { path: "dashboard", element: <StudentDashboard /> },
+        { path: "classes/:id", element: <ClassStream /> },
+        { path: "classes/:id/details", element: <ClassDetailsPage /> },
+        { path: "classes/:id/sections/:sectionId", element: <SectionStream /> },
+        // Add more student pages here
+      ],
+    },
   ]);
   return (
     <>
-    <GoogleOAuthProvider clientId="996803786434-eb4r231uhc5d9t8krd5baoa8vefpm6p6.apps.googleusercontent.com">
-    <RouterProvider router={routes}></RouterProvider>
-    </GoogleOAuthProvider>
-      
+      <GoogleOAuthProvider clientId="996803786434-eb4r231uhc5d9t8krd5baoa8vefpm6p6.apps.googleusercontent.com">
+        <RouterProvider router={routes}></RouterProvider>
+      </GoogleOAuthProvider>
     </>
   );
 }

@@ -33,19 +33,21 @@ const Login = () => {
   const navigate = useNavigate();
 
   const onGoogleSuccess = async (credentialResponse: any) => {
-  try {
-    const response = await googleAuth({ 
-      token: credentialResponse.credential 
-    });
-    const role = response.data.user.role;
-    navigate(role === "Student" ? "/student" : "/instructor");
-  } catch (error: any) {
-    form.setError("email", {
-      message: error.response?.data?.message || "Google sign in failed. Please try again.",
-    });
-    console.error("Google sign in failed:", error);
-  }
-};
+    try {
+      const response = await googleAuth({
+        token: credentialResponse.credential,
+      });
+      const role = response.data.user.role;
+      navigate(role === "Student" ? "/student" : "/instructor");
+    } catch (error: any) {
+      form.setError("email", {
+        message:
+          error.response?.data?.message ||
+          "Google sign in failed. Please try again.",
+      });
+      console.error("Google sign in failed:", error);
+    }
+  };
 
   const onSubmit = async (data: LoginInputs) => {
     try {

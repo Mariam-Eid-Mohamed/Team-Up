@@ -23,3 +23,15 @@ export interface RegisterInputs {
 // export interface ForgetInputs {
 //   email: string;
 // }
+export interface Class {
+  id: string;
+  name: string;
+  code: string;
+  description: string;
+  year: string;
+  studentsCount: number;
+  teamsCount: number;
+  instructorsCount: number;
+  color: string;
+  // role:string;
+}

@@ -1,5 +1,5 @@
 import { Users, UserCheck, ChevronRight } from "lucide-react";
-import type { Class } from "../../App";
+import type { Class } from "../../interfaces/interfaces";
 
 interface ClassCardProps {
   classData: Class;
@@ -18,13 +18,11 @@ export function ClassCard({ classData, onClick }: ClassCardProps) {
       "
     >
       {/* TOP */}
-       {/* TOP: Color + Name + Chevron */}
+      {/* TOP: Color + Name + Chevron */}
       <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div className="flex items-center gap-3">
           {/* Color bar */}
-          <div
-            className={`w-2 h-12 rounded-lg ${classData.color}`}
-          />
+          <div className={`w-2 h-12 rounded-lg ${classData.color}`} />
           {/* Class name */}
           <h3 className="text-gray-900 text-sm sm:text-base font-semibold">
             {classData.name}
@@ -62,9 +60,7 @@ export function ClassCard({ classData, onClick }: ClassCardProps) {
 
       {/* FOOTER */}
       <div className="pt-2 sm:pt-3 border-t border-gray-100">
-        <span className="text-xs text-gray-500">
-          {classData.semester}
-        </span>
+        <span className="text-xs text-gray-500">{classData.year}</span>
       </div>
     </button>
   );

@@ -5,23 +5,24 @@ import logo from "@/assets/images/Logo.jpg";
 
 export default function AuthLayout() {
   return (
-    <div className="grid md:grid-cols-2  h-screen">
-      {/* LEFT IMAGE */}
-      <div className="order-2 md:order-1 hidden md:block w-full">
-        <img
-          src={AuthImg}
-          alt="auth image"
-          className="w-full  object-cover Auth-IMG"
-        />
+    <div className="h-screen overflow-hidden grid md:grid-cols-2">
+      {/* LEFT IMAGE (fixed) */}
+      <div className="hidden md:block h-screen">
+        <img src={AuthImg} alt="auth" className="h-full w-full object-cover" />
       </div>
-      {/* RIGHT CONTENT */}
-      <div className="order-1 md:order-2 flex flex-col justify-center items-center p-6 overflow-auto">
-        {/* Logo */}
-        <img src={logo} alt="logo" className="mb-8 w-48" />
 
-        {/* Form container */}
-        <div className="w-full max-w-md">
-          <Outlet />
+      {/* RIGHT SIDE (single scroll container) */}
+      <div className="h-screen overflow-y-auto">
+        {/* Logo sticky at top */}
+        <div className="sticky top-0 bg-white z-10 p-6 flex justify-center">
+          <img src={logo} alt="logo" className="w-48" />
+        </div>
+
+        {/* Content */}
+        <div className="px-6 pb-6 flex justify-center">
+          <div className="w-full max-w-md">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

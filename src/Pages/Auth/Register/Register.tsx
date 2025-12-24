@@ -198,6 +198,9 @@ const Register = () => {
                   >
                     <option value="Instructor">Instructor</option>
                     <option value="Student">Student</option>
+                    {/* <option value="Admin" >
+                      Admin
+                    </option> */}
                   </select>
                 </FormControl>
                 <FormMessage className="text-xs" />
