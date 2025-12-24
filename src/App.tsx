@@ -11,7 +11,7 @@ import InstructorLayout from "./components/InstructorLayout/InstructorLayout";
 import { InstructorDashboard } from "./Pages/Instructor/Home/Home";
 import ClassDetailsPage from "./components/ClassDetailsPage/ClassDetailsPage";
 import {StudentDashboard} from "./Pages/Student/Home/Home";
-
+import {GoogleOAuthProvider} from '@react-oauth/google'
 
 export interface Class {
   id: string;
@@ -109,7 +109,10 @@ export default function App() {
   ]);
   return (
     <>
-      <RouterProvider router={routes}></RouterProvider>
+    <GoogleOAuthProvider clientId="996803786434-eb4r231uhc5d9t8krd5baoa8vefpm6p6.apps.googleusercontent.com">
+    <RouterProvider router={routes}></RouterProvider>
+    </GoogleOAuthProvider>
+      
     </>
   );
 }

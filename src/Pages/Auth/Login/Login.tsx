@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 
 import { useState } from "react";
 import { loginUser, googleAuth } from "../../../Services/Auth.service";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const form = useForm<LoginInputs>({
@@ -31,28 +32,20 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
-  const handleGoogleSignIn = async () => {
-    try {
-      // TODO: Replace this prompt with a real Google OAuth flow that returns an ID token
-      const token = window.prompt("Paste Google ID token (for testing):");
-      if (!token) return;
-
-      const response = await googleAuth({ token });
-      const role = response.data.user.role;
-
-      if (role === "Student") {
-        navigate("/student/home");
-      } else {
-        navigate("/instructor/home");
-      }
-    } catch (error: any) {
-      form.setError("email", {
-        message:
-          error.response?.data?.message || "Google sign in failed. Please try again.",
-      });
-      console.error("Google sign in failed:", error);
-    }
-  };
+  const onGoogleSuccess = async (credentialResponse: any) => {
+  try {
+    const response = await googleAuth({ 
+      token: credentialResponse.credential 
+    });
+    const role = response.data.user.role;
+    navigate(role === "Student" ? "/student" : "/instructor");
+  } catch (error: any) {
+    form.setError("email", {
+      message: error.response?.data?.message || "Google sign in failed. Please try again.",
+    });
+    console.error("Google sign in failed:", error);
+  }
+};
 
   const onSubmit = async (data: LoginInputs) => {
     try {
@@ -64,9 +57,9 @@ const Login = () => {
       console.log("Login successful:", response);
       const role = response.data.user.role;
       if (role === "Student") {
-        navigate("/student/home");
+        navigate("/student");
       } else {
-        navigate("/instructor/home");
+        navigate("/instructor");
       }
     } catch (error: any) {
       form.setError("email", {
@@ -165,38 +158,36 @@ const Login = () => {
 
             {/* Register Button */}
             {/* Sign in with Google */}
-            <Button
-              type="button"
-              onClick={handleGoogleSignIn}
-              className="w-full py-4 flex items-center justify-center gap-2
-             border-2 border-[var(--color-accent)]
-             text-[var(--color-accent)]
-             bg-transparent
-             hover:bg-transparent hover:text-[var(--color-accent)] hover:border-[var(--color-accent)]
-             cursor-pointer mt-3"
-            >
-              <img
-                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                alt="Google"
-                className="w-5 h-5"
-              />
-              Sign in with Google
-            </Button>
+            <GoogleLogin
+              onSuccess={onGoogleSuccess}
+              onError={() => {
+                console.log("Login Failed");
+                form.setError("email", {
+                  message: "Google sign in failed. Please try again.",
+                });
+              }}
+              useOneTap
+              text="signin_with" // Optional: shows "Continue with Google"
+              size="large" // Optional: 'medium' or 'large'
+              width="100%" // Make it full width to match your design
+              theme="outline" // Optional: 'outline' or 'filled_blue'
+              shape="rectangular" // Optional: 'rectangular' or 'pill' or 'circle'
+              logo_alignment="left" // Optional: 'left' or 'center'
+            />
 
             {/* Don't have an account? Sign up */}
-           
           </div>
         </form>
       </Form>
-       <div className="text-center mt-3 text-sm">
-              <span className="text-gray-600">Don't have an account? </span>
-              <button
-                onClick={() => navigate("/register")}
-                className="text-[var(--color-accent)] font-semibold hover:underline"
-              >
-                Sign up
-              </button>
-            </div>
+      <div className="text-center mt-3 text-sm">
+        <span className="text-gray-600">Don't have an account? </span>
+        <button
+          onClick={() => navigate("/register")}
+          className="text-[var(--color-accent)] font-semibold hover:underline"
+        >
+          Sign up
+        </button>
+      </div>
     </div>
   );
 };
