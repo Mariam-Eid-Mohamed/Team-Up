@@ -1,6 +1,7 @@
 import { ArrowLeft, Pencil, Trash } from "lucide-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
 
 export default function CourseHeader() {
@@ -29,6 +30,36 @@ export default function CourseHeader() {
     );
   };
 
+  const handleDelete = () => {
+    toast.custom((t) => (
+      <div className="bg-white shadow-lg rounded-lg p-4 w-[320px]">
+        <p className="text-sm font-medium mb-3">
+          Are you sure you want to delete this course?
+        </p>
+
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1 text-sm rounded-md border"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              // 🔥 DELETE LOGIC HERE
+              toast.success("Course deleted successfully");
+            }}
+            className="px-3 py-1 text-sm rounded-md bg-red-600 text-white"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
   return (
     <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -54,7 +85,10 @@ export default function CourseHeader() {
               <Pencil size={16} /> Edit
             </button>
 
-            <button className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-red-600 text-white text-sm">
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-red-600 text-white text-sm"
+            >
               <Trash size={16} /> Delete
             </button>
           </div>

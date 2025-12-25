@@ -38,7 +38,7 @@ export default function ActionButtons({
           onClick={() =>
             navigate(`/instructor/classes/${id}/details`)
           }
-          className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white text-sm"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] hover:bg-purple-700 text-white text-sm"
         >
           <Eye size={16} />
         </button>

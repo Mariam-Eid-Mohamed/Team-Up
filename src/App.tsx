@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
+import { Toaster } from "react-hot-toast";
 import AuthLayout from "./components/AuthLayout/AuthLayout";
 import NotFound from "./Pages/NotFound/NotFound";
 import Login from "./Pages/Auth/Login/Login";
@@ -118,6 +119,7 @@ export default function App() {
   return (
     <>
       <GoogleOAuthProvider clientId="996803786434-eb4r231uhc5d9t8krd5baoa8vefpm6p6.apps.googleusercontent.com">
+          <Toaster position="top-right" />
         <RouterProvider router={routes}></RouterProvider>
       </GoogleOAuthProvider>
     </>
