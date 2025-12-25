@@ -1,9 +1,9 @@
-import axios from "axios";
+import Api from "../Api";
 
-const API_BASE = "/api/classes";
+const API_BASE = "/classes";
 
 export const getUserClasses = async (userId: string, token: string) => {
-  return axios.get(`${API_BASE}/${userId}`, {
+  return Api.get(`${API_BASE}/${userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
@@ -14,10 +14,11 @@ export const createClass = async (
     course_code: string;
     year: number;
     course_plan?: string;
+    class_color: string; // Required by backend
   },
   token: string
 ) => {
-  return axios.post(`${API_BASE}/create`, payload, {
+  return Api.post(`${API_BASE}/create`, payload, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };

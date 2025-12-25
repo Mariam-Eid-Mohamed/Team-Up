@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { loginUser, googleAuth } from "../../../Services/Auth.service";
 import { GoogleLogin } from "@react-oauth/google";
+import { setToken, setUserId } from "../../../utilis/token";
 
 const Login = () => {
   const form = useForm<LoginInputs>({
@@ -37,6 +38,12 @@ const Login = () => {
       const response = await googleAuth({
         token: credentialResponse.credential,
       });
+      if (response.token) {
+        setToken(response.token);
+      }
+      if (response.data?.user?.id || response.data?.user?._id) {
+        setUserId(response.data.user.id || response.data.user._id);
+      }
       const role = response.data.user.role;
       navigate(role === "Student" ? "/student" : "/instructor");
     } catch (error: any) {
@@ -57,6 +64,12 @@ const Login = () => {
         rememberMe,
       });
       console.log("Login successful:", response);
+      if (response.token) {
+        setToken(response.token);
+      }
+      if (response.data?.user?.id || response.data?.user?._id) {
+        setUserId(response.data.user.id || response.data.user._id);
+      }
       const role = response.data.user.role;
       if (role === "Student") {
         navigate("/student");

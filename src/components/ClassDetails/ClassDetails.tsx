@@ -31,6 +31,13 @@ export function ClassDetails({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editedData, setEditedData] = useState(classData);
 
+  // Check if color is a hex value (starts with #) or a Tailwind class
+  const isHexColor = (color: string) => color?.startsWith("#");
+  const getColorStyle = (color: string) => 
+    isHexColor(color) ? { backgroundColor: color } : {};
+  const getColorClass = (color: string) => 
+    isHexColor(color) ? "w-12 h-12 sm:w-16 sm:h-16 rounded-lg" : `w-12 h-12 sm:w-16 sm:h-16 rounded-lg ${color}`;
+
   const handleSave = () => {
     onUpdate(editedData);
     setIsEditing(false);
@@ -266,7 +273,8 @@ export function ClassDetails({
                       Color Theme
                     </label>
                     <div
-                      className={`w-12 h-12 sm:w-16 sm:h-16 rounded-lg ${classData.color}`}
+                      className={getColorClass(classData.color)}
+                      style={getColorStyle(classData.color)}
                     />
                   </div>
                 </div>

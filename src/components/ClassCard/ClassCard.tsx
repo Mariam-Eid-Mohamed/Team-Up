@@ -7,6 +7,15 @@ interface ClassCardProps {
 }
 
 export function ClassCard({ classData, onClick }: ClassCardProps) {
+  // Check if color is a hex value (starts with #) or a Tailwind class
+  const isHexColor = classData.color?.startsWith("#");
+  const colorStyle = isHexColor 
+    ? { backgroundColor: classData.color } 
+    : {};
+  const colorClass = isHexColor 
+    ? "w-2 h-12 rounded-lg" 
+    : `w-2 h-12 rounded-lg ${classData.color}`;
+
   return (
     <button
       onClick={onClick}
@@ -22,7 +31,7 @@ export function ClassCard({ classData, onClick }: ClassCardProps) {
       <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div className="flex items-center gap-3">
           {/* Color bar */}
-          <div className={`w-2 h-12 rounded-lg ${classData.color}`} />
+          <div className={colorClass} style={colorStyle} />
           {/* Class name */}
           <h3 className="text-gray-900 text-sm sm:text-base font-semibold">
             {classData.name}

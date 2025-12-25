@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Search, Copy, RefreshCw } from "lucide-react";
-import type { Class } from "../../App";
+import type { Class } from "../../interfaces/interfaces";
+import { SearchUsernameSchema } from "../../utilis/Validations/Validations";
 
 interface InviteStudentsModalProps {
   isOpen: boolean;
@@ -11,8 +12,39 @@ interface InviteStudentsModalProps {
 export const InviteStudentsModal: React.FC<InviteStudentsModalProps> = ({ isOpen, onClose, classes }) => {
   const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
+  const [username, setUsername] = useState<string>("");
+  const [usernameError, setUsernameError] = useState<string>("");
 
   if (!isOpen) return null;
+
+  const validateUsername = (): boolean => {
+    // Only validate if username is provided (search is optional)
+    if (!username || username.trim() === "") {
+      setUsernameError("");
+      return true;
+    }
+
+    try {
+      SearchUsernameSchema.parse({
+        username: username || "",
+      });
+      setUsernameError("");
+      return true;
+    } catch (err: any) {
+      if (err.issues && err.issues.length > 0) {
+        setUsernameError(err.issues[0].message);
+      }
+      return false;
+    }
+  };
+
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
+    // Clear error when user starts typing
+    if (usernameError) {
+      setUsernameError("");
+    }
+  };
 
   const handleSelectClass = (id: string) => {
     setSelectedClassId(id);
@@ -25,6 +57,8 @@ export const InviteStudentsModal: React.FC<InviteStudentsModalProps> = ({ isOpen
   const handleClose = () => {
     setStep(1);
     setSelectedClassId(null);
+    setUsername("");
+    setUsernameError("");
     onClose();
   };
 
@@ -96,8 +130,18 @@ export const InviteStudentsModal: React.FC<InviteStudentsModalProps> = ({ isOpen
                 <input 
                   type="text" 
                   placeholder="Search by username" 
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2D7A74]/20"
+                  value={username}
+                  onChange={(e) => handleUsernameChange(e.target.value)}
+                  onBlur={validateUsername}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 ${
+                    usernameError 
+                      ? "border-red-500 focus:ring-red-500/20" 
+                      : "border-gray-200 focus:ring-[#2D7A74]/20"
+                  }`}
                 />
+                {usernameError && (
+                  <p className="text-red-500 text-xs mt-1">{usernameError}</p>
+                )}
              </div>
 
              <div className="text-center font-bold text-gray-400 text-xs">OR</div>
@@ -122,7 +166,15 @@ export const InviteStudentsModal: React.FC<InviteStudentsModalProps> = ({ isOpen
               <button onClick={() => setStep(1)} className="flex-1 py-2.5 border border-purple-200 text-gray-700 rounded-lg font-bold">
                 Back
               </button>
-              <button onClick={handleClose} className="flex-1 py-2.5 bg-[#2D7A74] text-white rounded-lg font-bold">
+              <button 
+                onClick={() => {
+                  // Validate before closing
+                  if (validateUsername()) {
+                    handleClose();
+                  }
+                }} 
+                className="flex-1 py-2.5 bg-[#2D7A74] text-white rounded-lg font-bold"
+              >
                 Done
               </button>
             </div>
