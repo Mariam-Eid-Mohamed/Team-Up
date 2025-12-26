@@ -35,3 +35,34 @@ export interface Class {
   color: string;
   // role:string;
 }
+
+export interface User {
+  _id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+  isAlreadyInClass: boolean;
+}
+
+export interface ClassInvitation {
+  _id: string;
+  classId: string;
+  senderId: string;
+  receiverId: string;
+  status: "pending" | "accepted" | "declined";
+  createdAt?: string;
+}
+
+export interface Notification {
+  _id: string;
+  type: string;
+  message: string;
+  invitationId?: string;
+  classId?: string;
+  course_name?: string;
+  senderId?: string;
+  senderName?: string;
+  isRead?: boolean;
+  createdAt?: string;
+}

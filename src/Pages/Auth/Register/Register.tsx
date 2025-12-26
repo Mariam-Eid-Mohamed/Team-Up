@@ -234,7 +234,7 @@ const Register = () => {
               width="100%"
               theme="outline"
               shape="rectangular"
-              logo_alignment="left"
+              logo_alignment="center"
             />
             {/* Already have an account? */}
           </div>

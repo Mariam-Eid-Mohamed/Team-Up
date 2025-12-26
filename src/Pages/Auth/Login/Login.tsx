@@ -187,7 +187,7 @@ const Login = () => {
               width="100%" // Make it full width to match your design
               theme="outline" // Optional: 'outline' or 'filled_blue'
               shape="rectangular" // Optional: 'rectangular' or 'pill' or 'circle'
-              logo_alignment="left" // Optional: 'left' or 'center'
+              logo_alignment="center" // Optional: 'left' or 'center'
             />
 
             {/* Don't have an account? Sign up */}

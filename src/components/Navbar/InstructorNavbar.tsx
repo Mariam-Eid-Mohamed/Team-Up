@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, MouseEvent } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import type { MouseEvent } from "react";
 import { MessageCircle, Bell, ChevronDown, ChevronUp } from "lucide-react";
 import logo from "@/assets/images/removebg-preview.png";
 

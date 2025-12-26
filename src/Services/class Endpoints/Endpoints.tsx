@@ -50,3 +50,51 @@ export const joinClass = async (classCode: string, token: string) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
+// Search users by username for class invitation
+export const searchUsersForInvitation = async (
+  classId: string,
+  username: string,
+  token: string
+) => {
+  return Api.get(`${API_BASE}/${classId}/search-users?username=${encodeURIComponent(username)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+// Invite user to class
+export const inviteUserToClass = async (
+  classId: string,
+  userId: string,
+  token: string
+) => {
+  return Api.post(
+    `${API_BASE}/${classId}/invite`,
+    { userId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+};
+
+// Get class code
+export const getClassCode = async (classId: string, token: string) => {
+  return Api.get(`${API_BASE}/${classId}/class-code`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+// Respond to invitation (accept or decline)
+export const respondToInvitation = async (
+  invitationId: string,
+  action: "accept" | "decline",
+  token: string
+) => {
+  return Api.patch(
+    `${API_BASE}/invitations/${invitationId}`,
+    { action },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+};
