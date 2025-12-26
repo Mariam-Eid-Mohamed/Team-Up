@@ -126,7 +126,9 @@ export function StudentDashboard() {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          // Refresh classes after joining
+        }}
+        onSuccess={() => {
+          // Refresh classes after successfully joining
           fetchClasses();
         }}
       />

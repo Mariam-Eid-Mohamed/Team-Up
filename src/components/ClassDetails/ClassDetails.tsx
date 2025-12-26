@@ -5,12 +5,11 @@ import {
   Edit,
   Users,
   UserCheck,
-  Save,
-  X,
   Layers,
   User,
 } from "lucide-react";
-import type { Class } from "../../App";
+import type { Class } from "../../interfaces/interfaces";
+import { CreateClassModal } from "../CreateClassModal/CreateClassModal";
 
 interface ClassDetailsProps {
   classData: Class;
@@ -27,9 +26,8 @@ export function ClassDetails({
   onUpdate,
   onDelete,
 }: ClassDetailsProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [editedData, setEditedData] = useState(classData);
 
   // Check if color is a hex value (starts with #) or a Tailwind class
   const isHexColor = (color: string) => color?.startsWith("#");
@@ -38,25 +36,9 @@ export function ClassDetails({
   const getColorClass = (color: string) => 
     isHexColor(color) ? "w-12 h-12 sm:w-16 sm:h-16 rounded-lg" : `w-12 h-12 sm:w-16 sm:h-16 rounded-lg ${color}`;
 
-  const handleSave = () => {
-    onUpdate(editedData);
-    setIsEditing(false);
-  };
-
   const handleDelete = () => {
     onDelete();
   };
-
-  const colors = [
-    { name: "Blue", value: "bg-blue-500" },
-    { name: "Purple", value: "bg-purple-500" },
-    { name: "Green", value: "bg-green-500" },
-    { name: "Red", value: "bg-red-500" },
-    { name: "Orange", value: "bg-orange-500" },
-    { name: "Pink", value: "bg-pink-500" },
-    { name: "Indigo", value: "bg-indigo-500" },
-    { name: "Teal", value: "bg-teal-500" },
-  ];
 
   return (
     <>
@@ -76,67 +58,42 @@ export function ClassDetails({
                 <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
                   {classData.name}
                 </h1>
-                <p className="text-gray-600 text-sm">{classData.semester}</p>
+                <p className="text-gray-600 text-sm">{classData.year}</p>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2 sm:gap-3">
-              {!isEditing ? (
+              {/* Role-based buttons */}
+              {role === "instructor" ? (
                 <>
-                  {/* Role-based buttons */}
-                  {role === "instructor" ? (
-                    <>
-                      <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#084a49] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
-                        <Layers size={18} />
-                        View Sections
-                      </button>
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
-                      >
-                        <Edit size={18} />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => setShowDeleteConfirm(true)}
-                        className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
-                      >
-                        <Trash2 size={18} />
-                        Delete
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#084a49] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
-                        <Layers size={18} />
-                        Class Stream
-                      </button>
-                      <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#313a3a] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
-                        <Layers size={18} />
-                        + Join Section
-                      </button>
-                    </>
-                  )}
+                  <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#084a49] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
+                    <Layers size={18} />
+                    View Sections
+                  </button>
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
+                  >
+                    <Edit size={18} />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-2"
+                  >
+                    <Trash2 size={18} />
+                    Delete
+                  </button>
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={handleSave}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#58a8a7] text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
-                  >
-                    <Save size={18} />
-                    Save
+                  <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#084a49] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
+                    <Layers size={18} />
+                    Class Stream
                   </button>
-
-                  <button
-                    onClick={() => {
-                      setIsEditing(false);
-                      setEditedData(classData);
-                    }}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
-                  >
-                    <X size={18} />
-                    Cancel
+                  <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#313a3a] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
+                    <Layers size={18} />
+                    + Join Section
                   </button>
                 </>
               )}
@@ -155,101 +112,7 @@ export function ClassDetails({
                 Class Information
               </h2>
 
-              {isEditing ? (
-                <div className="space-y-4">
-                  {/* Editing form */}
-                  <div>
-                    <label className="block text-gray-700 mb-2 text-sm">
-                      Class Name
-                    </label>
-                    <input
-                      type="text"
-                      value={editedData.name}
-                      onChange={(e) =>
-                        setEditedData({ ...editedData, name: e.target.value })
-                      }
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 mb-2 text-sm">
-                      Class Code
-                    </label>
-                    <input
-                      type="text"
-                      value={editedData.code}
-                      onChange={(e) =>
-                        setEditedData({ ...editedData, code: e.target.value })
-                      }
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 mb-2 text-sm">
-                      Description
-                    </label>
-                    <textarea
-                      value={editedData.description}
-                      onChange={(e) =>
-                        setEditedData({
-                          ...editedData,
-                          description: e.target.value,
-                        })
-                      }
-                      rows={4}
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 mb-2 text-sm">
-                      Semester
-                    </label>
-                    <input
-                      type="text"
-                      value={editedData.semester}
-                      onChange={(e) =>
-                        setEditedData({
-                          ...editedData,
-                          semester: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-gray-700 mb-3 text-sm">
-                      Class Color
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {colors.map((color) => (
-                        <button
-                          key={color.value}
-                          type="button"
-                          onClick={() =>
-                            setEditedData({
-                              ...editedData,
-                              color: color.value,
-                            })
-                          }
-                          className={`p-3 rounded-lg border-2 transition-all ${
-                            editedData.color === color.value
-                              ? "border-gray-900 scale-105"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}
-                        >
-                          <div
-                            className={`w-full h-8 rounded ${color.value}`}
-                          />
-                          <p className="text-xs text-gray-600 mt-2">
-                            {color.name}
-                          </p>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
+              <div className="space-y-4">
                   <div>
                     <label className="block text-sm text-gray-500 mb-1">
                       Class Code
@@ -266,7 +129,7 @@ export function ClassDetails({
                     <label className="block text-sm text-gray-500 mb-1">
                       Semester
                     </label>
-                    <p className="text-gray-900">{classData.semester}</p>
+                    <p className="text-gray-900">{classData.year}</p>
                   </div>
                   <div>
                     <label className="block text-sm text-gray-500 mb-1">
@@ -278,7 +141,6 @@ export function ClassDetails({
                     />
                   </div>
                 </div>
-              )}
             </div>
           </div>
 
@@ -353,9 +215,21 @@ export function ClassDetails({
         </div>
       </main>
 
+      {/* Edit Class Modal */}
+      {showEditModal && (
+        <CreateClassModal
+          classData={classData}
+          onClose={() => setShowEditModal(false)}
+          onUpdate={(updatedClass) => {
+            onUpdate(updatedClass);
+            setShowEditModal(false);
+          }}
+        />
+      )}
+
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-4 sm:p-6">
             <h3 className="text-gray-900 mb-3">Delete Class?</h3>
             <p className="text-gray-600 mb-6">

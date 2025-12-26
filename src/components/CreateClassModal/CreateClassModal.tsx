@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import type { Class } from "../../interfaces/interfaces";
 import { CreateClassSchema, type CreateClassInputs } from "../../utilis/Validations/Validations";
-import { createClass } from "../../Services/class Endpoints/Endpoints";
+import { createClass, updateClass } from "../../Services/class Endpoints/Endpoints";
 import { getToken } from "../../utilis/token";
 
 interface CreateClassModalProps {
   onClose: () => void;
-  onCreate: (newClass: Class) => void;
+  onCreate?: (newClass: Class) => void;
+  onUpdate?: (updatedClass: Class) => void;
+  classData?: Class | null; // If provided, it's edit mode
 }
 
 
@@ -15,22 +17,10 @@ interface CreateClassModalProps {
 export function CreateClassModal({
   onClose,
   onCreate,
+  onUpdate,
+  classData,
 }: CreateClassModalProps) {
-  const [formData, setFormData] = useState<Class>({
-    id: crypto.randomUUID(),
-    name: "",
-    code: "",
-    description: "",
-    year: "",
-    studentsCount: 0,
-    teamsCount: 0,
-    instructorsCount: 1,
-    color: "bg-blue-500",
-  });
-
-  const [errors, setErrors] = useState<Partial<Record<keyof CreateClassInputs, string>>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
+  const isEditMode = !!classData;
 
   const colors = [
     { name: "Blue", value: "bg-blue-500", hex: "#3b82f6" },
@@ -42,6 +32,16 @@ export function CreateClassModal({
     { name: "Indigo", value: "bg-indigo-500", hex: "#6366f1" },
     { name: "Teal", value: "bg-teal-500", hex: "#14b8a6" },
   ];
+
+  // Helper function to convert hex color to Tailwind class (for edit mode)
+  const getColorFromHex = (hexColor: string): string => {
+    if (!hexColor.startsWith("#")) {
+      // Already a Tailwind class
+      return hexColor;
+    }
+    const color = colors.find((c) => c.hex.toLowerCase() === hexColor.toLowerCase());
+    return color ? color.value : "bg-blue-500"; // Default to blue if no match
+  };
 
   // Helper function to convert Tailwind color class to hex
   const getColorHex = (colorClass: string): string => {
@@ -56,6 +56,49 @@ export function CreateClassModal({
     // Default fallback
     return "#3b82f6"; // Default to blue
   };
+
+  const [formData, setFormData] = useState<Class>(() => {
+    // Initialize form data - convert hex to Tailwind class if needed
+    const initialColor = classData?.color 
+      ? getColorFromHex(classData.color) 
+      : "bg-blue-500";
+    
+    return {
+      id: classData?.id || crypto.randomUUID(),
+      name: classData?.name || "",
+      code: classData?.code || "",
+      description: classData?.description || "",
+      year: classData?.year || "",
+      studentsCount: classData?.studentsCount || 0,
+      teamsCount: classData?.teamsCount || 0,
+      instructorsCount: classData?.instructorsCount || 1,
+      color: initialColor,
+    };
+  });
+
+  // Update form data when classData changes (for edit mode)
+  useEffect(() => {
+    if (classData) {
+      // Convert hex color to Tailwind class if needed
+      const colorForForm = getColorFromHex(classData.color || "bg-blue-500");
+      
+      setFormData({
+        id: classData.id,
+        name: classData.name || "",
+        code: classData.code || "",
+        description: classData.description || "",
+        year: classData.year || "",
+        studentsCount: classData.studentsCount || 0,
+        teamsCount: classData.teamsCount || 0,
+        instructorsCount: classData.instructorsCount || 1,
+        color: colorForForm,
+      });
+    }
+  }, [classData]);
+
+  const [errors, setErrors] = useState<Partial<Record<keyof CreateClassInputs, string>>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const validateForm = (): boolean => {
     try {
@@ -143,24 +186,52 @@ export function CreateClassModal({
 
       console.log("Sending payload to API:", payload);
 
-      const response = await createClass(payload, token);
-      
-      if (response.data.success) {
-        // Map API response to Class interface
-        const createdClass: Class = {
-          id: response.data.data._id,
-          name: response.data.data.course_name,
-          code: response.data.data.course_code,
-          description: response.data.data.course_plan || "",
-          year: response.data.data.year.toString(),
-          studentsCount: 0,
-          teamsCount: 0,
-          instructorsCount: 1,
-          color: formData.color,
-        };
+      if (isEditMode && formData.id) {
+        // Edit mode - call update API
+        const response = await updateClass(formData.id, payload, token);
         
-        onCreate(createdClass);
-        onClose();
+        if (response.data.success) {
+          // Map API response to Class interface
+          const updatedClass: Class = {
+            id: formData.id,
+            name: response.data.data.course_name || formData.name,
+            code: response.data.data.course_code || formData.code,
+            description: response.data.data.course_plan || formData.description,
+            year: response.data.data.year?.toString() || formData.year,
+            studentsCount: formData.studentsCount,
+            teamsCount: formData.teamsCount,
+            instructorsCount: formData.instructorsCount,
+            color: formData.color,
+          };
+          
+          if (onUpdate) {
+            onUpdate(updatedClass);
+          }
+          onClose();
+        }
+      } else {
+        // Create mode - call create API
+        const response = await createClass(payload, token);
+        
+        if (response.data.success) {
+          // Map API response to Class interface
+          const createdClass: Class = {
+            id: response.data.data._id,
+            name: response.data.data.course_name,
+            code: response.data.data.course_code,
+            description: response.data.data.course_plan || "",
+            year: response.data.data.year.toString(),
+            studentsCount: 0,
+            teamsCount: 0,
+            instructorsCount: 1,
+            color: formData.color,
+          };
+          
+          if (onCreate) {
+            onCreate(createdClass);
+          }
+          onClose();
+        }
       }
     } catch (error: any) {
       console.error("Failed to create class:", error);
@@ -193,35 +264,42 @@ export function CreateClassModal({
   };
 
   return (
-    <div className="fixed inset-0  flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-xl p-6 relative max-h-[85vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-xl shadow-xl w-fit max-w-4xl mx-4 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6">
 
-        {/* Close */}
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
-        >
-          <X />
-        </button>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b mb-6">
+          <h2 className="text-lg font-semibold">
+            {isEditMode ? "Edit Class" : "Create New Class"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded hover:bg-gray-100"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
-        <h2 className="text-lg font-semibold mb-6">Create New Class</h2>
-
-        {apiError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
-            {apiError}
-          </div>
-        )}
-
-        {/* FORM (same style as edit) */}
-        <div className="space-y-4">
+        {/* BODY */}
+        <div className="p-6 space-y-4">
+          {apiError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {apiError}
+            </div>
+          )}
           <div>
-            <label className="block text-gray-700 mb-2 text-sm">
-              Class Name
-            </label>
+            <label className="block text-sm mb-1">Class Name</label>
             <input
               type="text"
-              className={`w-full px-4 py-2 border rounded-lg ${
-                errors.name ? "border-red-500" : "border-gray-300"
+              className={`w-full border rounded-lg px-4 py-2 ${
+                errors.name ? "border-red-500" : ""
               }`}
               value={formData.name || ""}
               onChange={(e) => handleFieldChange("name", e.target.value)}
@@ -232,13 +310,11 @@ export function CreateClassModal({
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2 text-sm">
-              Class Code
-            </label>
+            <label className="block text-sm mb-1">Class Code</label>
             <input
               type="text"
-              className={`w-full px-4 py-2 border rounded-lg ${
-                errors.code ? "border-red-500" : "border-gray-300"
+              className={`w-full border rounded-lg px-4 py-2 ${
+                errors.code ? "border-red-500" : ""
               }`}
               value={formData.code || ""}
               onChange={(e) => handleFieldChange("code", e.target.value)}
@@ -249,13 +325,11 @@ export function CreateClassModal({
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2 text-sm">
-              Description
-            </label>
+            <label className="block text-sm mb-1">Description</label>
             <textarea
               rows={4}
-              className={`w-full px-4 py-2 border rounded-lg ${
-                errors.description ? "border-red-500" : "border-gray-300"
+              className={`w-full border rounded-lg px-4 py-2 ${
+                errors.description ? "border-red-500" : ""
               }`}
               value={formData.description || ""}
               onChange={(e) => handleFieldChange("description", e.target.value)}
@@ -266,13 +340,11 @@ export function CreateClassModal({
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-2 text-sm">
-              Semester
-            </label>
+            <label className="block text-sm mb-1">Semester</label>
             <input
               type="text"
-              className={`w-full px-4 py-2 border rounded-lg ${
-                errors.year ? "border-red-500" : "border-gray-300"
+              className={`w-full border rounded-lg px-4 py-2 ${
+                errors.year ? "border-red-500" : ""
               }`}
               value={formData.year || ""}
               onChange={(e) => handleFieldChange("year", e.target.value)}
@@ -283,25 +355,21 @@ export function CreateClassModal({
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-3 text-sm">
-              Class Color
-            </label>
-            <div className="grid grid-cols-4 gap-3">
+            <label className="block text-sm mb-3">Class Color</label>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
               {colors.map((color) => (
                 <button
                   key={color.value}
                   type="button"
                   onClick={() => handleFieldChange("color", color.value)}
-                  className={`p-3 rounded-lg border-2 transition-all ${
+                  className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center ${
                     formData.color === color.value
                       ? "border-gray-900 scale-105"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <div
-                    className={`w-full h-8 rounded ${color.value}`}
-                  />
-                  <p className="text-xs text-gray-600 mt-2">
+                  <div className={`w-full h-8 rounded ${color.value}`} />
+                  <p className="text-xs text-gray-600 mt-1">
                     {color.name}
                   </p>
                 </button>
@@ -313,22 +381,27 @@ export function CreateClassModal({
           </div>
         </div>
 
-        {/* ACTION BUTTONS */}
-        <div className="flex justify-center gap-4 mt-8">
+        {/* FOOTER */}
+        <div className="flex justify-center gap-6 px-6 py-4 border-t">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border rounded-lg text-gray-700 flex items-center gap-1 hover:bg-gray-50"
           >
+            <X size={16} />
             Cancel
           </button>
 
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="px-4 py-2 bg-[#9B87F5] text-white rounded-lg hover:bg-[#8B77E5] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-[#58a8a7] text-white rounded-lg flex items-center gap-1 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "Creating..." : "Create Class"}
+            {isSubmitting 
+              ? (isEditMode ? "Updating..." : "Creating...") 
+              : (isEditMode ? "Update Class" : "Create Class")
+            }
           </button>
+        </div>
         </div>
       </div>
     </div>
