@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import type { Class } from "../../interfaces/interfaces";
-import { CreateClassSchema, type CreateClassInputs } from "../../utilis/Validations/Validations";
-import { createClass, updateClass } from "../../Services/class Endpoints/Endpoints";
+import {
+  CreateClassSchema,
+  type CreateClassInputs,
+} from "../../utilis/Validations/Validations";
+import {
+  createClass,
+  updateClass,
+} from "../../Services/class Endpoints/Endpoints";
 import { getToken } from "../../utilis/token";
 
 interface CreateClassModalProps {
@@ -11,8 +17,6 @@ interface CreateClassModalProps {
   onUpdate?: (updatedClass: Class) => void;
   classData?: Class | null; // If provided, it's edit mode
 }
-
-
 
 export function CreateClassModal({
   onClose,
@@ -39,7 +43,9 @@ export function CreateClassModal({
       // Already a Tailwind class
       return hexColor;
     }
-    const color = colors.find((c) => c.hex.toLowerCase() === hexColor.toLowerCase());
+    const color = colors.find(
+      (c) => c.hex.toLowerCase() === hexColor.toLowerCase()
+    );
     return color ? color.value : "bg-blue-500"; // Default to blue if no match
   };
 
@@ -59,10 +65,10 @@ export function CreateClassModal({
 
   const [formData, setFormData] = useState<Class>(() => {
     // Initialize form data - convert hex to Tailwind class if needed
-    const initialColor = classData?.color 
-      ? getColorFromHex(classData.color) 
+    const initialColor = classData?.color
+      ? getColorFromHex(classData.color)
       : "bg-blue-500";
-    
+
     return {
       id: classData?.id || crypto.randomUUID(),
       name: classData?.name || "",
@@ -81,7 +87,7 @@ export function CreateClassModal({
     if (classData) {
       // Convert hex color to Tailwind class if needed
       const colorForForm = getColorFromHex(classData.color || "bg-blue-500");
-      
+
       setFormData({
         id: classData.id,
         name: classData.name || "",
@@ -96,7 +102,9 @@ export function CreateClassModal({
     }
   }, [classData]);
 
-  const [errors, setErrors] = useState<Partial<Record<keyof CreateClassInputs, string>>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof CreateClassInputs, string>>
+  >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -189,7 +197,7 @@ export function CreateClassModal({
       if (isEditMode && formData.id) {
         // Edit mode - call update API
         const response = await updateClass(formData.id, payload, token);
-        
+
         if (response.data.success) {
           // Map API response to Class interface
           const updatedClass: Class = {
@@ -203,7 +211,7 @@ export function CreateClassModal({
             instructorsCount: formData.instructorsCount,
             color: formData.color,
           };
-          
+
           if (onUpdate) {
             onUpdate(updatedClass);
           }
@@ -212,7 +220,7 @@ export function CreateClassModal({
       } else {
         // Create mode - call create API
         const response = await createClass(payload, token);
-        
+
         if (response.data.success) {
           // Map API response to Class interface
           const createdClass: Class = {
@@ -226,7 +234,7 @@ export function CreateClassModal({
             instructorsCount: 1,
             color: formData.color,
           };
-          
+
           if (onCreate) {
             onCreate(createdClass);
           }
@@ -237,10 +245,12 @@ export function CreateClassModal({
       console.error("Failed to create class:", error);
       console.error("Error response:", error.response?.data);
       console.error("Error status:", error.response?.status);
-      
-      const errorMessage = error.response?.data?.message || "Failed to create class. Please try again.";
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to create class. Please try again.";
       setApiError(errorMessage);
-      
+
       // Set field-specific errors if available
       if (error.response?.status === 400) {
         const errorData = error.response.data;
@@ -264,144 +274,145 @@ export function CreateClassModal({
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={onClose}
     >
-      <div 
+      <div
         className="bg-white rounded-xl shadow-xl w-fit max-w-4xl mx-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b mb-6">
+            <h2 className="text-lg font-semibold">
+              {isEditMode ? "Edit Class" : "Create New Class"}
+            </h2>
+            <button onClick={onClose} className="p-2 rounded hover:bg-gray-100">
+              <X size={18} />
+            </button>
+          </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b mb-6">
-          <h2 className="text-lg font-semibold">
-            {isEditMode ? "Edit Class" : "Create New Class"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded hover:bg-gray-100"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* BODY */}
-        <div className="p-6 space-y-4">
-          {apiError && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {apiError}
+          {/* BODY */}
+          <div className="p-6 space-y-4">
+            {apiError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {apiError}
+              </div>
+            )}
+            <div>
+              <label className="block text-sm mb-1">Class Name</label>
+              <input
+                type="text"
+                className={`w-full border rounded-lg px-4 py-2 ${
+                  errors.name ? "border-red-500" : ""
+                }`}
+                value={formData.name || ""}
+                onChange={(e) => handleFieldChange("name", e.target.value)}
+              />
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+              )}
             </div>
-          )}
-          <div>
-            <label className="block text-sm mb-1">Class Name</label>
-            <input
-              type="text"
-              className={`w-full border rounded-lg px-4 py-2 ${
-                errors.name ? "border-red-500" : ""
-              }`}
-              value={formData.name || ""}
-              onChange={(e) => handleFieldChange("name", e.target.value)}
-            />
-            {errors.name && (
-              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-sm mb-1">Class Code</label>
-            <input
-              type="text"
-              className={`w-full border rounded-lg px-4 py-2 ${
-                errors.code ? "border-red-500" : ""
-              }`}
-              value={formData.code || ""}
-              onChange={(e) => handleFieldChange("code", e.target.value)}
-            />
-            {errors.code && (
-              <p className="text-red-500 text-xs mt-1">{errors.code}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">Description</label>
-            <textarea
-              rows={4}
-              className={`w-full border rounded-lg px-4 py-2 ${
-                errors.description ? "border-red-500" : ""
-              }`}
-              value={formData.description || ""}
-              onChange={(e) => handleFieldChange("description", e.target.value)}
-            />
-            {errors.description && (
-              <p className="text-red-500 text-xs mt-1">{errors.description}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1">Semester</label>
-            <input
-              type="text"
-              className={`w-full border rounded-lg px-4 py-2 ${
-                errors.year ? "border-red-500" : ""
-              }`}
-              value={formData.year || ""}
-              onChange={(e) => handleFieldChange("year", e.target.value)}
-            />
-            {errors.year && (
-              <p className="text-red-500 text-xs mt-1">{errors.year}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm mb-3">Class Color</label>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-              {colors.map((color) => (
-                <button
-                  key={color.value}
-                  type="button"
-                  onClick={() => handleFieldChange("color", color.value)}
-                  className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center ${
-                    formData.color === color.value
-                      ? "border-gray-900 scale-105"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  <div className={`w-full h-8 rounded ${color.value}`} />
-                  <p className="text-xs text-gray-600 mt-1">
-                    {color.name}
-                  </p>
-                </button>
-              ))}
+            <div>
+              <label className="block text-sm mb-1">Class Code</label>
+              <input
+                type="text"
+                className={`w-full border rounded-lg px-4 py-2 ${
+                  errors.code ? "border-red-500" : ""
+                }`}
+                value={formData.code || ""}
+                onChange={(e) => handleFieldChange("code", e.target.value)}
+              />
+              {errors.code && (
+                <p className="text-red-500 text-xs mt-1">{errors.code}</p>
+              )}
             </div>
-            {errors.color && (
-              <p className="text-red-500 text-xs mt-1">{errors.color}</p>
-            )}
+
+            <div>
+              <label className="block text-sm mb-1">Description</label>
+              <textarea
+                rows={4}
+                className={`w-full border rounded-lg px-4 py-2 ${
+                  errors.description ? "border-red-500" : ""
+                }`}
+                value={formData.description || ""}
+                onChange={(e) =>
+                  handleFieldChange("description", e.target.value)
+                }
+              />
+              {errors.description && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.description}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm mb-1">Year</label>
+              <input
+                type="text"
+                className={`w-full border rounded-lg px-4 py-2 ${
+                  errors.year ? "border-red-500" : ""
+                }`}
+                value={formData.year || ""}
+                onChange={(e) => handleFieldChange("year", e.target.value)}
+              />
+              {errors.year && (
+                <p className="text-red-500 text-xs mt-1">{errors.year}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm mb-3">Class Color</label>
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                {colors.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    onClick={() => handleFieldChange("color", color.value)}
+                    className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center ${
+                      formData.color === color.value
+                        ? "border-gray-900 scale-105"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className={`w-full h-8 rounded ${color.value}`} />
+                    <p className="text-xs text-gray-600 mt-1">{color.name}</p>
+                  </button>
+                ))}
+              </div>
+              {errors.color && (
+                <p className="text-red-500 text-xs mt-1">{errors.color}</p>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* FOOTER */}
-        <div className="flex justify-center gap-6 px-6 py-4 border-t">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 border rounded-lg text-gray-700 flex items-center gap-1 hover:bg-gray-50"
-          >
-            <X size={16} />
-            Cancel
-          </button>
+          {/* FOOTER */}
+          <div className="flex justify-center gap-6 px-6 py-4 border-t">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 border rounded-lg text-gray-700 flex items-center gap-1 hover:bg-gray-50"
+            >
+              <X size={16} />
+              Cancel
+            </button>
 
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="px-4 py-2 bg-[#58a8a7] text-white rounded-lg flex items-center gap-1 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting 
-              ? (isEditMode ? "Updating..." : "Creating...") 
-              : (isEditMode ? "Update Class" : "Create Class")
-            }
-          </button>
-        </div>
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-[#58a8a7] text-white rounded-lg flex items-center gap-1 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting
+                ? isEditMode
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditMode
+                ? "Update Class"
+                : "Create Class"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
