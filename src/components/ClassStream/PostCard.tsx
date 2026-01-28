@@ -1,10 +1,15 @@
 import { Pencil, Trash, Download } from "lucide-react";
-
+import AnnouncementModal from "./AnnouncemetModal";
+import { useState } from "react";
 interface PostCardProps {
   withFile?: boolean;
 }
 
+
+
 export default function PostCard({ withFile }: PostCardProps) {
+  const [modalMode, setModalMode] = useState<"edit" | "delete" | null>(null);
+  const postContent = "There will be a quiz next saturday";
   return (
     <div className="bg-white rounded-lg shadow p-5">
       {/* Header */}
@@ -18,9 +23,17 @@ export default function PostCard({ withFile }: PostCardProps) {
         </div>
        
 
-        <div className="flex gap-2 text-gray-500">
-          <Pencil size={16} className="cursor-pointer hover:text-black" />
-          <Trash size={16} className="cursor-pointer hover:text-red-600" />
+       <div className="flex gap-2 text-gray-500">
+          <Pencil 
+            size={16} 
+            className="cursor-pointer hover:text-black" 
+            onClick={() => setModalMode("edit")}
+          />
+          <Trash 
+            size={16} 
+            className="cursor-pointer hover:text-red-600" 
+            onClick={() => setModalMode("delete")}
+          />
         </div>
         
       </div>
@@ -48,6 +61,17 @@ export default function PostCard({ withFile }: PostCardProps) {
           </div>
         )}
       </div>
+
+      <AnnouncementModal 
+        isOpen={!!modalMode}
+        onClose={() => setModalMode(null)}
+        mode={modalMode || "edit"}
+        initialData={postContent}
+        onConfirm={(data) => {
+          if (modalMode === "edit") console.log("Update logic here", data);
+          if (modalMode === "delete") console.log("Delete logic here");
+        }}
+      />
     </div>
   );
 }
