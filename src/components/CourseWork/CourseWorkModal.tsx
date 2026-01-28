@@ -4,7 +4,7 @@ import { CreateCourseworkSchema } from "@/utilis/Validations/courseworkValidatio
 import type { CreateCourseworkInputs } from "@/utilis/Validations/courseworkValidations";
 import { createCoursework } from "@/Services/coursework Endpoints/Endpoints";
 import { getToken } from "@/utilis/token";
-
+import { Plus, Upload, Trash2, Paperclip } from "lucide-react";
 interface CourseworkData {
   name: string;
   description?: string;
@@ -28,7 +28,6 @@ export default function CourseworkModal({
   classId,
   initialData,
 }: Props) {
-  console.log("Modal received classId:", classId);
   const [errors, setErrors] = useState<
     Partial<Record<keyof CreateCourseworkInputs, string>>
   >({});
@@ -40,6 +39,11 @@ export default function CourseworkModal({
   const [files, setFiles] = useState<File[]>([]);
   const isEdit = !!initialData;
   const [includeDiscussion, setIncludeDiscussion] = useState(false);
+  type CriterionItem = { criterion: string; points: string };
+
+  const [gradingCriteria, setGradingCriteria] = useState<CriterionItem[]>([
+    { criterion: "", points: "" },
+  ]);
 
   const [form, setForm] = useState<CourseworkData>({
     name: "",
@@ -85,16 +89,31 @@ export default function CourseworkModal({
       return false;
     }
   };
+  //handling files
+  const MAX_FILES = 5;
+
+  const addFiles = (incoming: FileList | null) => {
+    if (!incoming) return;
+    const incomingArr = Array.from(incoming);
+
+    setFiles((prev) => {
+      const merged = [...prev, ...incomingArr];
+
+      // optional: منع التكرار بالاسم + الحجم
+      const unique = merged.filter(
+        (f, i, arr) =>
+          i === arr.findIndex((x) => x.name === f.name && x.size === f.size)
+      );
+
+      return unique.slice(0, MAX_FILES);
+    });
+  };
+
+  const removeFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async () => {
-    console.log("Submitting with:", {
-      classId,
-      form,
-      notes,
-      files,
-      includeDiscussion,
-    });
-
     if (!validateForm()) return;
 
     const token = getToken();
@@ -190,9 +209,10 @@ export default function CourseworkModal({
             </label>
 
             <textarea
-              // className={`w-full border rounded-md p-2 ${
-              //   errors.description ? "border-red-500" : ""
+              className={`w-full border rounded-md p-2`}
+              // ${  errors.description ? "border-red-500" : ""
               // }`}
+
               placeholder="Brief overview of coursework"
               value={form.description || ""}
               onChange={(e) =>
@@ -217,24 +237,83 @@ export default function CourseworkModal({
           </div>
 
           {/* ATTACHMENTS (separate upload) */}
+          {/* ATTACHMENTS */}
           <div>
             <label className="block text-sm font-medium mb-1">
-              Attachments (max 5)
+              Attachments (max {MAX_FILES})
             </label>
-            <input
-              type="file"
-              multiple
-              className="w-full text-sm"
-              onChange={(e) => {
-                const selected = e.target.files
-                  ? Array.from(e.target.files)
-                  : [];
-                setFiles(selected.slice(0, 5));
-              }}
-            />
+
+            <div className="flex items-center gap-2">
+              {/* زر Upload */}
+              <label className="inline-flex items-center gap-2 px-3 py-2 border rounded-md cursor-pointer hover:bg-gray-50">
+                <Upload size={16} />
+                <span className="text-sm">Upload files</span>
+
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    addFiles(e.target.files);
+                    // مهم: نفضي القيمة عشان لو اختار نفس الملف تاني يشتغل onChange
+                    e.currentTarget.value = "";
+                  }}
+                />
+              </label>
+
+              {/* Add more */}
+              <label className="inline-flex items-center gap-2 px-3 py-2 border rounded-md cursor-pointer hover:bg-gray-50">
+                <Plus size={16} />
+                <span className="text-sm">Add more</span>
+
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    addFiles(e.target.files);
+                    e.currentTarget.value = "";
+                  }}
+                />
+              </label>
+
+              <span className="text-xs text-gray-500">
+                {files.length}/{MAX_FILES} selected
+              </span>
+            </div>
+
+            {/* قائمة الملفات */}
             {files.length > 0 && (
-              <p className="text-xs text-gray-600 mt-1">
-                {files.length} file(s) selected
+              <div className="mt-3 space-y-2">
+                {files.map((f, idx) => (
+                  <div
+                    key={`${f.name}-${f.size}-${idx}`}
+                    className="flex items-center justify-between border rounded-md px-3 py-2"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Paperclip size={16} className="shrink-0" />
+                      <span className="text-sm truncate">{f.name}</span>
+                      <span className="text-xs text-gray-500 shrink-0">
+                        {(f.size / 1024 / 1024).toFixed(2)} MB
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeFile(idx)}
+                      className="text-red-600 hover:text-red-700 p-1"
+                      title="Remove"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {files.length >= MAX_FILES && (
+              <p className="text-xs text-amber-600 mt-2">
+                Max {MAX_FILES} files reached.
               </p>
             )}
           </div>
