@@ -3,14 +3,17 @@ import CourseHeader from "@/components/ClassStream/CourseHeader";
 import SectionDropdown from "@/components/ClassStream/SectionDropdown";
 import ActionButtons from "@/components/ClassStream/ActionButtons";
 import PostCard from "@/components/ClassStream/PostCard";
-
+import { useParams } from "react-router-dom";
 export default function ClassStream() {
   const location = useLocation();
 
-  const role: "student" | "instructor" =
-    location.pathname.startsWith("/instructor")
-      ? "instructor"
-      : "student";
+  const { id } = useParams();
+
+  const role: "student" | "instructor" = location.pathname.startsWith(
+    "/instructor"
+  )
+    ? "instructor"
+    : "student";
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
@@ -18,7 +21,7 @@ export default function ClassStream() {
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6">
         <SectionDropdown />
-        <ActionButtons role={role} />
+        <ActionButtons role={role} classId={id!} />
       </div>
 
       <div className="mt-6 space-y-6">

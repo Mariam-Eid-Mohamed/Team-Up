@@ -8,6 +8,7 @@ export default function CourseHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
+  console.log("params:", useParams());
   const [editOpen, setEditOpen] = useState(false);
 
   const isSectionStream = location.pathname.includes("/sections/");
@@ -96,6 +97,7 @@ export default function CourseHeader() {
       </div>
 
       <CourseworkModal
+        classId={id!}
         open={editOpen}
         onClose={() => setEditOpen(false)}
         initialData={existingCoursework}
