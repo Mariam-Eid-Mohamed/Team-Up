@@ -146,6 +146,17 @@ export default function CourseworkModal({
       } else {
         fd.append("discussion_date", "");
       }
+      const criteriaPayload = gradingCriteria
+        .map((c) => ({
+          criterion: c.criterion.trim(),
+          points: Number(c.points),
+        }))
+        .filter(
+          (c) =>
+            c.criterion.length > 0 && Number.isFinite(c.points) && c.points >= 0
+        );
+
+      fd.append("grading_criteria", JSON.stringify(criteriaPayload));
 
       files.forEach((file) => fd.append("files", file));
       for (const [k, v] of fd.entries()) console.log(k, v);
@@ -411,6 +422,74 @@ export default function CourseworkModal({
               />
             </div>
           )}
+          {/* GRADING CRITERIA */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm font-medium">Grading criteria</label>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setGradingCriteria((prev) => [
+                    ...prev,
+                    { criterion: "", points: "" },
+                  ])
+                }
+                className="p-2 rounded-md hover:bg-gray-100"
+                title="Add criterion"
+              >
+                <Plus size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {gradingCriteria.map((item, idx) => (
+                <div key={idx} className="flex gap-2 items-center">
+                  <input
+                    className="flex-1 border rounded-md p-2"
+                    placeholder="E.g. code works"
+                    value={item.criterion}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setGradingCriteria((prev) =>
+                        prev.map((x, i) =>
+                          i === idx ? { ...x, criterion: v } : x
+                        )
+                      );
+                    }}
+                  />
+
+                  <input
+                    className="w-24 border rounded-md p-2"
+                    placeholder="E.g. 5"
+                    value={item.points}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setGradingCriteria((prev) =>
+                        prev.map((x, i) =>
+                          i === idx ? { ...x, points: v } : x
+                        )
+                      );
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setGradingCriteria((prev) =>
+                        prev.filter((_, i) => i !== idx)
+                      )
+                    }
+                    className="p-2 rounded-md hover:bg-gray-100 text-red-600"
+                    title="Remove"
+                    disabled={gradingCriteria.length === 1}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* ACTIONS */}
           <div className="flex justify-end gap-3 pt-6">
