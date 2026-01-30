@@ -2,20 +2,20 @@ import { Pencil, FileText, Eye } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
-import AnnouncementModal from "../ClassStream/AnnouncemetModal"; 
+import AnnouncementModal from "../ClassStream/AnnouncemetModal";
 
 interface ActionButtonsProps {
   role: "student" | "instructor";
   classId: string;
   hideCoursework?: boolean;
+  onPostCreated?: () => void;
 }
-
-
 
 export default function ActionButtons({
   role,
   classId,
   hideCoursework = false,
+  onPostCreated,
 }: ActionButtonsProps) {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -25,7 +25,7 @@ export default function ActionButtons({
   return (
     <>
       <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
-       <button 
+        <button
           onClick={() => setIsAnnounceOpen(true)} // Open Modal
           className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white hover:bg-purple-700 text-sm"
         >
@@ -50,7 +50,7 @@ export default function ActionButtons({
           <Eye size={16} />
         </button>
       </div>
-<AnnouncementModal 
+      <AnnouncementModal
         isOpen={isAnnounceOpen}
         onClose={() => setIsAnnounceOpen(false)}
         mode="create"
@@ -60,6 +60,10 @@ export default function ActionButtons({
         open={open}
         onClose={() => setOpen(false)}
         classId={classId}
+        onCreated={() => {
+          setOpen(false);
+          onPostCreated?.(); // دي تعمل refetch في ClassStream
+        }}
       />
     </>
   );

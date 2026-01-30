@@ -1,15 +1,28 @@
 import { Pencil, Trash, Download } from "lucide-react";
-import AnnouncementModal from "./AnnouncemetModal";
 import { useState } from "react";
-interface PostCardProps {
-  withFile?: boolean;
+import type { Post } from "@/Types/posts";
+
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString(); // تقدري تخصصيها
 }
 
-
-
-export default function PostCard({ withFile }: PostCardProps) {
+export default function PostCard({
+  post,
+  role,
+  onChanged,
+}: {
+  post: Post;
+  role: "student" | "instructor";
+  onChanged?: () => void;
+}) {
   const [modalMode, setModalMode] = useState<"edit" | "delete" | null>(null);
-  const postContent = "There will be a quiz next saturday";
+
+  const authorName = `${post.authorId.first_name} ${post.authorId.last_name}`;
+  const created = formatDate(post.createdAt);
+
+  const canEdit = role === "instructor"; // أو لو عندك شرط authorId == currentUserId
+
   return (
     <div className="bg-white rounded-lg shadow p-5">
       {/* Header */}
@@ -17,61 +30,93 @@ export default function PostCard({ withFile }: PostCardProps) {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gray-300" />
           <div>
-            <p className="font-semibold text-sm">Nourhan Ihab</p>
-            <p className="text-xs text-gray-500">21/12/2025 - 8:00 AM</p>
+            <p className="font-semibold text-sm">{authorName}</p>
+            <p className="text-xs text-gray-500">{created}</p>
           </div>
         </div>
-       
 
-       <div className="flex gap-2 text-gray-500">
-          <Pencil 
-            size={16} 
-            className="cursor-pointer hover:text-black" 
-            onClick={() => setModalMode("edit")}
-          />
-          <Trash 
-            size={16} 
-            className="cursor-pointer hover:text-red-600" 
-            onClick={() => setModalMode("delete")}
-          />
-        </div>
-        
-      </div>
-
-      <hr className="border-t border-gray-300 mt-4" />
-
-      {/* Content */}
-      <div className="mt-4 space-y-2 text-sm">
-        <h3 className="font-semibold">SOA Phase 1</h3>
-        <p>Phase 1 for SOA project. Please view file for project description.</p>
-
-        <p><strong>Team size:</strong> 3 - 5</p>
-        <p><strong>Grade:</strong> 10</p>
-        <p><strong>Deadline:</strong> 21/12/2025</p>
-        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sint, maxime? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nam ipsam nostrum tempore nulla perferendis? Quia iusto eos, nemo perferendis, ipsum perspiciatis, quibusdam eius ex reprehenderit deleniti aperiam maiores eveniet cupiditate.</p>
-
-        {withFile && (
-          <div className="mt-4 flex items-center gap-3 border rounded-md p-3 w-fit">
-            <div className="w-8 h-8 bg-gray-200 rounded" />
-            <div>
-              <p className="text-xs font-medium">File Name</p>
-              <p className="text-xs text-gray-500">PDF / ZIP / PNG</p>
-            </div>
-            <Download size={16} className="ml-2 cursor-pointer" />
+        {canEdit && (
+          <div className="flex gap-2 text-gray-500">
+            <Pencil
+              size={16}
+              className="cursor-pointer hover:text-black"
+              onClick={() => setModalMode("edit")}
+            />
+            <Trash
+              size={16}
+              className="cursor-pointer hover:text-red-600"
+              onClick={() => setModalMode("delete")}
+            />
           </div>
         )}
       </div>
 
-      <AnnouncementModal 
-        isOpen={!!modalMode}
-        onClose={() => setModalMode(null)}
-        mode={modalMode || "edit"}
-        initialData={postContent}
-        onConfirm={(data) => {
-          if (modalMode === "edit") console.log("Update logic here", data);
-          if (modalMode === "delete") console.log("Delete logic here");
-        }}
-      />
+      <hr className="border-t border-gray-300 mt-4" />
+
+      {/* Body */}
+      {post.type === "ANNOUNCEMENT" ? (
+        <div className="mt-4 text-sm">
+          <p className="whitespace-pre-wrap">{post.announcement_text}</p>
+        </div>
+      ) : (
+        <div className="mt-4 space-y-2 text-sm">
+          <h3 className="font-semibold">{post.courseworkId.name}</h3>
+
+          {post.courseworkId.description && (
+            <p className="text-gray-700 whitespace-pre-wrap">
+              {post.courseworkId.description}
+            </p>
+          )}
+
+          <div className="text-gray-700">
+            {post.courseworkId.team_size_min != null &&
+              post.courseworkId.team_size_max != null && (
+                <p>
+                  <strong>Team size:</strong> {post.courseworkId.team_size_min}{" "}
+                  - {post.courseworkId.team_size_max}
+                </p>
+              )}
+
+            {post.courseworkId.grade != null && (
+              <p>
+                <strong>Grade:</strong> {post.courseworkId.grade}
+              </p>
+            )}
+
+            <p>
+              <strong>Deadline:</strong>{" "}
+              {formatDate(post.courseworkId.deadline)}
+            </p>
+          </div>
+
+          {/* Files */}
+          {post.courseworkId.files?.length > 0 && (
+            <div className="mt-3 space-y-2">
+              {post.courseworkId.files.map((f) => (
+                <div
+                  key={f._id}
+                  className="flex items-center justify-between border rounded-md p-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium truncate">
+                      {f.file_name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {(f.file_size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+
+                  <a href={f.file_url} target="_blank" rel="noreferrer">
+                    <Download size={16} className="cursor-pointer" />
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* هنا لاحقًا تحطي مودال edit/delete حسب النوع */}
     </div>
   );
 }

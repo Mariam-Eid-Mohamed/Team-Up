@@ -108,7 +108,7 @@ export const respondToInvitation = async (
   );
 };
 export const GetClassPosts = (classId: string, token: string) => {
-  return Api.get(`${API_BASE}/classes/${classId}/posts`, {
+  return Api.get(`${API_BASE}/${classId}/posts`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

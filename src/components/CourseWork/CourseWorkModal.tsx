@@ -5,6 +5,7 @@ import type { CreateCourseworkInputs } from "@/utilis/Validations/courseworkVali
 import { createCoursework } from "@/Services/coursework Endpoints/Endpoints";
 import { getToken } from "@/utilis/token";
 import { Plus, Upload, Trash2, Paperclip } from "lucide-react";
+
 interface CourseworkData {
   name: string;
   description?: string;
@@ -20,6 +21,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   initialData?: CourseworkData | null;
+  onCreated?: () => void;
 }
 
 export default function CourseworkModal({
@@ -162,7 +164,7 @@ export default function CourseworkModal({
       for (const [k, v] of fd.entries()) console.log(k, v);
 
       await createCoursework(classId, fd, token);
-
+      onCreated?.();
       onClose();
     } catch (error: any) {
       setApiError(
