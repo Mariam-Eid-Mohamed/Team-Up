@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import InstructorNavbar from "../Navbar/InstructorNavbar";
 import InstructorSidebar from "../Sidebar/InstructorSidebar";
+import AppNavbar from "../Navbar/AppNavbar";
 
 export default function InstructorLayout() {
   // const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -21,11 +21,10 @@ export default function InstructorLayout() {
       {/* Main content area */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <InstructorNavbar />
+        <AppNavbar />
 
         {/* Content */}
         <main className="pt-14 bg-gray-50 min-h-screen ml-16 lg:ml-64 p-4">
-
           <Outlet />
         </main>
       </div>

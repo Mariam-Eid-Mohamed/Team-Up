@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import StudentNavbar from "../Navbar/StudentNavbar";
-import InstructorSidebar from "../Sidebar/InstructorSidebar";
+// import InstructorSidebar from "../Sidebar/InstructorSidebar";
+import AppNavbar from "../Navbar/AppNavbar";
 
 export default function StudentLayout() {
   // const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -8,7 +8,7 @@ export default function StudentLayout() {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <InstructorSidebar />
+      <AppNavbar />
 
       {/* Overlay for mobile */}
       {/* {sidebarOpen && (
@@ -21,11 +21,10 @@ export default function StudentLayout() {
       {/* Main content area */}
       <div className="flex-1 flex flex-col">
         {/* Navbar */}
-        <StudentNavbar />
+        <AppNavbar />
 
         {/* Content */}
         <main className="pt-14 bg-gray-50 min-h-screen ml-16 lg:ml-64 p-4">
-
           <Outlet />
         </main>
       </div>

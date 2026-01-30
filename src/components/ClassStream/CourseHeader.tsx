@@ -8,7 +8,7 @@ export default function CourseHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  console.log("params:", useParams());
+
   const [editOpen, setEditOpen] = useState(false);
 
   const isSectionStream = location.pathname.includes("/sections/");
@@ -26,8 +26,8 @@ export default function CourseHeader() {
       isSectionStream
         ? `/${isInstructor ? "instructor" : "student"}/classes/${id}`
         : isInstructor
-        ? "/instructor/dashboard"
-        : "/student/dashboard"
+          ? "/instructor/dashboard"
+          : "/student/dashboard",
     );
   };
 

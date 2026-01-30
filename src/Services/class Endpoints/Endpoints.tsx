@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import Api from "../Api";
 
 const API_BASE = "/classes";
