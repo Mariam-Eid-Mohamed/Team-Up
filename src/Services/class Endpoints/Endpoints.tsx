@@ -46,9 +46,13 @@ export const deleteClass = async (classId: string, token: string) => {
 };
 
 export const joinClass = async (classCode: string, token: string) => {
-  return Api.post(`${API_BASE}/join`, { class_code: classCode }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return Api.post(
+    `${API_BASE}/join`,
+    { class_code: classCode },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 };
 
 // Search users by username for class invitation
@@ -57,9 +61,14 @@ export const searchUsersForInvitation = async (
   username: string,
   token: string
 ) => {
-  return Api.get(`${API_BASE}/${classId}/search-users?username=${encodeURIComponent(username)}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return Api.get(
+    `${API_BASE}/${classId}/search-users?username=${encodeURIComponent(
+      username
+    )}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 };
 
 // Invite user to class
@@ -97,4 +106,11 @@ export const respondToInvitation = async (
       headers: { Authorization: `Bearer ${token}` },
     }
   );
+};
+export const GetClassPosts = (classId: string, token: string) => {
+  return Api.get(`${API_BASE}/classes/${classId}/posts`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
