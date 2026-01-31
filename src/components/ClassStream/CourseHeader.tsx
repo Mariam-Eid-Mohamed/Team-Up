@@ -50,9 +50,10 @@ export default function CourseHeader() {
         const classItem = response.data.data.find((c: any) => c._id === id);
         if (classItem) {
           // Format: "COURSE_CODE - COURSE_NAME"
-          const formattedName = classItem.course_code && classItem.course_name
-            ? `${classItem.course_code} - ${classItem.course_name}`
-            : classItem.course_name || classItem.course_code || "Course";
+          const formattedName =
+            classItem.course_code && classItem.course_name
+              ? `${classItem.course_code} - ${classItem.course_name}`
+              : classItem.course_name || classItem.course_code || "Course";
           setCourseName(formattedName);
         }
       }
@@ -78,7 +79,7 @@ export default function CourseHeader() {
     toast.custom((t) => (
       <div className="bg-white shadow-lg rounded-lg p-4 w-[320px]">
         <p className="text-sm font-medium mb-3">
-          Are you sure you want to delete this course?
+          Are you sure you want to delete this coursework?
         </p>
 
         <div className="flex justify-end gap-2">
