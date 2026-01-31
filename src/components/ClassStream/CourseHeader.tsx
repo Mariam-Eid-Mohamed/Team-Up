@@ -10,6 +10,7 @@ export default function CourseHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
+
   const [editOpen, setEditOpen] = useState(false);
   const [courseName, setCourseName] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -68,8 +69,8 @@ export default function CourseHeader() {
       isSectionStream
         ? `/${isInstructor ? "instructor" : "student"}/classes/${id}`
         : isInstructor
-        ? "/instructor/dashboard"
-        : "/student/dashboard"
+          ? "/instructor/dashboard"
+          : "/student/dashboard",
     );
   };
 

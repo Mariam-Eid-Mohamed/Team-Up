@@ -29,6 +29,7 @@ export default function CourseworkModal({
   onClose,
   classId,
   initialData,
+  onCreated,
 }: Props) {
   const [errors, setErrors] = useState<
     Partial<Record<keyof CreateCourseworkInputs, string>>

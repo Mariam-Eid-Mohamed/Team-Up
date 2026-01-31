@@ -2,7 +2,7 @@ import { useParams, useLocation } from "react-router-dom";
 import CourseHeader from "@/components/ClassStream/CourseHeader";
 import SectionDropdown from "@/components/ClassStream/SectionDropdown";
 import ActionButtons from "@/components/ClassStream/ActionButtons";
-import PostCard from "@/components/ClassStream/PostCard";
+
 import NoSectionsImg from "@/assets/Images/no-posts-yet-removebg-preview 1.png";
 
 export default function SectionStream() {
