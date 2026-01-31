@@ -1,6 +1,8 @@
 import { Pencil, Trash, Download } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { Post } from "@/Types/posts";
+// import AnnouncementModal from "./AnnouncemetModal";
+import CourseworkModal from "../CourseWork/CourseWorkModal";
 
 function formatDate(iso: string) {
   const d = new Date(iso);
@@ -10,10 +12,12 @@ function formatDate(iso: string) {
 export default function PostCard({
   post,
   role,
+  classId,
   onChanged,
 }: {
   post: Post;
-  role: "student" | "instructor";
+  role: "admin" | "instructor";
+  classId: string;
   onChanged?: () => void;
 }) {
   const [modalMode, setModalMode] = useState<"edit" | "delete" | null>(null);
@@ -21,7 +25,29 @@ export default function PostCard({
   const authorName = `${post.authorId.first_name} ${post.authorId.last_name}`;
   const created = formatDate(post.createdAt);
 
-  const canEdit = role === "instructor"; // أو لو عندك شرط authorId == currentUserId
+  const canEdit = role === "instructor" || role === "admin";
+  const courseworkInitialData = useMemo(() => {
+    if (post.type !== "COURSEWORK" || !post.courseworkId) return null;
+
+    return {
+      name: post.courseworkId.name ?? "",
+      description: post.courseworkId.description ?? "",
+      grade:
+        post.courseworkId.grade == null ? "" : String(post.courseworkId.grade),
+      teamMin:
+        post.courseworkId.team_size_min == null
+          ? ""
+          : String(post.courseworkId.team_size_min),
+      teamMax:
+        post.courseworkId.team_size_max == null
+          ? ""
+          : String(post.courseworkId.team_size_max),
+      deadline: post.courseworkId.deadline
+        ? post.courseworkId.deadline.slice(0, 10) // YYYY-MM-DD للـ input type=date
+        : "",
+      discussionDate: "", // لو موجود عندك في API ضيفيه
+    };
+  }, [post]);
 
   return (
     <div className="bg-white rounded-lg shadow p-5">
@@ -89,7 +115,6 @@ export default function PostCard({
             </p>
           </div>
 
-          {/* Files */}
           {post.courseworkId.files?.length > 0 && (
             <div className="mt-3 space-y-2">
               {post.courseworkId.files.map((f) => (
@@ -116,7 +141,28 @@ export default function PostCard({
         </div>
       )}
 
-      {/* هنا لاحقًا تحطي مودال edit/delete حسب النوع */}
+      {/* ✅ مودال حسب النوع */}
+      {/* {post.type === "ANNOUNCEMENT" && (
+        <AnnouncementModal
+          isOpen={!!modalMode}
+          onClose={() => setModalMode(null)}
+          mode={modalMode || "edit"}
+          initialData={post.announcement_text || ""}
+          onConfirm={handleConfirmAnnouncement}
+        />
+      )} */}
+
+      {post.type === "COURSEWORK" && (
+        <CourseworkModal
+          open={!!modalMode}
+          onClose={() => setModalMode(null)}
+          classId={classId}
+          mode={modalMode || "edit"}
+          courseworkId={post.courseworkId?._id}
+          initialData={courseworkInitialData}
+          onChanged={onChanged}
+        />
+      )}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import CourseworkModal from "../CourseWork/CourseWorkModal";
 import AnnouncementModal from "../ClassStream/AnnouncemetModal";
 
 interface ActionButtonsProps {
-  role: "student" | "instructor";
+  role: "admin" | "instructor";
   classId: string;
   hideCoursework?: boolean;
   onPostCreated?: () => void;

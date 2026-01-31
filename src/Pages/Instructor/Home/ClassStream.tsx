@@ -16,11 +16,11 @@ export default function ClassStream() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const role: "student" | "instructor" = location.pathname.startsWith(
-    "/instructor"
+  const role: "admin" | "instructor" = location.pathname.startsWith(
+    "/instructor",
   )
     ? "instructor"
-    : "student";
+    : "admin";
 
   const fetchPosts = async () => {
     if (!id) return;
@@ -36,7 +36,6 @@ export default function ClassStream() {
     try {
       const res = await GetClassPosts(id, token);
 
-      // حسب شكل response اللي بعتيه: { success: true, posts: [...] }
       setPosts(res.data.posts || []);
     } catch (e: any) {
       setError(e?.response?.data?.message || "Failed to load posts");
@@ -69,6 +68,7 @@ export default function ClassStream() {
               key={p._id}
               post={p}
               role={role}
+              classId={id!}
               onChanged={fetchPosts} // بعد edit/delete refresh
             />
           ))}

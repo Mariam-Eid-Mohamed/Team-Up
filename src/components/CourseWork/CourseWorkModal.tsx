@@ -15,13 +15,17 @@ interface CourseworkData {
   deadline?: string;
   discussionDate?: string;
 }
-
 interface Props {
   classId: string;
   open: boolean;
   onClose: () => void;
+
+  mode: "create" | "edit" | "delete";
+
+  courseworkId?: string; // needed for edit/delete
   initialData?: CourseworkData | null;
-  onCreated?: () => void;
+
+  onChanged?: () => void; // refresh posts after edit/delete/create
 }
 
 export default function CourseworkModal({
@@ -105,7 +109,7 @@ export default function CourseworkModal({
       // optional: منع التكرار بالاسم + الحجم
       const unique = merged.filter(
         (f, i, arr) =>
-          i === arr.findIndex((x) => x.name === f.name && x.size === f.size)
+          i === arr.findIndex((x) => x.name === f.name && x.size === f.size),
       );
 
       return unique.slice(0, MAX_FILES);
@@ -144,7 +148,7 @@ export default function CourseworkModal({
       if (includeDiscussion && form.discussionDate) {
         fd.append(
           "discussion_date",
-          new Date(form.discussionDate).toISOString()
+          new Date(form.discussionDate).toISOString(),
         );
       } else {
         fd.append("discussion_date", "");
@@ -156,20 +160,26 @@ export default function CourseworkModal({
         }))
         .filter(
           (c) =>
-            c.criterion.length > 0 && Number.isFinite(c.points) && c.points >= 0
+            c.criterion.length > 0 &&
+            Number.isFinite(c.points) &&
+            c.points >= 0,
         );
 
       fd.append("grading_criteria", JSON.stringify(criteriaPayload));
 
       files.forEach((file) => fd.append("files", file));
       for (const [k, v] of fd.entries()) console.log(k, v);
+      if (mode === "create") await createCoursework(classId, fd, token);
+      if (mode === "edit") await updateCoursework(courseworkId!, fd, token);
+      if (mode === "delete") await deleteCoursework(courseworkId!, token);
 
       await createCoursework(classId, fd, token);
       onCreated?.();
+      onChanged?.();
       onClose();
     } catch (error: any) {
       setApiError(
-        error.response?.data?.message || "Failed to create coursework"
+        error.response?.data?.message || "Failed to create coursework",
       );
     } finally {
       setIsSubmitting(false);
@@ -456,8 +466,8 @@ export default function CourseworkModal({
                       const v = e.target.value;
                       setGradingCriteria((prev) =>
                         prev.map((x, i) =>
-                          i === idx ? { ...x, criterion: v } : x
-                        )
+                          i === idx ? { ...x, criterion: v } : x,
+                        ),
                       );
                     }}
                   />
@@ -470,8 +480,8 @@ export default function CourseworkModal({
                       const v = e.target.value;
                       setGradingCriteria((prev) =>
                         prev.map((x, i) =>
-                          i === idx ? { ...x, points: v } : x
-                        )
+                          i === idx ? { ...x, points: v } : x,
+                        ),
                       );
                     }}
                   />
@@ -480,7 +490,7 @@ export default function CourseworkModal({
                     type="button"
                     onClick={() =>
                       setGradingCriteria((prev) =>
-                        prev.filter((_, i) => i !== idx)
+                        prev.filter((_, i) => i !== idx),
                       )
                     }
                     className="p-2 rounded-md hover:bg-gray-100 text-red-600"
