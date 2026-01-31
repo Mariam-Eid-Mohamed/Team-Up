@@ -9,11 +9,11 @@ export default function SectionStream() {
   const { sectionId } = useParams();
   const location = useLocation();
 
-  const role: "student" | "instructor" = location.pathname.startsWith(
-    "/instructor"
+  const role: "admin" | "instructor" = location.pathname.startsWith(
+    "/instructor",
   )
     ? "instructor"
-    : "student";
+    : "admin";
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">

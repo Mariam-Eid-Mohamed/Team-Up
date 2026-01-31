@@ -2,7 +2,11 @@ import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CreateCourseworkSchema } from "@/utilis/Validations/courseworkValidations";
 import type { CreateCourseworkInputs } from "@/utilis/Validations/courseworkValidations";
-import { createCoursework } from "@/Services/coursework Endpoints/Endpoints";
+import {
+  createCoursework,
+  deleteCoursework,
+  updateCoursework,
+} from "@/Services/coursework Endpoints/Endpoints";
 import { getToken } from "@/utilis/token";
 import { Plus, Upload, Trash2, Paperclip } from "lucide-react";
 
@@ -32,8 +36,10 @@ export default function CourseworkModal({
   open,
   onClose,
   classId,
+  mode,
+  courseworkId,
   initialData,
-  onCreated,
+  onChanged,
 }: Props) {
   const [errors, setErrors] = useState<
     Partial<Record<keyof CreateCourseworkInputs, string>>
@@ -121,8 +127,6 @@ export default function CourseworkModal({
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
-
     const token = getToken();
     if (!token) {
       setApiError("Authentication required");
@@ -133,6 +137,22 @@ export default function CourseworkModal({
     setApiError(null);
 
     try {
+      //  DELETE: no validation, no formdata
+      if (mode === "delete") {
+        if (!courseworkId) throw new Error("Missing courseworkId");
+        await deleteCoursework(courseworkId, token);
+        onChanged?.();
+        onClose();
+        return;
+      }
+
+      //  CREATE / EDIT: validate first
+      if (!validateForm()) {
+        setIsSubmitting(false);
+        return;
+      }
+
+      //  FormData appending (create/edit )
       const fd = new FormData();
 
       fd.append("name", form.name);
@@ -153,6 +173,7 @@ export default function CourseworkModal({
       } else {
         fd.append("discussion_date", "");
       }
+
       const criteriaPayload = gradingCriteria
         .map((c) => ({
           criterion: c.criterion.trim(),
@@ -168,23 +189,24 @@ export default function CourseworkModal({
       fd.append("grading_criteria", JSON.stringify(criteriaPayload));
 
       files.forEach((file) => fd.append("files", file));
-      for (const [k, v] of fd.entries()) console.log(k, v);
-      if (mode === "create") await createCoursework(classId, fd, token);
-      if (mode === "edit") await updateCoursework(courseworkId!, fd, token);
-      if (mode === "delete") await deleteCoursework(courseworkId!, token);
 
-      await createCoursework(classId, fd, token);
-      onCreated?.();
+      //  API call حسب الـ mode
+      if (mode === "create") {
+        await createCoursework(classId, fd, token);
+      } else if (mode === "edit") {
+        if (!courseworkId) throw new Error("Missing courseworkId");
+        await updateCoursework(courseworkId, fd, token);
+      }
+
       onChanged?.();
       onClose();
     } catch (error: any) {
-      setApiError(
-        error.response?.data?.message || "Failed to create coursework",
-      );
+      setApiError(error.response?.data?.message || error.message || "Failed");
     } finally {
       setIsSubmitting(false);
     }
   };
+
   if (!open) return null;
 
   return (

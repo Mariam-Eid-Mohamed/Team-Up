@@ -34,7 +34,7 @@ export default function PostCard({
     : post.authorId.first_name.trim();
   const created = formatDate(post.createdAt);
 
-  const canEdit = role === "instructor" && post.type === "ANNOUNCEMENT"; // Only instructors can edit/delete announcements
+  const canEdit = role === "instructor" || role === "admin"; // Only instructors can edit/delete announcements
 
   const handleEditAnnouncement = async (content: string) => {
     if (post.type !== "ANNOUNCEMENT" || !content.trim()) return;
@@ -199,6 +199,36 @@ export default function PostCard({
                 ? handleDeleteAnnouncement
                 : () => {}
           }
+        />
+      )}
+      {post.type === "COURSEWORK" && (
+        <CourseworkModal
+          open={modalMode !== null}
+          onClose={() => setModalMode(null)}
+          classId={classId}
+          mode={modalMode === "edit" ? "edit" : "delete"}
+          courseworkId={post.courseworkId._id}
+          initialData={{
+            name: post.courseworkId.name ?? "",
+            description: post.courseworkId.description ?? "",
+            grade:
+              post.courseworkId.grade == null
+                ? ""
+                : String(post.courseworkId.grade),
+            teamMin:
+              post.courseworkId.team_size_min == null
+                ? ""
+                : String(post.courseworkId.team_size_min),
+            teamMax:
+              post.courseworkId.team_size_max == null
+                ? ""
+                : String(post.courseworkId.team_size_max),
+            deadline: post.courseworkId.deadline
+              ? post.courseworkId.deadline.slice(0, 10)
+              : "",
+            discussionDate: "", // لو عندك discussion_date في API ضيفيه هنا
+          }}
+          onChanged={onChanged}
         />
       )}
     </div>

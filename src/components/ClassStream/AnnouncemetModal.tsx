@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Megaphone, Trash, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Megaphone, Trash } from "lucide-react";
 
 interface AnnouncementModalProps {
   isOpen: boolean;
@@ -59,7 +59,9 @@ export default function AnnouncementModal({
           {/* Header */}
           <div className="flex items-center gap-3 mb-4">
             {current.icon}
-            <h2 className="text-lg font-semibold text-gray-800">{current.title}</h2>
+            <h2 className="text-lg font-semibold text-gray-800">
+              {current.title}
+            </h2>
           </div>
 
           {/* Text Area */}
@@ -107,8 +109,8 @@ export default function AnnouncementModal({
                 ? mode === "delete"
                   ? "Deleting..."
                   : mode === "edit"
-                  ? "Saving..."
-                  : "Posting..."
+                    ? "Saving..."
+                    : "Posting..."
                 : current.buttonText}
             </button>
           </div>

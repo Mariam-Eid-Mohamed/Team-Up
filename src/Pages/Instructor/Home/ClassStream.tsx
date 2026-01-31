@@ -17,11 +17,11 @@ export default function ClassStream() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const role: "student" | "instructor" = location.pathname.startsWith(
+  const role: "admin" | "instructor" = location.pathname.startsWith(
     "/instructor",
   )
     ? "instructor"
-    : "student";
+    : "admin";
 
   const fetchPosts = async () => {
     if (!id) return;
