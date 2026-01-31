@@ -1,15 +1,18 @@
 import { ArrowLeft, Pencil, Trash } from "lucide-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
+import { getUserClasses } from "@/Services/class Endpoints/Endpoints";
+import { getToken, getUserId } from "@/utilis/token";
 
 export default function CourseHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  console.log("params:", useParams());
   const [editOpen, setEditOpen] = useState(false);
+  const [courseName, setCourseName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const isSectionStream = location.pathname.includes("/sections/");
   const isInstructor = location.pathname.startsWith("/instructor");
@@ -19,6 +22,45 @@ export default function CourseHeader() {
     grade: "10",
     deadline: "2025-12-22",
     discussionDate: "2025-12-25",
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchCourseName();
+    }
+  }, [id]);
+
+  const fetchCourseName = async () => {
+    if (!id) return;
+
+    const token = getToken();
+    const userId = getUserId();
+
+    if (!token || !userId) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await getUserClasses(userId, token);
+
+      if (response.data.success && response.data.data) {
+        const classItem = response.data.data.find((c: any) => c._id === id);
+        if (classItem) {
+          // Format: "COURSE_CODE - COURSE_NAME"
+          const formattedName = classItem.course_code && classItem.course_name
+            ? `${classItem.course_code} - ${classItem.course_name}`
+            : classItem.course_name || classItem.course_code || "Course";
+          setCourseName(formattedName);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch course name:", error);
+      setCourseName("Course");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBack = () => {
@@ -73,7 +115,7 @@ export default function CourseHeader() {
           </button>
 
           <h1 className="text-base sm:text-lg md:text-xl font-semibold">
-            CS101 - Introduction to Programming
+            {isLoading ? "Loading..." : courseName || "Course"}
           </h1>
         </div>
 

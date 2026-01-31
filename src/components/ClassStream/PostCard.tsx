@@ -1,6 +1,9 @@
 import { Pencil, Trash, Download } from "lucide-react";
 import { useState } from "react";
 import type { Post } from "@/Types/posts";
+import AnnouncementModal from "./AnnouncemetModal";
+import { updateAnnouncement, deleteAnnouncement } from "@/Services/announcement Endpoints/Endpoints";
+import { getToken } from "@/utilis/token";
 
 function formatDate(iso: string) {
   const d = new Date(iso);
@@ -17,11 +20,65 @@ export default function PostCard({
   onChanged?: () => void;
 }) {
   const [modalMode, setModalMode] = useState<"edit" | "delete" | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const authorName = `${post.authorId.first_name} ${post.authorId.last_name}`;
+  const authorName = post.authorId.last_name
+    ? `${post.authorId.first_name} ${post.authorId.last_name}`.trim()
+    : post.authorId.first_name.trim();
   const created = formatDate(post.createdAt);
 
-  const canEdit = role === "instructor"; // أو لو عندك شرط authorId == currentUserId
+  const canEdit = role === "instructor" && post.type === "ANNOUNCEMENT"; // Only instructors can edit/delete announcements
+
+  const handleEditAnnouncement = async (content: string) => {
+    if (post.type !== "ANNOUNCEMENT" || !content.trim()) return;
+
+    const token = getToken();
+    if (!token) {
+      console.error("No authentication token found");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await updateAnnouncement(post._id, content.trim(), token);
+      setModalMode(null);
+      onChanged?.(); // Refresh the posts list
+    } catch (error: any) {
+      console.error("Failed to update announcement:", error);
+      alert(
+        error?.response?.data?.message ||
+          "Failed to update announcement. Please try again."
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (_content: string) => {
+    // Content parameter is required by modal but not used for delete
+    if (post.type !== "ANNOUNCEMENT") return;
+
+    const token = getToken();
+    if (!token) {
+      console.error("No authentication token found");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      await deleteAnnouncement(post._id, token);
+      setModalMode(null);
+      onChanged?.(); // Refresh the posts list
+    } catch (error: any) {
+      console.error("Failed to delete announcement:", error);
+      alert(
+        error?.response?.data?.message ||
+          "Failed to delete announcement. Please try again."
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow p-5">
@@ -116,7 +173,22 @@ export default function PostCard({
         </div>
       )}
 
-      {/* هنا لاحقًا تحطي مودال edit/delete حسب النوع */}
+      {/* Announcement Edit/Delete Modal */}
+      {post.type === "ANNOUNCEMENT" && (
+        <AnnouncementModal
+          isOpen={modalMode !== null}
+          onClose={() => setModalMode(null)}
+          mode={modalMode === "edit" ? "edit" : modalMode === "delete" ? "delete" : "create"}
+          initialData={post.announcement_text}
+          onConfirm={
+            modalMode === "edit"
+              ? handleEditAnnouncement
+              : modalMode === "delete"
+              ? handleDeleteAnnouncement
+              : () => {}
+          }
+        />
+      )}
     </div>
   );
 }
