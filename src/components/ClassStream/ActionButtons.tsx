@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
 import AnnouncementModal from "../ClassStream/AnnouncemetModal";
+import { createAnnouncement } from "@/Services/announcement Endpoints/Endpoints";
+import { getToken } from "@/utilis/token";
 
 interface ActionButtonsProps {
   role: "admin" | "instructor";
@@ -21,6 +23,28 @@ export default function ActionButtons({
   const { id } = useParams();
   const [open, setOpen] = useState(false);
   const [isAnnounceOpen, setIsAnnounceOpen] = useState(false);
+
+  const handleCreateAnnouncement = async (content: string) => {
+    if (!classId || !content.trim()) return;
+
+    const token = getToken();
+    if (!token) {
+      console.error("No authentication token found");
+      return;
+    }
+
+    try {
+      await createAnnouncement(classId, content.trim(), token);
+      setIsAnnounceOpen(false);
+      onPostCreated?.(); // Refresh the posts list
+    } catch (error: any) {
+      console.error("Failed to create announcement:", error);
+      alert(
+        error?.response?.data?.message ||
+          "Failed to create announcement. Please try again."
+      );
+    }
+  };
 
   return (
     <>
@@ -54,7 +78,11 @@ export default function ActionButtons({
         isOpen={isAnnounceOpen}
         onClose={() => setIsAnnounceOpen(false)}
         mode="create"
-        onConfirm={(content) => console.log("Created:", content)}
+        classId={classId}
+        onConfirm={handleCreateAnnouncement}
+        onSuccess={() => {
+          // Additional success handling if needed
+        }}
       />
       <CourseworkModal
         open={open}

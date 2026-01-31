@@ -6,7 +6,9 @@ interface AnnouncementModalProps {
   onClose: () => void;
   mode: "create" | "edit" | "delete";
   initialData?: string;
-  onConfirm: (data: string) => void;
+  onConfirm: (data: string) => void | Promise<void>;
+  classId?: string;
+  onSuccess?: () => void;
 }
 
 export default function AnnouncementModal({
@@ -15,8 +17,11 @@ export default function AnnouncementModal({
   mode,
   initialData = "",
   onConfirm,
+  classId,
+  onSuccess,
 }: AnnouncementModalProps) {
   const [content, setContent] = useState(initialData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setContent(initialData);
@@ -76,13 +81,35 @@ export default function AnnouncementModal({
               Cancel
             </button>
             <button
-              onClick={() => {
-                onConfirm(content);
-                onClose();
+              onClick={async () => {
+                if (mode === "create" && !content.trim()) {
+                  return; // Don't submit empty content
+                }
+                setIsSubmitting(true);
+                try {
+                  await onConfirm(content);
+                  onSuccess?.();
+                  onClose();
+                } catch (error) {
+                  console.error("Error submitting announcement:", error);
+                } finally {
+                  setIsSubmitting(false);
+                }
               }}
-              className={`px-10 py-1.5 text-white rounded-full text-sm font-medium transition-colors ${current.buttonClass}`}
+              disabled={isSubmitting || (mode === "create" && !content.trim())}
+              className={`px-10 py-1.5 text-white rounded-full text-sm font-medium transition-colors ${current.buttonClass} ${
+                isSubmitting || (mode === "create" && !content.trim())
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
             >
-              {current.buttonText}
+              {isSubmitting
+                ? mode === "delete"
+                  ? "Deleting..."
+                  : mode === "edit"
+                  ? "Saving..."
+                  : "Posting..."
+                : current.buttonText}
             </button>
           </div>
         </div>

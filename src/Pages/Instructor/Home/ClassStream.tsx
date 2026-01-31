@@ -5,6 +5,7 @@ import SectionDropdown from "@/components/ClassStream/SectionDropdown";
 import ActionButtons from "@/components/ClassStream/ActionButtons";
 import PostCard from "@/components/ClassStream/PostCard";
 import { GetClassPosts } from "@/Services/class Endpoints/Endpoints";
+import { getClassAnnouncements } from "@/Services/announcement Endpoints/Endpoints";
 import { getToken } from "@/utilis/token";
 import type { Post } from "@/Types/posts";
 
@@ -16,11 +17,11 @@ export default function ClassStream() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const role: "admin" | "instructor" = location.pathname.startsWith(
+  const role: "student" | "instructor" = location.pathname.startsWith(
     "/instructor",
   )
     ? "instructor"
-    : "admin";
+    : "student";
 
   const fetchPosts = async () => {
     if (!id) return;
@@ -34,9 +35,62 @@ export default function ClassStream() {
     setLoading(true);
     setError(null);
     try {
-      const res = await GetClassPosts(id, token);
+      // Fetch announcements using the new API
+      const announcementsRes = await getClassAnnouncements(id, token);
+      const announcementsData = announcementsRes.data?.data || [];
 
-      setPosts(res.data.posts || []);
+      // Transform announcements to match Post type
+      const transformedAnnouncements: Post[] = announcementsData.map(
+        (announcement: any) => {
+          // Get the instructor name directly from API response
+          // API returns: authorId: { _id: "instructorId", name: "Dr. Ahmed" }
+          const instructorName = announcement.authorId?.name || "";
+          const instructorId = announcement.authorId?._id || "";
+
+          // Split the name for the Author type structure
+          // Use the full name from API response
+          const nameParts = instructorName.trim().split(/\s+/);
+          const first_name = nameParts[0] || "";
+          const last_name = nameParts.slice(1).join(" ") || "";
+
+          return {
+            _id: announcement._id,
+            type: "ANNOUNCEMENT" as const,
+            classId: id!,
+            authorId: {
+              _id: instructorId,
+              first_name: first_name,
+              last_name: last_name,
+              role: "Instructor" as const, // Announcements are instructor-only
+            },
+            announcement_text: announcement.announcement_text,
+            createdAt: announcement.createdAt,
+            updatedAt: announcement.createdAt, // API doesn't return updatedAt, use createdAt
+          };
+        },
+      );
+
+      // Fetch courseworks using the existing endpoint (if it returns courseworks)
+      let courseworks: Post[] = [];
+      try {
+        const postsRes = await GetClassPosts(id, token);
+        const allPosts = postsRes.data?.posts || [];
+        // Filter only courseworks from the posts
+        courseworks = allPosts.filter(
+          (post: Post) => post.type === "COURSEWORK",
+        );
+      } catch (e) {
+        // If GetClassPosts fails, just continue with announcements
+        console.warn("Failed to fetch courseworks:", e);
+      }
+
+      // Combine and sort by createdAt (latest first)
+      const allPosts = [...transformedAnnouncements, ...courseworks].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+
+      setPosts(allPosts);
     } catch (e: any) {
       setError(e?.response?.data?.message || "Failed to load posts");
     } finally {
@@ -68,7 +122,6 @@ export default function ClassStream() {
               key={p._id}
               post={p}
               role={role}
-              classId={id!}
               onChanged={fetchPosts} // بعد edit/delete refresh
             />
           ))}
