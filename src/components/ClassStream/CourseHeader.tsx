@@ -78,10 +78,29 @@ export default function CourseHeader() {
           <ArrowLeft size={20} />
         </button>
 
-        <h1 className="text-base sm:text-lg md:text-xl font-semibold">
-          {isLoading ? "Loading..." : courseName || "Course"}
-        </h1>
+          <h1 className="text-base sm:text-lg md:text-xl font-semibold">
+            {isLoading ? "Loading..." : courseName || "Course"}
+          </h1>
+        </div>
+
+        {/* {isInstructor && (
+          <div className="flex gap-2 sm:gap-3">
+            <button
+              onClick={() => setEditOpen(true)}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-gray-700 text-white text-sm"
+            >
+              <Pencil size={16} /> Edit
+            </button>
+
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-red-600 text-white text-sm"
+            >
+              <Trash size={16} /> Delete
+            </button>
+          </div>
+        )} */}
       </div>
-    </div>
+    
   );
 }

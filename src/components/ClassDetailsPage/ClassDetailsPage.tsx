@@ -294,6 +294,7 @@ export default function ClassDetailsPage() {
         onBack={() => navigate(-1)}
         onUpdate={handleUpdate}
         onDelete={handleDelete}
+        
       />
       {(isUpdating || isDeleting) && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">

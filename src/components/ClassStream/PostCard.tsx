@@ -19,11 +19,13 @@ export default function PostCard({
   role,
   classId,
   onChanged,
+  hideActions = false, // ✅ ADDED
 }: {
   post: Post;
-  role: "admin" | "instructor";
+  role: "admin" | "instructor" | "student"; // ✅ ADDED
   classId: string;
   onChanged?: () => void;
+   hideActions?: boolean; // ✅ ADDED
 }) {
   const [modalMode, setModalMode] = useState<"edit" | "delete" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -33,7 +35,8 @@ export default function PostCard({
     : post.authorId.first_name.trim();
   const created = formatDate(post.createdAt);
 
-  const canEdit = role === "instructor" || role === "admin"; // Only instructors can edit/delete announcements
+   const canEdit =
+    (role === "instructor" || role === "admin") && !hideActions; // ✅ UPDATED // Only instructors can edit/delete announcements
 
   const handleEditAnnouncement = async (content: string) => {
     if (post.type !== "ANNOUNCEMENT" || !content.trim()) return;

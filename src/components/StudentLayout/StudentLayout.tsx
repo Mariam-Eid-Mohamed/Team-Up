@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-// import InstructorSidebar from "../Sidebar/InstructorSidebar";
+import InstructorSidebar from "../Sidebar/InstructorSidebar";
 import AppNavbar from "../Navbar/AppNavbar";
 
 export default function StudentLayout() {
@@ -8,7 +8,7 @@ export default function StudentLayout() {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <AppNavbar />
+      <InstructorSidebar />
 
       {/* Overlay for mobile */}
       {/* {sidebarOpen && (
