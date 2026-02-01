@@ -75,77 +75,20 @@ export default function CourseHeader() {
     );
   };
 
-  const handleDelete = () => {
-    toast.custom((t) => (
-      <div className="bg-white shadow-lg rounded-lg p-4 w-[320px]">
-        <p className="text-sm font-medium mb-3">
-          Are you sure you want to delete this coursework?
-        </p>
-
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="px-3 py-1 text-sm rounded-md border"
-          >
-            Cancel
-          </button>
-
-          <button
-            onClick={() => {
-              toast.dismiss(t.id);
-              // 🔥 DELETE LOGIC HERE
-              toast.success("Course deleted successfully");
-            }}
-            className="px-3 py-1 text-sm rounded-md bg-red-600 text-white"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    ));
-  };
-
   return (
-    <>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleBack}
-            className="p-2 hover:bg-gray-200 rounded-lg"
-          >
-            <ArrowLeft size={20} />
-          </button>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={handleBack}
+          className="p-2 hover:bg-gray-200 rounded-lg"
+        >
+          <ArrowLeft size={20} />
+        </button>
 
-          <h1 className="text-base sm:text-lg md:text-xl font-semibold">
-            {isLoading ? "Loading..." : courseName || "Course"}
-          </h1>
-        </div>
-
-        {isInstructor && (
-          <div className="flex gap-2 sm:gap-3">
-            <button
-              onClick={() => setEditOpen(true)}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-gray-700 text-white text-sm"
-            >
-              <Pencil size={16} /> Edit
-            </button>
-
-            <button
-              onClick={handleDelete}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-red-600 text-white text-sm"
-            >
-              <Trash size={16} /> Delete
-            </button>
-          </div>
-        )}
+        <h1 className="text-base sm:text-lg md:text-xl font-semibold">
+          {isLoading ? "Loading..." : courseName || "Course"}
+        </h1>
       </div>
-
-      <CourseworkModal
-        classId={id!}
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        initialData={existingCoursework}
-      />
-    </>
+    </div>
   );
 }
