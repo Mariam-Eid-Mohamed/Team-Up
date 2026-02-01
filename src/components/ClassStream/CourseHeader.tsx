@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil, Trash } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -17,13 +17,6 @@ export default function CourseHeader() {
 
   const isSectionStream = location.pathname.includes("/sections/");
   const isInstructor = location.pathname.startsWith("/instructor");
-
-  const existingCoursework = {
-    name: "Assignment 1",
-    grade: "10",
-    deadline: "2025-12-22",
-    discussionDate: "2025-12-25",
-  };
 
   useEffect(() => {
     if (id) {

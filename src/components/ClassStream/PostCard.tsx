@@ -1,5 +1,5 @@
 import { Pencil, Trash, Download } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import type { Post } from "@/Types/posts";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
 import AnnouncementModal from "./AnnouncemetModal";
