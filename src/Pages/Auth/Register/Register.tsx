@@ -124,6 +124,24 @@ const Register = () => {
               )}
             />
           </div>
+          {/* Username */}
+<FormField
+  control={form.control}
+  name="username"
+  render={({ field }) => (
+    <FormItem className="space-y-0.5">
+      <FormLabel className="text-xs">Username</FormLabel>
+      <FormControl>
+        <Input
+          className="bg-[#f4f4ff] py-1.5 text-sm"
+          placeholder="john_doe"
+          {...field}
+        />
+      </FormControl>
+      <FormMessage className="text-xs" />
+    </FormItem>
+  )}
+/>
 
           {/* Email */}
           <FormField

@@ -5,9 +5,10 @@ import {
   Users,
   UsersRound,
   Info,
-  Settings
+  Settings,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import React from "react";
 
 interface SidebarItemProps {
   icon: React.ReactNode;
@@ -25,18 +26,30 @@ function SidebarItem({ icon, label, to }: SidebarItemProps) {
       className={`
         flex items-center justify-center lg:justify-start gap-3 px-3 py-3 rounded-md
         transition-colors cursor-pointer
-        ${isActive ? "bg-[#83CDC4] text-white" : "text-gray-800 hover:bg-gray-100"}
+        ${
+          isActive
+            ? "bg-[#83CDC4] text-white"
+            : "text-gray-800 hover:bg-gray-100"
+        }
       `}
     >
       {icon}
-      <span className="hidden lg:inline text-sm font-medium">
-        {label}
-      </span>
+      <span className="hidden lg:inline text-sm font-medium">{label}</span>
     </Link>
   );
 }
 
-export default function InstructorSidebar() {
+export default function Sidebar() {
+  const location = useLocation();
+
+  // ✅ ROLE DERIVED FROM PATH (TYPE-SAFE)
+  const role: "admin" | "instructor" | "student" =
+    location.pathname.startsWith("/instructor")
+      ? "instructor"
+      : location.pathname.startsWith("/student")
+      ? "student"
+      : "admin";
+
   return (
     <aside
       className="
@@ -50,11 +63,31 @@ export default function InstructorSidebar() {
     >
       {/* Top menu */}
       <div className="space-y-2">
-        <SidebarItem icon={<LayoutDashboard size={20} />} label="Dashboard" to="/instructor/dashboard" />
+        {/* ✅ DASHBOARD HANDLED HERE ONLY */}
+        <SidebarItem
+          icon={<LayoutDashboard size={20} />}
+          label="Dashboard"
+          to={
+            role === "student"
+              ? "/student/dashboard"
+              : role === "instructor"
+              ? "/instructor/dashboard"
+              : "/dashboard"
+          }
+        />
+
         <SidebarItem icon={<BookOpen size={20} />} label="My Classes" to="/classes" />
         <SidebarItem icon={<Bell size={20} />} label="Notifications" to="/notifications" />
         <SidebarItem icon={<Users size={20} />} label="Teams" to="/teams" />
-        <SidebarItem icon={<UsersRound size={20} />} label="Students" to="/students" />
+
+        {/* Instructor-only */}
+        
+          <SidebarItem
+            icon={<UsersRound size={20} />}
+            label="Students"
+            to="/students"
+          />
+     
       </div>
 
       {/* Bottom menu */}
