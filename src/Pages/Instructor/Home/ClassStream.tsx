@@ -17,7 +17,7 @@ export default function ClassStream() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
- const role: "admin" | "instructor" | "student" =
+  const role: "admin" | "instructor" | "student" =
     location.pathname.startsWith("/instructor")
       ? "instructor"
       : location.pathname.startsWith("/student")
@@ -123,7 +123,7 @@ export default function ClassStream() {
               key={p._id}
               post={p}
               role={role}
-               hideActions={role === "student"} // ✅ ADDED
+              hideActions={role === "student"} // ✅ ADDED
               onChanged={fetchPosts} // بعد edit/delete refresh
             />
           ))}

@@ -5,6 +5,12 @@ import { loginUser } from "@/Services/Auth.service";
 
 jest.mock("@/Services/Auth.service");
 
+// Mock Google OAuth so tests don't depend on GoogleOAuthProvider
+jest.mock("@react-oauth/google", () => ({
+  GoogleLogin: () => null,
+  GoogleOAuthProvider: ({ children }: any) => children,
+}));
+
 const renderWithRouter = () =>
   render(
     <MemoryRouter>
