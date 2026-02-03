@@ -50,16 +50,16 @@ export default function ActionButtons({
     <>
       <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
         {/* New Post — Instructor only */}
-        {role === "instructor" ||
-          (role === "admin" && (
-            <button
-              onClick={() => setIsAnnounceOpen(true)}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white hover:bg-purple-700 text-sm"
-            >
-              <Pencil size={16} />
-              <span className="hidden sm:inline">New post</span>
-            </button>
-          ))}
+       {(role === "instructor" || role === "admin") && (
+  <button
+    onClick={() => setIsAnnounceOpen(true)}
+    className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white hover:bg-purple-700 text-sm"
+  >
+    <Pencil size={16} />
+    <span className="hidden sm:inline">New post</span>
+  </button>
+)}
+
 
         {role === "instructor" && !hideCoursework && (
           <button
