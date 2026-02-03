@@ -17,12 +17,13 @@ export default function ClassStream() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const role: "admin" | "instructor" | "student" =
-    location.pathname.startsWith("/instructor")
-      ? "instructor"
-      : location.pathname.startsWith("/student")
-        ? "student"
-        : "admin";
+  const role: "admin" | "instructor" | "student" = location.pathname.startsWith(
+    "/instructor",
+  )
+    ? "instructor"
+    : location.pathname.startsWith("/student")
+      ? "student"
+      : "admin";
 
   const fetchPosts = async () => {
     if (!id) return;
@@ -100,8 +101,12 @@ export default function ClassStream() {
   };
 
   useEffect(() => {
+    if (!id) return;
     fetchPosts();
   }, [id]);
+  if (!id) {
+    return <div className="p-6 text-red-600">Missing class id</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
@@ -120,10 +125,11 @@ export default function ClassStream() {
           !error &&
           posts.map((p) => (
             <PostCard
+              classId={id}
               key={p._id}
               post={p}
               role={role}
-              hideActions={role === "student"} // ✅ ADDED
+              hideActions={role === "student"}
               onChanged={fetchPosts} // بعد edit/delete refresh
             />
           ))}
