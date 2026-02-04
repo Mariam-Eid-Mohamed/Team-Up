@@ -227,7 +227,7 @@ export default function CourseworkModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center backdrop-blur-sm">
       <div className="bg-white w-[95%] max-w-xl rounded-2xl p-6 max-h-[90vh] overflow-y-auto">
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
