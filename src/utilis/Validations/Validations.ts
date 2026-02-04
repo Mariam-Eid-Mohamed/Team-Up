@@ -12,6 +12,10 @@ export const RegisterSchema = z
   .object({
     first_name: z.string().min(1, "First Name is required"),
     last_name: z.string().min(1, "Last Name is required"),
+    username: z
+      .string()
+      .min(1, "Username is required")
+      .min(3, "Username must be at least 3 characters"),
     email: z.string().email("Invalid email"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z
@@ -48,7 +52,10 @@ export type CreateClassInputs = z.infer<typeof CreateClassSchema>;
 
 /* JOIN CLASS SCHEMA */
 export const JoinClassSchema = z.object({
-  classCode: z.string().min(1, "Class code is required").length(6, "Class code must be exactly 6 characters"),
+  classCode: z
+    .string()
+    .min(1, "Class code is required")
+    .length(6, "Class code must be exactly 6 characters"),
 });
 
 /* TYPES */
@@ -56,10 +63,12 @@ export type JoinClassInputs = z.infer<typeof JoinClassSchema>;
 
 /* SEARCH USERNAME SCHEMA */
 export const SearchUsernameSchema = z.object({
-  username: z.string().refine(
-    (val) => !val || val.trim().length === 0 || val.trim().length >= 3,
-    { message: "Username must be at least 3 characters" }
-  ),
+  username: z
+    .string()
+    .refine(
+      (val) => !val || val.trim().length === 0 || val.trim().length >= 3,
+      { message: "Username must be at least 3 characters" }
+    ),
 });
 
 /* TYPES */

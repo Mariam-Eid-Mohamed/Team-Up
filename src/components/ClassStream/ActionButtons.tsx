@@ -79,9 +79,10 @@ export default function ActionButtons({
                 : `/student/classes/${id}/details`,
             )
           }
-          className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] hover:bg-purple-700 text-white text-sm"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] hover:bg-purple-700 text-white text-sm hover:cursor-pointer"
         >
           <Eye size={16} />
+          <span>Class Details</span>
         </button>
       </div>
       <AnnouncementModal

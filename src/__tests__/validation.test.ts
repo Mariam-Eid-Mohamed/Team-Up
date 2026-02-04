@@ -23,6 +23,7 @@ describe("zod validation Tests", () => {
     const result = RegisterSchema.safeParse({
       first_name: "John",
       last_name: "Doe",
+      username: "john_doe",
       email: "john@mail.com",
       password: "password123",
       confirmPassword: "password124",
@@ -35,6 +36,7 @@ describe("zod validation Tests", () => {
     const result = RegisterSchema.safeParse({
       first_name: "John",
       last_name: "Doe",
+      username: "john_doe",
       email: "john@mail.com",
       password: "password123",
       confirmPassword: "password123",

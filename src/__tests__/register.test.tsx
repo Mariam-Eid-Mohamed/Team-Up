@@ -28,6 +28,10 @@ describe("Register Component", () => {
       target: { value: "John" },
     });
 
+    fireEvent.change(screen.getByPlaceholderText("john_doe"), {
+      target: { value: "john_doe" },
+    });
+
     fireEvent.change(screen.getByPlaceholderText("Doe"), {
       target: { value: "Doe" },
     });
@@ -53,7 +57,7 @@ describe("Register Component", () => {
         first_name: "John",
         last_name: "Doe",
         email: "john@mail.com",
-        username: "john",
+        username: "john_doe",
         password: "password123",
         role: "Student",
         rememberMe: false,

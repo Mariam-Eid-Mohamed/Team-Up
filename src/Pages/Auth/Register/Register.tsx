@@ -25,6 +25,7 @@ const Register = () => {
     defaultValues: {
       first_name: "",
       last_name: "",
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -57,7 +58,7 @@ const Register = () => {
         first_name: data.first_name,
         last_name: data.last_name,
         email: data.email,
-        username: data.email.split("@")[0],
+        username: data.username,
         password: data.password,
         role: data.role,
         rememberMe: false,
