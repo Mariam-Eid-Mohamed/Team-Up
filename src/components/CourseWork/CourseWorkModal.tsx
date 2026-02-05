@@ -182,6 +182,9 @@ export default function CourseworkModal({
       files.forEach((file) => fd.append("files", file));
 
       //  API call حسب الـ mode
+      console.log("MODE:", mode);
+      console.log("CLASS ID:", classId);
+
       if (mode === "create") {
         await createCoursework(classId, fd, token);
       } else if (mode === "edit") {
@@ -373,7 +376,6 @@ export default function CourseworkModal({
                   </span>
                 </div>
 
-                {/* قائمة الملفات */}
                 {files.length > 0 && (
                   <div className="mt-3 space-y-2">
                     {files.map((f, idx) => (
