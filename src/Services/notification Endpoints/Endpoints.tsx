@@ -10,9 +10,15 @@ export const getNotifications = async (token: string) => {
 };
 
 // Mark notification as read
-export const markNotificationAsRead = async (notificationId: string, token: string) => {
-  return Api.patch(`${API_BASE}/${notificationId}/read`, {}, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const markNotificationAsRead = async (
+  notificationId: string,
+  token: string,
+) => {
+  return Api.patch(
+    `${API_BASE}/${notificationId}/read`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
 };
-

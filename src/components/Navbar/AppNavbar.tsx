@@ -2,7 +2,11 @@ import { MessageCircle, ChevronDown } from "lucide-react";
 import logo from "@/assets/images/removebg-preview.png";
 import NotificationsDropdown from "@/components/Navbar/NotificationsDropdown";
 
-export default function AppNavbar() {
+export default function AppNavbar({
+  onClassListChanged,
+}: {
+  onClassListChanged?: () => void;
+}) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 md:px-6 bg-[#83CDC4]">
       <div className="flex items-center gap-2">
@@ -23,7 +27,7 @@ export default function AppNavbar() {
 
         <MessageCircle className="w-5 h-5 cursor-pointer hover:opacity-70 transition-opacity" />
 
-        <NotificationsDropdown />
+        <NotificationsDropdown onJoinedClass={onClassListChanged} />
 
         <div className="flex items-center gap-1 cursor-pointer group">
           <div className="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-bold shadow-sm">

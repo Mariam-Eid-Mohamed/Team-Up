@@ -7,6 +7,8 @@ import { CreateClassForm } from "../../../components/CreateClassForm/CreateClass
 import { InviteStudentsModal } from "../../../components/InviteStudentModal/InviteStudentModal";
 import { getUserClasses } from "../../../Services/class Endpoints/Endpoints";
 import { getToken, getUserId } from "../../../utilis/token";
+import { fetchUserClassesMapped } from "@/Services/Helpers/classHelpers";
+import { useOutletContext } from "react-router-dom";
 
 export function InstructorDashboard() {
   const navigate = useNavigate();
@@ -24,6 +26,9 @@ export function InstructorDashboard() {
   const fetchClasses = async () => {
     const token = getToken();
     const userId = getUserId();
+    const classes = await fetchUserClassesMapped(userId, token);
+    setClasses(classes);
+    setIsLoading(false);
 
     if (!token || !userId) {
       setError("Authentication required. Please login again.");
@@ -38,22 +43,27 @@ export function InstructorDashboard() {
 
       if (response.data.success && response.data.data) {
         // Map API response to Class interface
-        const mappedClasses: Class[] = response.data.data.map((classItem: any) => ({
-          id: classItem._id,
-          name: classItem.course_name || "",
-          code: classItem.course_code || "",
-          description: classItem.course_plan || "",
-          year: classItem.year?.toString() || "",
-          studentsCount: classItem.studentsCount || 0,
-          teamsCount: classItem.teamsCount || 0,
-          instructorsCount: classItem.instructorsCount || 1,
-          color: classItem.class_color || "bg-blue-500", // Default color if not provided
-        }));
+        const mappedClasses: Class[] = response.data.data.map(
+          (classItem: any) => ({
+            id: classItem._id,
+            name: classItem.course_name || "",
+            code: classItem.course_code || "",
+            description: classItem.course_plan || "",
+            year: classItem.year?.toString() || "",
+            studentsCount: classItem.studentsCount || 0,
+            teamsCount: classItem.teamsCount || 0,
+            instructorsCount: classItem.instructorsCount || 1,
+            color: classItem.class_color || "bg-blue-500", // Default color if not provided
+          }),
+        );
         setClasses(mappedClasses);
       }
     } catch (error: any) {
       console.error("Failed to fetch classes:", error);
-      setError(error.response?.data?.message || "Failed to load classes. Please try again.");
+      setError(
+        error.response?.data?.message ||
+          "Failed to load classes. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
