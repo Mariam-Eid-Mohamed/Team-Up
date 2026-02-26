@@ -1,4 +1,4 @@
-import { Pencil, Trash, Download } from "lucide-react";
+import { Pencil, Trash, Download, Users, UserPlus } from "lucide-react";
 import { useState } from "react";
 import type { Post } from "@/Types/posts";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
@@ -8,6 +8,8 @@ import {
   deleteAnnouncement,
 } from "@/Services/announcement Endpoints/Endpoints";
 import { getToken } from "@/utilis/token";
+import CreateTeamModal from "../CreateTeamModal/CreateTeamModal";
+import { useNavigate } from "react-router-dom";
 
 function formatDate(iso: string) {
   const d = new Date(iso);
@@ -29,7 +31,7 @@ export default function PostCard({
 }) {
   const [modalMode, setModalMode] = useState<"edit" | "delete" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-
+const navigate = useNavigate();
   const first = post.authorId?.first_name?.trim() || "Unknown";
   const last = post.authorId?.last_name?.trim() || "";
   const authorName = `${first} ${last}`.trim();
@@ -88,6 +90,20 @@ export default function PostCard({
       setIsProcessing(false);
     }
   };
+
+  // Placeholder functions for the new buttons
+  const handleJoinTeam = () => {
+    navigate(`/student/classes/${classId}/coursework/${post.courseworkId._id}/teams`, {
+    state: { courseworkName: post.courseworkId.name }
+  });
+    // Add your navigation or logic here
+  };
+const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
+
+// Update your handleCreateTeam function
+const handleCreateTeam = () => {
+  setIsCreateTeamOpen(true);
+};
 
   return (
     <div className="bg-white rounded-lg shadow p-5">
@@ -155,6 +171,31 @@ export default function PostCard({
             </p>
           </div>
 
+          {/* NEW SECTION: Student Team Buttons */}
+          {role === "student" && (
+            <div className="flex flex-wrap gap-3 mt-4 pt-2">
+              <button
+                onClick={handleJoinTeam}
+                className="flex items-center gap-2 px-4 py-2 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-md  transition-colors text-xs font-medium"
+              >
+                <Users size={14} />
+                Join Existing Team
+              </button>
+              <button
+                onClick={handleCreateTeam}
+                className="flex items-center gap-2 px-4 py-2 border border-[#2D7A78] rounded-md cursor-pointer hover:bg-[#2D7A78] hover:text-white transition-colors text-xs font-medium"
+              >
+                <UserPlus size={14} />
+                Create a New Team
+              </button>
+            </div>
+          )}
+
+          <CreateTeamModal 
+      isOpen={isCreateTeamOpen} 
+      onClose={() => setIsCreateTeamOpen(false)} 
+      courseworkId={post.courseworkId._id}
+    />
           {post.courseworkId.files?.length > 0 && (
             <div className="mt-3 space-y-2">
               {post.courseworkId.files.map((f) => (

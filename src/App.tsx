@@ -15,6 +15,9 @@ import { StudentDashboard } from "./Pages/Student/Home/Home";
 import ClassStream from "./Pages/Instructor/Home/ClassStream";
 import SectionStream from "./Pages/Instructor/Home/SectionStream";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import ClassMembers from "./Pages/Instructor/Home/ClassMembers";
+import TeamWorkspace from "./Pages/Instructor/Home/TeamWorkspace";
+import TeamsPage from "./Pages/Instructor/Home/TeamsPage";
 // export interface Class {
 //   id: string;
 //   name: string;
@@ -99,6 +102,7 @@ export default function App() {
           path: "/instructor/classes/:id/sections/:sectionId",
           element: <SectionStream />,
         },
+        {path:"classes/:id/members",element:<ClassMembers/>},
         // Add more instructor pages here
       ],
     },
@@ -112,6 +116,9 @@ export default function App() {
         { path: "classes/:id", element: <ClassStream /> },
         { path: "classes/:id/details", element: <ClassDetailsPage /> },
         { path: "classes/:id/sections/:sectionId", element: <SectionStream /> },
+        {path:"classes/:id/members",element:<ClassMembers/>},
+        { path: "teams/:teamId", element: <TeamWorkspace /> },
+        { path: "classes/:id/coursework/:courseworkId/teams", element: <TeamsPage /> },
         // Add more student pages here
       ],
     },

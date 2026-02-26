@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { Class } from "../../interfaces/interfaces";
 import { CreateClassModal } from "../CreateClassModal/CreateClassModal";
+import { useNavigate } from "react-router-dom";
 
 interface ClassDetailsProps {
   classData: Class;
@@ -26,6 +27,7 @@ export function ClassDetails({
   onUpdate,
   onDelete,
 }: ClassDetailsProps) {
+  const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -191,8 +193,18 @@ export function ClassDetails({
                     <p className="text-sm text-gray-500">Instructors</p>
                   </div>
                 </div>
+
+   <button 
+                  onClick={() => navigate(`/${role}/classes/${classData.id}/members`)}
+                  className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2D7A78] hover:bg-[#246361] text-white rounded-lg font-medium transition-all shadow-sm"
+                >
+                  <Users size={18} />
+                  View Class Members
+                </button>
               </div>
             </div>
+
+           
 
             {/* Quick Actions */}
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200 p-4 sm:p-6">
