@@ -11,7 +11,7 @@ const JoinTeamModal: React.FC<JoinModalProps> = ({ isOpen, onClose, onConfirm, t
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50  p-4">
       <div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in duration-200">
         <div className="text-center">
           <div className="w-16 h-16 bg-[#F0F7F7] text-[#2D7A78] rounded-full flex items-center justify-center mx-auto mb-4">

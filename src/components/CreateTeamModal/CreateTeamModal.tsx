@@ -38,7 +38,7 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({ isOpen, onClose, cour
 };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50  p-4">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 relative animate-in fade-in zoom-in duration-200">
         
         <div className="flex justify-between items-center mb-8">
