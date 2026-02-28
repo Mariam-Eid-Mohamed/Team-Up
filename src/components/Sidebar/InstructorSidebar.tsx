@@ -43,10 +43,11 @@ export default function Sidebar() {
   const location = useLocation();
 
   // ✅ ROLE DERIVED FROM PATH (TYPE-SAFE)
-  const role: "admin" | "instructor" | "student" =
-    location.pathname.startsWith("/instructor")
-      ? "instructor"
-      : location.pathname.startsWith("/student")
+  const role: "admin" | "instructor" | "student" = location.pathname.startsWith(
+    "/instructor",
+  )
+    ? "instructor"
+    : location.pathname.startsWith("/student")
       ? "student"
       : "admin";
 
@@ -71,29 +72,44 @@ export default function Sidebar() {
             role === "student"
               ? "/student/dashboard"
               : role === "instructor"
-              ? "/instructor/dashboard"
-              : "/dashboard"
+                ? "/instructor/dashboard"
+                : "/dashboard"
           }
         />
 
-        <SidebarItem icon={<BookOpen size={20} />} label="My Classes" to="/classes" />
-        <SidebarItem icon={<Bell size={20} />} label="Notifications" to="/notifications" />
-        <SidebarItem icon={<Users size={20} />} label="Teams" to="/teams" />
+        <SidebarItem
+          icon={<BookOpen size={20} />}
+          label="My Classes"
+          to="/classes"
+        />
+        <SidebarItem
+          icon={<Bell size={20} />}
+          label="Notifications"
+          to="/notifications"
+        />
+        <SidebarItem
+          icon={<Users size={20} />}
+          label="Teams"
+          to={role === "student" ? "/student/teams" : "/instructor/teams"}
+        />
 
         {/* Instructor-only */}
-        
-          <SidebarItem
-            icon={<UsersRound size={20} />}
-            label="Students"
-            to="/students"
-          />
-     
+
+        <SidebarItem
+          icon={<UsersRound size={20} />}
+          label="Students"
+          to="/students"
+        />
       </div>
 
       {/* Bottom menu */}
       <div className="space-y-2 border-t mt-2 pt-2">
         <SidebarItem icon={<Info size={20} />} label="About us" to="/about" />
-        <SidebarItem icon={<Settings size={20} />} label="Settings" to="/settings" />
+        <SidebarItem
+          icon={<Settings size={20} />}
+          label="Settings"
+          to="/settings"
+        />
       </div>
     </aside>
   );

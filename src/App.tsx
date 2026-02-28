@@ -18,6 +18,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import ClassMembers from "./Pages/Instructor/Home/ClassMembers";
 import TeamWorkspace from "./Pages/Instructor/Home/TeamWorkspace";
 import TeamsPage from "./Pages/Instructor/Home/TeamsPage";
+import OwnTeams from "./Pages/Student/OwnTeams";
 // export interface Class {
 //   id: string;
 //   name: string;
@@ -102,7 +103,7 @@ export default function App() {
           path: "/instructor/classes/:id/sections/:sectionId",
           element: <SectionStream />,
         },
-        {path:"classes/:id/members",element:<ClassMembers/>},
+        { path: "classes/:id/members", element: <ClassMembers /> },
         // Add more instructor pages here
       ],
     },
@@ -116,9 +117,13 @@ export default function App() {
         { path: "classes/:id", element: <ClassStream /> },
         { path: "classes/:id/details", element: <ClassDetailsPage /> },
         { path: "classes/:id/sections/:sectionId", element: <SectionStream /> },
-        {path:"classes/:id/members",element:<ClassMembers/>},
+        { path: "classes/:id/members", element: <ClassMembers /> },
         { path: "teams/:teamId", element: <TeamWorkspace /> },
-        { path: "classes/:id/coursework/:courseworkId/teams", element: <TeamsPage /> },
+        { path: "teams", element: <OwnTeams /> },
+        {
+          path: "classes/:id/coursework/:courseworkId/teams",
+          element: <TeamsPage />,
+        },
         // Add more student pages here
       ],
     },
@@ -126,7 +131,7 @@ export default function App() {
   return (
     <>
       <GoogleOAuthProvider clientId="996803786434-eb4r231uhc5d9t8krd5baoa8vefpm6p6.apps.googleusercontent.com">
-          <Toaster position="top-right" />
+        <Toaster position="top-right" />
         <RouterProvider router={routes}></RouterProvider>
       </GoogleOAuthProvider>
     </>
