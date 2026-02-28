@@ -104,6 +104,7 @@ export default function App() {
           element: <SectionStream />,
         },
         { path: "classes/:id/members", element: <ClassMembers /> },
+        { path: "teams", element: <OwnTeams /> },
         // Add more instructor pages here
       ],
     },
