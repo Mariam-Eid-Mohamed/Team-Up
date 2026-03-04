@@ -19,6 +19,7 @@ import ClassMembers from "./Pages/Instructor/Home/ClassMembers";
 import TeamWorkspace from "./Pages/Instructor/Home/TeamWorkspace";
 import TeamsPage from "./Pages/Instructor/Home/TeamsPage";
 import OwnTeams from "./Pages/Student/OwnTeams";
+import AvailableMembers from "./Pages/Instructor/Home/AvailableMembers";
 // export interface Class {
 //   id: string;
 //   name: string;
@@ -119,6 +120,7 @@ export default function App() {
         { path: "classes/:id/details", element: <ClassDetailsPage /> },
         { path: "classes/:id/sections/:sectionId", element: <SectionStream /> },
         { path: "classes/:id/members", element: <ClassMembers /> },
+        {path: "classes/:id/available-members", element: <AvailableMembers/> },
         { path: "teams/:teamId", element: <TeamWorkspace /> },
         { path: "teams", element: <OwnTeams /> },
         {

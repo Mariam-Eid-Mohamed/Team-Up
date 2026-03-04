@@ -31,7 +31,8 @@ export default function TeamWorkspace() {
 
   const handleInviteClick = () => {
     const role = window.location.pathname.includes('/instructor') ? 'instructor' : 'student';
-    navigate(`/${role}/classes/${teamData.classId}/members`);
+    navigate(`/${role}/classes/${teamData.classId}/available-members`);
+
   };
 
   return (
