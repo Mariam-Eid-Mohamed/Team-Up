@@ -94,6 +94,13 @@ export const getClassCode = async (classId: string, token: string) => {
   });
 };
 
+// Get all class members (instructors and students)
+export const getClassMembers = async (classId: string, token: string) => {
+  return Api.get(`${API_BASE}/${classId}/members`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
 // Respond to invitation (accept or decline)
 export const respondToInvitation = async (
   invitationId: string,
@@ -114,4 +121,20 @@ export const GetClassPosts = (classId: string, token: string) => {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+// Get existing teams for a coursework (unlocked by default; use locked=true for closed teams)
+export const getCourseworkTeams = async (
+  classId: string,
+  courseworkId: string,
+  token: string,
+  options?: { locked?: boolean }
+) => {
+  const locked = options?.locked === true ? "true" : "false";
+  return Api.get(
+    `${API_BASE}/${classId}/courseworks/${courseworkId}/teams?locked=${locked}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 };

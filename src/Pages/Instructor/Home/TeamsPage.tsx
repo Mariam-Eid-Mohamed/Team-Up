@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ChevronDown, ChevronUp, Search, ArrowLeft, UserPlus } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import JoinTeamModal from "../../../components/JoinTeamModal/JoinTeamModal"
+import JoinTeamModal from "../../../components/JoinTeamModal/JoinTeamModal";
+import { getToken } from "@/utilis/token";
+import { getCourseworkTeams } from "@/Services/class Endpoints/Endpoints";
+import { sendJoinRequest } from "@/Services/team Endpoints/Endpoints";
+import toast from "react-hot-toast";
 
 interface TeamMember {
   id: string;
@@ -17,31 +21,144 @@ interface Team {
   members: TeamMember[];
 }
 
+// API response types
+interface ApiTeamMember {
+  _id: string;
+  first_name: string;
+  last_name: string;
+  username: string;
+  email: string;
+  role: string;
+}
+
+interface ApiTeam {
+  teamId?: string;
+  _id?: string;
+  id?: string;
+  teamName: string;
+  teamMembers: ApiTeamMember[];
+  courseworkName: string;
+  className: string;
+}
+
+interface CourseworkTeamsResponse {
+  success: boolean;
+  data: ApiTeam[];
+}
+
+function mapApiTeamToTeam(apiTeam: ApiTeam): Team {
+  const members: TeamMember[] = (apiTeam.teamMembers ?? []).map((m) => ({
+    id: m._id,
+    name: `${m.first_name} ${m.last_name}`.trim() || m.username,
+    role: m.role === "LEADER" ? "Leader" : undefined,
+  }));
+
+  const teamId = apiTeam.teamId || apiTeam._id || apiTeam.id || "";
+  if (!teamId) {
+    console.warn("API returned a team without an ID identifier:", apiTeam);
+  }
+
+  return {
+    id: teamId,
+    name: apiTeam.teamName,
+    membersLeft: 0, // API does not return max size; display uses member count only
+    members,
+  };
+}
+
 const TeamsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { id, courseworkId } = useParams();
-  const [expandedTeam, setExpandedTeam] = useState<string | null>("alpha");
+  const { id: classId, courseworkId } = useParams<{ id: string; courseworkId: string }>();
+  const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [courseworkName, setCourseworkName] = useState<string>("Coursework");
+  const [className, setClassName] = useState<string>("Class");
+  const [isJoining, setIsJoining] = useState(false);
+  const [pendingTeams, setPendingTeams] = useState<Set<string>>(new Set());
 
-  const handleJoinConfirm = () => {
-    // Logic for pending or navigation goes here
-    console.log("Joining:", selectedTeam?.name);
+  const fetchTeams = useCallback(async () => {
+    if (!classId || !courseworkId) return;
+    const token = getToken();
+    if (!token) {
+      setError("Please sign in to view teams.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getCourseworkTeams(classId, courseworkId, token, { locked: false });
+      const { data } = response.data as CourseworkTeamsResponse;
+      const list = Array.isArray(data) ? data : [];
+      setTeams(list.map(mapApiTeamToTeam));
+      if (list.length > 0) {
+        setCourseworkName(list[0].courseworkName ?? "Coursework");
+        setClassName(list[0].className ?? "Class");
+      }
+    } catch (err: unknown) {
+      const message =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : "Failed to load teams.";
+      setError(message ?? "Failed to load teams.");
+      setTeams([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [classId, courseworkId]);
+
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
+
+  const handleJoinConfirm = async () => {
+    if (!selectedTeam) return;
+
+    if (!selectedTeam.id) {
+      toast.error("Cannot join team: this team is missing an ID. Check the developer console for details.");
+      return;
+    }
+
+    const token = getToken();
+    if (!token) {
+      toast.error("Please sign in to send a join request.");
+      return;
+    }
+
+    setIsJoining(true);
+    try {
+      const response = await sendJoinRequest(selectedTeam.id, token);
+
+      const newStatus = response?.data?.data?.status;
+
+      toast.success("Join request sent successfully.");
+
+      if (newStatus === "PENDING" || !newStatus) {
+        setPendingTeams((prev) => {
+          const newSet = new Set(prev);
+          newSet.add(selectedTeam.id);
+          return newSet;
+        });
+      }
+      setSelectedTeam(null);
+    } catch (err: unknown) {
+      const message =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : "Failed to send join request. Please try again.";
+      toast.error(message ?? "Failed to send join request. Please try again.");
+    } finally {
+      setIsJoining(false);
+    }
   };
 
-  const teams: Team[] = [
-    {
-      id: "alpha",
-      name: "Team Alpha",
-      membersLeft: 3,
-      members: [
-        { id: "1", name: "Mariam Eid", role: "Leader" },
-        { id: "2", name: "Dalia Adel" },
-      ],
-    },
-    { id: "beta", name: "Team Beta", membersLeft: 1, members: [] },
-    { id: "gamma", name: "Team Gamma", membersLeft: 2, members: [] },
-  ];
+  const filteredTeams = teams.filter((team) =>
+    team.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans">
@@ -56,12 +173,12 @@ const TeamsPage: React.FC = () => {
           </button>
 
           <h1 className="text-lg md:text-2xl font-bold text-gray-800 leading-tight">
-            CS101 - Introduction to programming using python
+            {className}
           </h1>
         </div>
 
         <h2 className="text-base md:text-xl text-gray-700 ml-8 md:ml-9">
-          Classwork | Project A
+          Coursework | {courseworkName}
         </h2>
       </div>
 
@@ -78,13 +195,34 @@ const TeamsPage: React.FC = () => {
           />
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center text-gray-500">
+            Loading teams...
+          </div>
+        )}
+
+        {/* Error */}
+        {!loading && error && (
+          <div className="bg-white border border-red-100 rounded-xl shadow-sm p-6 text-center text-red-600">
+            {error}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && !error && filteredTeams.length === 0 && (
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center text-gray-500">
+            {teams.length === 0 ? "No teams available for this coursework yet." : "No teams match your search."}
+          </div>
+        )}
+
         {/* Teams List */}
-        {teams.map((team) => (
+        {!loading && !error && filteredTeams.map((team) => (
           <div key={team.id} className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
             {/* Team Header - Stacked on mobile, row on tablet+ */}
             <div className="p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3 md:gap-4">
-                <button 
+                <button
                   onClick={() => setExpandedTeam(expandedTeam === team.id ? null : team.id)}
                   className="text-gray-500 hover:text-black transition-colors"
                 >
@@ -92,16 +230,26 @@ const TeamsPage: React.FC = () => {
                 </button>
                 <div>
                   <h3 className="font-semibold text-base md:text-lg text-gray-800">{team.name}</h3>
-                  <p className="text-[10px] md:text-xs text-gray-400">{team.membersLeft} member(s) left</p>
+                  <p className="text-[10px] md:text-xs text-gray-400">{team.members.length} member(s)</p>
                 </div>
               </div>
 
-              <button 
-                type="button" 
-                onClick={() => setSelectedTeam(team)} 
-                className="flex items-center justify-center gap-2 bg-[#2D7A78] hover:bg-[#23615f] text-white px-4 md:px-6 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto"
+              <button
+                type="button"
+                onClick={() => setSelectedTeam(team)}
+                disabled={pendingTeams.has(team.id)}
+                className={`flex items-center justify-center gap-2 px-4 md:px-6 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto ${pendingTeams.has(team.id)
+                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                  : "bg-[#2D7A78] hover:bg-[#23615f] text-white"
+                  }`}
               >
-                Join Team <UserPlus size={16} />
+                {pendingTeams.has(team.id) ? (
+                  "Pending"
+                ) : (
+                  <>
+                    Join Team <UserPlus size={16} />
+                  </>
+                )}
               </button>
             </div>
 
@@ -135,9 +283,10 @@ const TeamsPage: React.FC = () => {
         ))}
       </div>
 
-      <JoinTeamModal 
+      <JoinTeamModal
         isOpen={!!selectedTeam}
         teamName={selectedTeam?.name || ""}
+        isLoading={isJoining}
         onClose={() => setSelectedTeam(null)}
         onConfirm={handleJoinConfirm}
       />

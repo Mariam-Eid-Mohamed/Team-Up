@@ -195,7 +195,11 @@ export function ClassDetails({
                 </div>
 
    <button 
-                  onClick={() => navigate(`/${role}/classes/${classData.id}/members`)}
+                  onClick={() =>
+                    navigate(`/${role}/classes/${classData.id}/members`, {
+                      state: { className: classData.name },
+                    })
+                  }
                   className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2D7A78] hover:bg-[#246361] text-white rounded-lg font-medium transition-all shadow-sm"
                 >
                   <Users size={18} />
