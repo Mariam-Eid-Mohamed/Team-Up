@@ -228,13 +228,28 @@ export default function NotificationsDropdown({
             <EmptyRow text="Coming soon" />
           </AccordionSection>
 
+          {/* Find the Teams AccordionSection in your code and replace it with this: */}
           <AccordionSection
             title="Teams"
             open={expanded.teams}
             onToggle={() => setExpanded((p) => ({ ...p, teams: !p.teams }))}
-            disabled
           >
-            <EmptyRow text="Coming soon" />
+            {loading ? (
+              <LoadingRow />
+            ) : grouped.teams.length === 0 ? (
+              <EmptyRow text="No team notifications" />
+            ) : (
+              <div className="max-h-[300px] overflow-y-auto">
+                {grouped.teams.map((n) => (
+                  <TeamRow
+                    key={(n as any)._id}
+                    n={n}
+                    onApprove={() => onAcceptInvite(n)} // You can rename these handlers or create specific ones for teams
+                    onReject={() => onRejectInvite(n)}
+                  />
+                ))}
+              </div>
+            )}
           </AccordionSection>
         </div>
       )}
