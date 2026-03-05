@@ -1,40 +1,44 @@
-// Token utility functions for managing JWT tokens
+// src/utils/token.ts
+import { useSessionStore } from "../store/sessionStore";
 
+// Keep your existing constants (optional, for clarity)
 const TOKEN_KEY = "auth_token";
 const USER_ID_KEY = "user_id";
 
+/**
+ * NOTE:
+ * We are no longer reading/writing TOKEN_KEY and USER_ID_KEY directly.
+ * Zustand persists under "teamup_session".
+ *
+ * If you need backward compatibility (existing users already have auth_token),
+ * see the migration section below.
+ */
+
 export const getToken = (): string | null => {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_KEY);
+  return useSessionStore.getState().token;
 };
 
 export const setToken = (token: string): void => {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(TOKEN_KEY, token);
+  useSessionStore.getState().setToken(token);
 };
 
 export const removeToken = (): void => {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(TOKEN_KEY);
+  useSessionStore.getState().removeToken();
 };
 
 export const hasToken = (): boolean => {
-  return getToken() !== null;
+  return useSessionStore.getState().hasToken();
 };
 
 // User ID utility functions
 export const getUserId = (): string | null => {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(USER_ID_KEY);
+  return useSessionStore.getState().userId;
 };
 
 export const setUserId = (userId: string): void => {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(USER_ID_KEY, userId);
+  useSessionStore.getState().setUserId(userId);
 };
 
 export const removeUserId = (): void => {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(USER_ID_KEY);
+  useSessionStore.getState().removeUserId();
 };
-
