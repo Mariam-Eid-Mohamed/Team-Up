@@ -64,9 +64,6 @@ const Teams: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         {/* Header Section */}
         <div className="flex items-center gap-4 mb-8">
-          <button className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-            <ChevronLeft size={24} className="text-gray-600" />
-          </button>
           <h1 className="text-3xl font-bold text-gray-800">Teams</h1>
         </div>
 
@@ -79,7 +76,7 @@ const Teams: React.FC = () => {
             />
             <input
               type="text"
-              placeholder="Search for a team or class"
+              placeholder="Search by team name or coursework..."
               className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

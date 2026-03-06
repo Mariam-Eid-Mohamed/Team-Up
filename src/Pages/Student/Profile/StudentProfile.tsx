@@ -68,7 +68,7 @@ export function StudentProfile() {
           {/* GPA + Availability + Skills */}
           <div className="flex flex-col gap-4">
             {/* GPA + Availability */}
-            <div className="bg-white border-b rounded-lg p-4">
+            <div className="bg-white border-b rounded-lg px-4">
               <div className="flex flex-col">
                 <div className="flex py-4 items-center flex-row justify-between">
                   <h2 className="text-2xl text-[#1F6B6B] text-center">GPA</h2>
@@ -91,7 +91,7 @@ export function StudentProfile() {
             </div>
 
             {/* Skills */}
-            <div className=" bg-white border-b rounded-lg p-4">
+            <div className=" bg-white border-b rounded-lg px-4">
               <div className="flex flex-col">
                 {/* Skills */}
                 <div className="flex py-4 flex-col gap-4">
