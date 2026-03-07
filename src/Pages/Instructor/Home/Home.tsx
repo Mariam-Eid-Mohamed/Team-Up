@@ -97,7 +97,7 @@ export function InstructorDashboard() {
               <div className="flex gap-3 w-full sm:w-auto">
                  <button
               onClick={() => setIsModalOpen(true)}
-              className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-[#9B87F5] hover:bg-[#8B77E5] text-white px-6 py-3 rounded-lg font-bold shadow-lg shadow-teal-900/10 transition-all active:scale-95"
+              className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-[#9B87F5] hover:bg-[#8B77E5] text-white px-6 py-3 rounded-lg  shadow-lg shadow-teal-900/10 transition-all active:scale-95"
             >
               <span className="text-sm md:text-base">Join Class</span>
               <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />
