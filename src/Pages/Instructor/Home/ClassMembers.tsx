@@ -5,6 +5,7 @@ import { Pagination } from '../../../components/Pagination/Pagination';
 import { getToken } from '@/utilis/token';
 import { getClassMembers, assignClassAdmin } from '@/Services/class Endpoints/Endpoints';
 import toast from 'react-hot-toast';
+import { useSessionStore } from '../../../store/sessionStore';
 
 export interface ClassMember {
   _id: string;
@@ -35,6 +36,7 @@ const ClassMembers: React.FC = () => {
   const location = useLocation();
   const isInstructor = location.pathname.includes('/instructor');
   const className = (location.state as { className?: string } | null)?.className;
+  const userId = useSessionStore((state) => state.userId);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,6 +121,8 @@ const ClassMembers: React.FC = () => {
     (currentPage - 1) * MEMBERS_PER_PAGE,
     currentPage * MEMBERS_PER_PAGE
   );
+
+  const isClassAdmin = admins.some((admin) => admin._id === userId);
 
   const handleAssignAdmin = async (member: ClassMember) => {
     if (!classId) return;
@@ -228,21 +232,19 @@ const ClassMembers: React.FC = () => {
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-yellow-400 bg-yellow-50 flex-shrink-0 flex items-center justify-center font-bold text-yellow-600 uppercase">
                       {member.first_name.charAt(0)}
                     </div>
-                    <div className="min-w-0 flex items-center gap-2">
-                      <div>
-                        <h4 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
-                          {member.first_name} {member.last_name}
-                        </h4>
-                        <p className="text-xs sm:text-sm text-gray-400 truncate">
-                          {member.email}
-                        </p>
-                      </div>
-                      <span className="flex items-center gap-1 text-[10px] md:text-xs text-yellow-600 font-semibold bg-yellow-50 px-2 py-0.5 rounded-full border border-yellow-200">
-                        <ShieldCheck size={12} className="text-yellow-600" />
-                        Class Admin
-                      </span>
+                    <div className="min-w-0">
+                      <h4 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
+                        {member.first_name} {member.last_name}
+                      </h4>
+                      <p className="text-xs sm:text-sm text-gray-400 truncate">
+                        {member.email}
+                      </p>
                     </div>
                   </div>
+                  <span className="w-full sm:w-auto flex items-center justify-center gap-1 text-[11px] md:text-xs text-yellow-600 font-semibold bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
+                    <ShieldCheck size={14} className="text-yellow-600" />
+                    Class Admin
+                  </span>
                 </div>
               ))}
 
@@ -267,7 +269,7 @@ const ClassMembers: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  {isInstructor && (
+                  {isInstructor && isClassAdmin && (
                     <button
                       onClick={() => handleAssignAdmin(member)}
                       disabled={updatingId === member._id}
