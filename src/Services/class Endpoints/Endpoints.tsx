@@ -138,3 +138,14 @@ export const getCourseworkTeams = async (
     }
   );
 };
+
+// Assign instructor as class admin
+export const assignClassAdmin = async (classId: string, instructorId: string, token: string) => {
+  return Api.patch(
+    `${API_BASE}/${classId}/instructors/${instructorId}/role`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+};
