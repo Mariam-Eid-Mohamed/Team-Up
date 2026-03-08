@@ -24,15 +24,19 @@ function groupByType(items: NotificationItem[]): Grouped {
   };
 
   for (const n of items) {
-    const t = (n as any).type?.toUpperCase?.() ?? "";
+    const t = String((n as any).type || "").toUpperCase();
 
-    if (t.includes("INVIT")) grouped.invitations.push(n);
-    else if (t === "COURSEWORK") grouped.coursework.push(n);
-    else if (t === "ANNOUNCEMENT") grouped.announcements.push(n);
-    else if (t === "CHAT") grouped.chat.push(n);
-    else if (t === "TEAM" || t === "TEAMS") grouped.teams.push(n);
-    else {
-      // fallback: treat unknown as coursework or announcements if you prefer
+    if (t.includes("TEAM")) {
+      grouped.teams.push(n);
+    } else if (t.includes("INVIT")) {
+      grouped.invitations.push(n);
+    } else if (t === "COURSEWORK") {
+      grouped.coursework.push(n);
+    } else if (t === "ANNOUNCEMENT") {
+      grouped.announcements.push(n);
+    } else if (t === "CHAT") {
+      grouped.chat.push(n);
+    } else {
       grouped.coursework.push(n);
     }
   }
