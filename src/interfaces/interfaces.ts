@@ -67,11 +67,10 @@ export interface Notification {
   isRead?: boolean;
   createdAt?: string;
 }
-interface Team {
-  id: string;
-  courseCode: string; // e.g., "CS101"
-  teamName: string; // e.g., "Team Alpha"
-  courseName: string; // e.g., "Data Structures"
-  color: string; // Tailored color for the badge/text
-  hasAccess: boolean;
+
+export interface StudentTeamItem {
+  classCode: string;
+  classColor: string;
+  teamName: string;
+  courseworkName: string;
 }
