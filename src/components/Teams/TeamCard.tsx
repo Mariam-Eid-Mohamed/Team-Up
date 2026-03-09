@@ -2,7 +2,7 @@ interface TeamCardProps {
   courseCode: string;
   courseName: string;
   teamName: string;
-  colorHex: string; // e.g., "text-blue-500"
+  classColor: string; // hex color from API
   hasAccess?: boolean;
   onView: () => void;
 }
@@ -11,7 +11,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
   courseCode,
   courseName,
   teamName,
-  colorHex,
+  classColor,
   hasAccess = true,
   onView,
 }) => {
@@ -19,7 +19,12 @@ export const TeamCard: React.FC<TeamCardProps> = ({
     <div className="flex items-center justify-between p-5 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
       <div className="flex flex-col">
         <div className="flex items-center gap-2">
-          <span className={`font-bold text-lg ${colorHex}`}>{courseCode}</span>
+          <span
+            className="font-bold text-lg"
+            style={{ color: classColor || "#6b7280" }}
+          >
+            {courseCode}
+          </span>
           <span className="text-gray-400">•</span>
           <span className="font-semibold text-gray-800 text-lg">
             {teamName}
@@ -36,7 +41,7 @@ export const TeamCard: React.FC<TeamCardProps> = ({
           View <span className="text-xl">→</span>
         </button>
       ) : (
-        <div className="w-[105px]" /> /* Spacer to keep layout consistent if button is missing */
+        <div className="w-[105px]" />
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, UserPlus } from "lucide-react";
+import { LogIn, Plus, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ClassCard } from "../../../components/ClassCard/ClassCard";
 import type { Class } from "../../../interfaces/interfaces";
@@ -9,6 +9,7 @@ import { getUserClasses } from "../../../Services/class Endpoints/Endpoints";
 import { getToken, getUserId } from "../../../utilis/token";
 import { fetchUserClassesMapped } from "@/Services/Helpers/classHelpers";
 import { useOutletContext } from "react-router-dom";
+import JoinClassModal from "@/components/JoinClassModal/JoinClassModal";
 
 export function InstructorDashboard() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export function InstructorDashboard() {
   const [classes, setClasses] = useState<Class[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   // Fetch classes on component mount
   useEffect(() => {
@@ -93,6 +95,13 @@ export function InstructorDashboard() {
               </h1>
 
               <div className="flex gap-3 w-full sm:w-auto">
+                 <button
+              onClick={() => setIsModalOpen(true)}
+              className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-[#9B87F5] hover:bg-[#8B77E5] text-white px-6 py-3 rounded-lg  shadow-lg shadow-teal-900/10 transition-all active:scale-95"
+            >
+              <span className="text-sm md:text-base">Join Class</span>
+              <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </button>
                 <button
                   onClick={() => setIsInviteModalOpen(true)}
                   className="flex-1 sm:flex-none px-4 py-2.5 text-sm bg-[#9B87F5] hover:bg-[#8B77E5] text-white rounded-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
@@ -170,6 +179,17 @@ export function InstructorDashboard() {
           </div>
         </div>
       </main>
+       {/* Modal Integration */}
+      <JoinClassModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+        onSuccess={() => {
+          // Refresh classes after successfully joining
+          fetchClasses();
+        }}
+      />
 
       {/* INVITE STUDENTS MODAL */}
       <InviteStudentsModal
@@ -178,5 +198,6 @@ export function InstructorDashboard() {
         classes={classes}
       />
     </div>
+    
   );
 }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, Search, UserPlus, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Search, UserPlus, RefreshCw, ShieldCheck, Loader2 } from 'lucide-react';
 import { Pagination } from '../../../components/Pagination/Pagination';
 import { getToken } from '@/utilis/token';
-import { getClassMembers } from '@/Services/class Endpoints/Endpoints';
+import { getClassMembers, assignClassAdmin } from '@/Services/class Endpoints/Endpoints';
+import toast from 'react-hot-toast';
+import { useSessionStore } from '../../../store/sessionStore';
 
 export interface ClassMember {
   _id: string;
@@ -19,8 +21,10 @@ export interface ClassMember {
 interface ClassMembersResponse {
   success: boolean;
   data: {
+    admins: ClassMember[];
     instructors: ClassMember[];
     students: ClassMember[];
+    class_color?: string;
   };
 }
 
@@ -32,14 +36,18 @@ const ClassMembers: React.FC = () => {
   const location = useLocation();
   const isInstructor = location.pathname.includes('/instructor');
   const className = (location.state as { className?: string } | null)?.className;
+  const userId = useSessionStore((state) => state.userId);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [admins, setAdmins] = useState<ClassMember[]>([]);
   const [instructors, setInstructors] = useState<ClassMember[]>([]);
   const [students, setStudents] = useState<ClassMember[]>([]);
+  const [classColor, setClassColor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const fetchMembers = useCallback(async (isRefresh = false) => {
     if (!classId) return;
@@ -55,14 +63,23 @@ const ClassMembers: React.FC = () => {
     try {
       const response = await getClassMembers(classId, token);
       const data = (response.data as ClassMembersResponse).data;
-      setInstructors(data?.instructors ?? []);
+      const adminsList = data?.admins ?? [];
+      const adminIds = new Set(adminsList.map((a: ClassMember) => a._id));
+      const instructorsOnly = (data?.instructors ?? []).filter(
+        (inst: ClassMember) => !adminIds.has(inst._id)
+      );
+
+      setAdmins(adminsList);
+      setInstructors(instructorsOnly);
       setStudents(data?.students ?? []);
+      setClassColor(data?.class_color ?? null);
     } catch (err: unknown) {
       const message =
         err && typeof err === 'object' && 'response' in err
           ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
           : 'Failed to load class members.';
       setError(message ?? 'Failed to load class members.');
+      setAdmins([]);
       setInstructors([]);
       setStudents([]);
     } finally {
@@ -78,6 +95,12 @@ const ClassMembers: React.FC = () => {
   const handleRefresh = () => {
     fetchMembers(true);
   };
+
+  const filteredAdmins = admins.filter(
+    (m) =>
+      `${m.first_name} ${m.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const filteredInstructors = instructors.filter(
     (m) =>
@@ -99,8 +122,25 @@ const ClassMembers: React.FC = () => {
     currentPage * MEMBERS_PER_PAGE
   );
 
-  const handleAssignAdmin = (_member: ClassMember) => {
-    // TODO: integrate Assign Admin API when available; on success call fetchMembers(true) to refresh the list
+  const isClassAdmin = admins.some((admin) => admin._id === userId);
+
+  const handleAssignAdmin = async (member: ClassMember) => {
+    if (!classId) return;
+    const token = getToken();
+    if (!token) return;
+
+    setUpdatingId(member._id);
+    try {
+      const resp = await assignClassAdmin(classId, member._id, token);
+      if (resp.data.success) {
+        toast.success(resp.data.message || 'Instructor promoted to admin successfully.');
+        fetchMembers(true);
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to assign admin.');
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   if (!classId) {
@@ -145,7 +185,7 @@ const ClassMembers: React.FC = () => {
             </h2>
             {!loading && !error && (
               <p className="text-gray-500 text-sm mt-1 font-medium">
-                Instructors ({filteredInstructors.length})
+                Instructors ({filteredInstructors.length + filteredAdmins.length})
               </p>
             )}
           </div>
@@ -183,13 +223,15 @@ const ClassMembers: React.FC = () => {
           <>
             {/* Instructor List */}
             <div className="space-y-3 mb-8 sm:mb-12">
-              {filteredInstructors.map((member) => (
+              {filteredAdmins.map((member) => (
                 <div
                   key={member._id}
                   className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm"
                 >
                   <div className="flex items-center gap-3 w-full sm:w-auto">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-200 flex-shrink-0" />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-yellow-400 bg-yellow-50 flex-shrink-0 flex items-center justify-center font-bold text-yellow-600 uppercase">
+                      {member.first_name.charAt(0)}
+                    </div>
                     <div className="min-w-0">
                       <h4 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
                         {member.first_name} {member.last_name}
@@ -199,19 +241,52 @@ const ClassMembers: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  {isInstructor && (
+                  <span className="w-full sm:w-auto flex items-center justify-center gap-1 text-[11px] md:text-xs text-yellow-600 font-semibold bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
+                    <ShieldCheck size={14} className="text-yellow-600" />
+                    Class Admin
+                  </span>
+                </div>
+              ))}
+
+              {filteredInstructors.map((member) => (
+                <div
+                  key={member._id}
+                  className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm"
+                >
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <div
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 flex items-center justify-center font-bold uppercase border border-gray-100"
+                      style={{ backgroundColor: classColor || '#e5e7eb', color: classColor ? '#ffffff' : '#6b7280' }}
+                    >
+                      {member.first_name.charAt(0)}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
+                        {member.first_name} {member.last_name}
+                      </h4>
+                      <p className="text-xs sm:text-sm text-gray-400 truncate">
+                        {member.email}
+                      </p>
+                    </div>
+                  </div>
+                  {isInstructor && isClassAdmin && (
                     <button
                       onClick={() => handleAssignAdmin(member)}
-                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-[#2D7A78] text-white rounded-lg text-sm font-medium hover:bg-[#246361] transition-all"
+                      disabled={updatingId === member._id}
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-[#2D7A78] text-white rounded-lg text-sm font-medium hover:bg-[#246361] transition-all cursor-pointer disabled:opacity-50"
                     >
-                      <UserPlus size={16} />
+                      {updatingId === member._id ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <UserPlus size={16} />
+                      )}
                       Assign Admin
                     </button>
                   )}
                 </div>
               ))}
-              {filteredInstructors.length === 0 && (
-                <p className="text-gray-500 text-sm py-2">No instructors match your search.</p>
+              {filteredInstructors.length === 0 && filteredAdmins.length === 0 && (
+                <p className="text-gray-500 text-sm py-2">No instructors or admins match your search.</p>
               )}
             </div>
 
@@ -228,7 +303,12 @@ const ClassMembers: React.FC = () => {
                   key={member._id}
                   className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 flex items-center gap-3 sm:gap-4 shadow-sm"
                 >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex-shrink-0" />
+                  <div
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 flex items-center justify-center font-bold uppercase border border-gray-100"
+                    style={{ backgroundColor: classColor || '#f3f4f6', color: classColor ? '#ffffff' : '#9ca3af' }}
+                  >
+                    {member.first_name.charAt(0)}
+                  </div>
                   <div className="min-w-0">
                     <h4 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
                       {member.first_name} {member.last_name}

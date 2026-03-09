@@ -4,7 +4,8 @@ import {
   UserPlus,
   Lock,
   Crown,
-  Loader2
+  Loader2,
+  ArrowLeft
 } from "lucide-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useSessionStore } from "../../../store/sessionStore";
@@ -111,7 +112,14 @@ export default function TeamWorkspace() {
     <div className="max-w-6xl mx-auto p-4 md:p-6 bg-[#F9FAFB] min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
-        <div>
+        
+        <div className="flex items-center gap-3">
+          <button
+              onClick={() => navigate(-1)}
+              className="p-2 bg-white border border-gray-200 rounded-lg shadow-sm flex-shrink-0"
+            >
+              <ArrowLeft size={20} className="text-gray-600" />
+            </button>
           <h1 className="text-xl md:text-2xl font-bold text-gray-900">{teamData.teamName}</h1>
           <p className="text-gray-500 text-sm">
             {teamData.classCode} {teamData.className} · {teamData.courseworkName}

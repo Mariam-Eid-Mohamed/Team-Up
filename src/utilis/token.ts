@@ -1,17 +1,10 @@
 // src/utils/token.ts
 import { useSessionStore } from "../store/sessionStore";
 
-// Keep your existing constants (optional, for clarity)
-const TOKEN_KEY = "auth_token";
-const USER_ID_KEY = "user_id";
-
 /**
  * NOTE:
  * We are no longer reading/writing TOKEN_KEY and USER_ID_KEY directly.
  * Zustand persists under "teamup_session".
- *
- * If you need backward compatibility (existing users already have auth_token),
- * see the migration section below.
  */
 
 export const getToken = (): string | null => {
