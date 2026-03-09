@@ -48,6 +48,7 @@ const Teams: React.FC = () => {
         } else {
           setTeams([]);
         }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         console.error("Failed to fetch teams:", err);
         setError(err?.response?.data?.message || "Failed to load teams.");

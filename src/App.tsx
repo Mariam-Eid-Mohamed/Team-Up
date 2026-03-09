@@ -129,7 +129,7 @@ export default function App() {
           element: <TeamsPage />,
         },
         {
-          path: "id/profile",
+          path: ":id/profile",
           element: <StudentProfile />,
         }
         // Add more student pages here
