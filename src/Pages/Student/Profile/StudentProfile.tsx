@@ -3,6 +3,7 @@ import { Link as RouterLink, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getStudentProfile } from "../../../Services/profile Endpoints/Endpoints"; 
 import { type StudentProfileData } from "../../../interfaces/ProfileInterfaces/profileInterface"; 
+import profilePlaceholder from "../../../assets/images/profile-placeholder.png";
 
 export function StudentProfile() {
   const { id } = useParams<{ id: string }>();
@@ -57,8 +58,8 @@ export function StudentProfile() {
               <img
                 src={
                   profile.profile_picture.storagePath
-                    ? `${profile.profile_picture.storagePath}`
-                    : "https://dennymfg.com/cdn/shop/products/ckgrayHigh_600x.jpg?v=1619109728"
+                    ? profile.profile_picture.storagePath
+                    : profilePlaceholder
                 }
                 alt="profile-pic"
                 className="h-full w-full object-cover"

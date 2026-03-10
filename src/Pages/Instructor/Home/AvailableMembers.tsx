@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 import { ArrowLeft, Search, UserPlus, X } from 'lucide-react';
 import { Pagination } from '../../../components/Pagination/Pagination';
 
@@ -117,30 +117,33 @@ const AvailableMembers: React.FC = () => {
           {Array.from({ length: 9 }).map((_, i) => {
             const studentName = `Student Name ${i + 1}`; // Demo name
             return (
-              <div
-                key={i}
-                className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 flex items-center justify-between gap-3 shadow-sm hover:border-[#2D7A78]/30 transition-colors"
-              >
-                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex-shrink-0" />
-                  <div className="min-w-0">
-                    <h4 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
-                      {studentName}
-                    </h4>
-                    <p className="text-xs text-gray-400 truncate">
-                      student@university.edu
-                    </p>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => handleInviteClick(studentName, i)}
-                  className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[#2D7A78]/10 text-[#2D7A78] hover:bg-[#2D7A78] hover:text-white rounded-lg transition-all text-xs font-semibold group"
+              <Link to={`/student/69a6e49005a6c3903710726b/profile`} key={i}>
+                <div
+                  key={i}
+                  className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 flex items-center justify-between gap-3 shadow-sm hover:border-[#2D7A78]/30 transition-colors"
                 >
-                  <UserPlus size={14} className="group-hover:scale-110 transition-transform" />
-                  <span className="hidden xs:inline">Invite</span>
-                </button>
-              </div>
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex-shrink-0" />
+                    <div className="min-w-0">
+                      <h4 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
+                        {studentName}
+                      </h4>
+                      <p className="text-xs text-gray-400 truncate">
+                        student@university.edu
+                      </p>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => handleInviteClick(studentName, i)}
+                    className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[#2D7A78]/10 text-[#2D7A78] hover:bg-[#2D7A78] hover:text-white rounded-lg transition-all text-xs font-semibold group"
+                  >
+                    <UserPlus size={14} className="group-hover:scale-110 transition-transform" />
+                    <span className="hidden xs:inline">Invite</span>
+                  </button>
+                </div>
+              </Link>
+
             );
           })}
         </div>
