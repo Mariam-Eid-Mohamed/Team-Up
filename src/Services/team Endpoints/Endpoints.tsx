@@ -49,8 +49,24 @@ export const lockTeam = async (teamId: string, token: string) => {
     },
   );
 };
+
 export const getStudentTeams = async (studentId: string, token: string) => {
   return Api.get(`${API_BASE}/students/${studentId}/teams`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+};
+
+// Send a team invitation from leader to a specific student
+export const sendTeamInvitation = async (
+  teamId: string,
+  studentId: string,
+  token: string,
+) => {
+  return Api.post(
+    `${API_BASE}/${teamId}/invitations`,
+    { studentId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
 };
