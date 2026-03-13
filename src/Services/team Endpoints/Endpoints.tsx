@@ -70,3 +70,34 @@ export const sendTeamInvitation = async (
     },
   );
 };
+export const respondToTeamInvitation = async (
+  invitationId: string,
+  action: "accept" | "reject",
+  token: string,
+) => {
+  return Api.patch(
+    `/teams/invitations/${invitationId}/respond`,
+    { action },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};
+
+export const respondToJoinRequest = async (
+  joinRequestId: string,
+  action: "accept" | "reject",
+  token: string,
+) => {
+  return Api.patch(
+    `/teams/join-requests/${joinRequestId}/respond`,
+    { action },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};

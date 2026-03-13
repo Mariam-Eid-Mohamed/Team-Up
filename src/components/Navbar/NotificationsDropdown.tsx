@@ -176,12 +176,7 @@ export default function NotificationsDropdown({
               <EmptyRow text="No class invitations" />
             ) : (
               grouped.invitations.map((n) => (
-                <InviteRow
-                  key={(n as any)._id}
-                  n={n}
-                  onAccept={() => onAcceptInvite(n)}
-                  onReject={() => onRejectInvite(n)}
-                />
+                <InviteRow key={(n as any)._id} n={n} />
               ))
             )}
           </AccordionSection>
