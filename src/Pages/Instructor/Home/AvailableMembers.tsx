@@ -27,7 +27,9 @@ const ConfirmationModal = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in fade-in zoom-in duration-200">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-gray-900">Confirm Invitation</h3>
+          <h3 className="text-lg font-bold text-gray-900">
+            Confirm Invitation
+          </h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 cursor-pointer"
@@ -81,19 +83,14 @@ const AvailableMembers: React.FC = () => {
 
   const token = useSessionStore((state) => state.token);
 
-  const {
-    courseworkId,
-    teamId,
-    className,
-    classCode,
-    courseworkName,
-  } = (location.state || {}) as {
-    courseworkId?: string;
-    teamId?: string;
-    className?: string;
-    classCode?: string;
-    courseworkName?: string;
-  };
+  const { courseworkId, teamId, className, classCode, courseworkName } =
+    (location.state || {}) as {
+      courseworkId?: string;
+      teamId: string;
+      className?: string;
+      classCode?: string;
+      courseworkName?: string;
+    };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<{
@@ -125,6 +122,7 @@ const AvailableMembers: React.FC = () => {
       try {
         const response = await getAvailableStudentsForCoursework(
           courseworkId,
+          teamId,
           token,
         );
 
@@ -170,9 +168,15 @@ const AvailableMembers: React.FC = () => {
 
     try {
       setIsSendingInvite(true);
-      const response = await sendTeamInvitation(teamId, selectedStudent.id, token);
+      const response = await sendTeamInvitation(
+        teamId,
+        selectedStudent.id,
+        token,
+      );
       if (response.data?.success) {
-        toast.success(response.data.message || "Team invitation sent successfully.");
+        toast.success(
+          response.data.message || "Team invitation sent successfully.",
+        );
         setInvitedStudentIds(
           (prev) => new Set([...Array.from(prev), selectedStudent.id]),
         );
@@ -196,7 +200,8 @@ const AvailableMembers: React.FC = () => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return students;
     return students.filter((student) => {
-      const fullName = `${student.first_name} ${student.last_name}`.toLowerCase();
+      const fullName =
+        `${student.first_name} ${student.last_name}`.toLowerCase();
       const email = student.email.toLowerCase();
       return fullName.includes(query) || email.includes(query);
     });
