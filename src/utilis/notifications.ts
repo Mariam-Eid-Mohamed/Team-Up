@@ -3,23 +3,29 @@ export type NotificationType =
   | "MESSAGE"
   | "ANNOUNCEMENT"
   | "INVITATION_STATUS"
-  | "COURSEWORK";
+  | "COURSEWORK"
+  | "TEAM_INVITATION"
+  | "TEAM_JOIN_REQUEST"
+  | "TEAM_REQUEST_ACCEPTED"
+  | "TEAM_REQUEST_REJECTED";
+
+export interface NotificationItem {
+  _id: string;
+  userId: string | NotificationUser;
+  type: NotificationType | string;
+  referenceId?: string;
+  message: string;
+  courseCode?: string | null;
+  classColor?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface NotificationUser {
   _id: string;
   first_name: string;
   last_name: string;
   email: string;
-}
-
-export interface NotificationItem {
-  _id: string;
-  userId: NotificationUser; // recipient (current user)
-  type: NotificationType;
-  referenceId?: string; // points to announcement/coursework/invitation...
-  message: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface GroupedNotifications {
