@@ -53,3 +53,54 @@ export const formatNotifTime = (iso: string) => {
   const d = new Date(iso);
   return d.toLocaleString(); // you can customize later
 };
+export const getNotificationType = (n: NotificationItem) =>
+  String(n.type || "").toUpperCase();
+
+export const isTeamInvitation = (n: NotificationItem) =>
+  getNotificationType(n) === "TEAM_INVITATION";
+
+export const isTeamJoinRequest = (n: NotificationItem) =>
+  getNotificationType(n) === "TEAM_JOIN_REQUEST";
+
+export const isTeamRequestAccepted = (n: NotificationItem) =>
+  getNotificationType(n) === "TEAM_REQUEST_ACCEPTED";
+
+export const isTeamRequestRejected = (n: NotificationItem) =>
+  getNotificationType(n) === "TEAM_REQUEST_REJECTED";
+
+export const isTeamInvitationStatus = (n: NotificationItem) =>
+  getNotificationType(n) === "INVITATION_STATUS";
+
+export const isTeamNotification = (n: NotificationItem) => {
+  const t = getNotificationType(n);
+  return (
+    t === "TEAM_INVITATION" ||
+    t === "TEAM_JOIN_REQUEST" ||
+    t === "TEAM_REQUEST_ACCEPTED" ||
+    t === "TEAM_REQUEST_REJECTED" ||
+    t === "INVITATION_STATUS"
+  );
+};
+
+export const isTeamActionable = (n: NotificationItem) => {
+  const t = getNotificationType(n);
+  return t === "TEAM_INVITATION" || t === "TEAM_JOIN_REQUEST";
+};
+
+export const getTeamPrimaryActionLabel = (n: NotificationItem) => {
+  if (isTeamJoinRequest(n)) return "Approve";
+  if (isTeamInvitation(n)) return "Join";
+  return "";
+};
+
+export const getTeamSuccessText = (n: NotificationItem) => {
+  if (isTeamRequestAccepted(n)) return "Request approved";
+  if (isTeamInvitationStatus(n)) return "Invitation accepted";
+  return "Accepted";
+};
+
+export const getTeamRejectedText = (n: NotificationItem) => {
+  if (isTeamRequestRejected(n)) return "Request rejected";
+  if (isTeamInvitationStatus(n)) return "Invitation declined";
+  return "Rejected";
+};

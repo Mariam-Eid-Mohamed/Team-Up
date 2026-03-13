@@ -5,7 +5,13 @@ import { getToken } from "@/utilis/token";
 import type { NotificationItem } from "@/utilis/notifications";
 import { formatNotifTime } from "@/utilis/notifications";
 import { respondToInvitation } from "@/Services/class Endpoints/Endpoints";
+import {
+  respondToJoinRequest,
+  respondToTeamInvitation,
+} from "@/Services/team Endpoints/Endpoints";
 
+import { isTeamInvitation, isTeamJoinRequest } from "@/utilis/notifications";
+import TeamRow from "../Notifications/TeamRow";
 type Grouped = {
   invitations: NotificationItem[];
   coursework: NotificationItem[];
@@ -24,11 +30,26 @@ function groupByType(items: NotificationItem[]): Grouped {
   };
 
   for (const n of items) {
-    const t = String((n as any).type || "").toUpperCase();
+    const t = String(n.type || "").toUpperCase();
+    const msg = String(n.message || "").toLowerCase();
 
-    if (t.includes("TEAM")) {
+    if (
+      t === "TEAM_INVITATION" ||
+      t === "TEAM_JOIN_REQUEST" ||
+      t === "TEAM_REQUEST_ACCEPTED" ||
+      t === "TEAM_REQUEST_REJECTED"
+    ) {
       grouped.teams.push(n);
-    } else if (t.includes("INVIT")) {
+    } else if (t === "INVITATION_STATUS") {
+      if (msg.includes("team")) grouped.teams.push(n);
+      else grouped.invitations.push(n);
+    } else if (t === "MESSAGE") {
+      if (msg.includes("joined your team") || msg.includes("team")) {
+        grouped.teams.push(n);
+      } else {
+        grouped.chat.push(n);
+      }
+    } else if (t === "CLASS_INVITATION") {
       grouped.invitations.push(n);
     } else if (t === "COURSEWORK") {
       grouped.coursework.push(n);
@@ -62,7 +83,49 @@ export default function NotificationsDropdown({
     chat: false,
     teams: false,
   });
+  const removeNotificationLocally = (notificationId: string) => {
+    setAll((prev) => prev.filter((item) => item._id !== notificationId));
+  };
+  const onApproveTeam = async (n: NotificationItem) => {
+    const token = getToken();
+    if (!token || !n.referenceId) return;
 
+    try {
+      setLoading(true);
+
+      if (isTeamInvitation(n)) {
+        await respondToTeamInvitation(n.referenceId, "accept", token);
+      } else if (isTeamJoinRequest(n)) {
+        await respondToJoinRequest(n.referenceId, "accept", token);
+      }
+      // remove the pending notif immediately
+      removeNotificationLocally(n._id);
+
+      await fetchNotifs();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRejectTeam = async (n: NotificationItem) => {
+    const token = getToken();
+    if (!token || !n.referenceId) return;
+
+    try {
+      setLoading(true);
+
+      if (isTeamInvitation(n)) {
+        await respondToTeamInvitation(n.referenceId, "reject", token);
+      } else if (isTeamJoinRequest(n)) {
+        await respondToJoinRequest(n.referenceId, "reject", token);
+      }
+      // remove the pending notif immediately
+      removeNotificationLocally(n._id);
+      await fetchNotifs();
+    } finally {
+      setLoading(false);
+    }
+  };
   // close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -85,15 +148,28 @@ export default function NotificationsDropdown({
 
   const fetchNotifs = async () => {
     const token = getToken();
-    if (!token) return;
+    if (!token) {
+      console.log("No token found");
+      return;
+    }
 
     try {
       setLoading(true);
+      console.log("Fetching notifications with token:", token);
+
       const res = await getNotifications(token);
-      if (res.data?.success && Array.isArray(res.data.data))
+      console.log("Notifications response:", res);
+
+      if (res.data?.success && Array.isArray(res.data.data)) {
         setAll(res.data.data);
-      else setAll([]);
-    } catch {
+      } else {
+        console.log("Notifications response shape unexpected:", res.data);
+        setAll([]);
+      }
+    } catch (error: any) {
+      console.error("Fetch notifications failed:", error);
+      console.error("Response data:", error?.response?.data);
+      console.error("Status:", error?.response?.status);
       setAll([]);
     } finally {
       setLoading(false);
@@ -122,7 +198,7 @@ export default function NotificationsDropdown({
     } finally {
       setLoading(false);
     }
-    await fetchNotifs();
+
     // 2) refresh classes list on homepage (so class appears immediately)
 
     onJoinedClass?.();
@@ -144,14 +220,17 @@ export default function NotificationsDropdown({
     } finally {
       setLoading(false);
     }
-    await fetchNotifs();
   };
 
   return (
     <div className="relative" ref={dropdownRef}>
       <div
         className="relative cursor-pointer p-1"
-        onClick={() => setOpen((p) => !p)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setOpen((p) => !p);
+        }}
       >
         <Bell
           className={`w-5 h-5 transition-transform ${open ? "scale-110" : ""}`}
@@ -176,7 +255,12 @@ export default function NotificationsDropdown({
               <EmptyRow text="No class invitations" />
             ) : (
               grouped.invitations.map((n) => (
-                <InviteRow key={(n as any)._id} n={n} />
+                <InviteRow
+                  key={(n as any)._id}
+                  n={n}
+                  onAccept={() => onAcceptInvite(n)}
+                  onReject={() => onRejectInvite(n)}
+                />
               ))
             )}
           </AccordionSection>
@@ -243,8 +327,8 @@ export default function NotificationsDropdown({
                   <TeamRow
                     key={(n as any)._id}
                     n={n}
-                    onApprove={() => onAcceptInvite(n)} // You can rename these handlers or create specific ones for teams
-                    onReject={() => onRejectInvite(n)}
+                    onApprove={() => onApproveTeam(n)}
+                    onReject={() => onRejectTeam(n)}
                   />
                 ))}
               </div>
