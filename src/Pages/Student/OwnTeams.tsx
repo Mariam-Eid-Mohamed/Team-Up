@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Search, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TeamCard } from "../../components/Teams/TeamCard";
@@ -29,6 +29,8 @@ const Teams: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const filterRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const fetchTeams = async () => {
       if (!token || !userId) {
@@ -48,7 +50,6 @@ const Teams: React.FC = () => {
         } else {
           setTeams([]);
         }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         console.error("Failed to fetch teams:", err);
         setError(err?.response?.data?.message || "Failed to load teams.");
@@ -61,6 +62,17 @@ const Teams: React.FC = () => {
     fetchTeams();
   }, [token, userId]);
 
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setIsFilterOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   const classOptions = useMemo(() => {
     const uniqueCodes = Array.from(
       new Set(teams.map((team) => team.classCode)),
@@ -70,10 +82,12 @@ const Teams: React.FC = () => {
 
   const filteredTeams = useMemo(() => {
     return teams.filter((team) => {
+      const q = searchQuery.toLowerCase().trim();
+
       const matchesSearch =
-        team.classCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        team.teamName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        team.courseworkName.toLowerCase().includes(searchQuery.toLowerCase());
+        team.classCode.toLowerCase().includes(q) ||
+        team.teamName.toLowerCase().includes(q) ||
+        team.courseworkName.toLowerCase().includes(q);
 
       const matchesClass =
         selectedClass === "All Classes" || team.classCode === selectedClass;
@@ -102,48 +116,55 @@ const Teams: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50/50 px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8">
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Teams</h1>
+        <div className="flex items-center justify-between gap-3 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+            Teams
+          </h1>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center mb-6 sm:mb-8">
           <div className="relative flex-1">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              size={20}
+              size={18}
             />
             <input
               type="text"
               placeholder="Search by team name or coursework..."
-              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all shadow-sm"
+              className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <div className="relative min-w-[180px]">
+          <div
+            ref={filterRef}
+            className="relative w-full md:w-[200px] shrink-0"
+          >
             <button
+              type="button"
               onClick={() => setIsFilterOpen((prev) => !prev)}
-              className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-[#1F6B6B] text-white rounded-lg font-medium hover:bg-[#164e4e] transition-colors shadow-sm"
+              className="w-full flex items-center justify-between gap-3 px-4 py-2.5 sm:py-3 bg-[#1F6B6B] text-white rounded-lg font-medium hover:bg-[#164e4e] transition-colors shadow-sm text-sm sm:text-base"
             >
-              {selectedClass}
+              <span className="truncate">{selectedClass}</span>
               <ChevronDown size={18} />
             </button>
 
             {isFilterOpen && (
-              <div className="absolute right-0 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
+              <div className="absolute right-0 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden max-h-60 overflow-y-auto">
                 {classOptions.map((option) => (
                   <button
                     key={option}
+                    type="button"
                     onClick={() => {
                       setSelectedClass(option);
                       setIsFilterOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition"
                   >
-                    {option}
+                    <span className="block truncate">{option}</span>
                   </button>
                 ))}
               </div>
@@ -151,14 +172,16 @@ const Teams: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-4 ">
+        <div className="space-y-3 sm:space-y-4">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-              <p className="text-lg font-medium">Loading teams...</p>
+            <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-gray-500">
+              <p className="text-base sm:text-lg font-medium">
+                Loading teams...
+              </p>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center py-20 text-red-500">
-              <p className="text-lg font-medium">{error}</p>
+            <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-red-500 text-center px-4">
+              <p className="text-base sm:text-lg font-medium">{error}</p>
             </div>
           ) : paginatedTeams.length > 0 ? (
             paginatedTeams.map((team, index) => (
@@ -177,16 +200,17 @@ const Teams: React.FC = () => {
               />
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-              <p className="text-lg font-medium">No teams found</p>
+            <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-gray-500 text-center px-4">
+              <p className="text-base sm:text-lg font-medium">No teams found</p>
               <p className="text-sm">Try adjusting your search or filters.</p>
             </div>
           )}
         </div>
 
-        {!loading && !error && filteredTeams.length > 1 && (
-          <div className="mt-12 flex items-center justify-center gap-2 text-sm font-medium">
+        {!loading && !error && totalPages > 1 && (
+          <div className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center gap-2 text-sm font-medium">
             <button
+              type="button"
               onClick={goToPreviousPage}
               disabled={currentPage === 1}
               className={`flex items-center px-2 py-1 ${
@@ -198,21 +222,27 @@ const Teams: React.FC = () => {
               <ChevronLeft size={16} /> Previous
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${
-                  currentPage === page
-                    ? "bg-[#1F6B6B] text-white"
-                    : "text-gray-500 hover:bg-gray-200"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-8 h-8 rounded-md flex items-center justify-center transition-colors ${
+                      currentPage === page
+                        ? "bg-[#1F6B6B] text-white"
+                        : "text-gray-500 hover:bg-gray-200"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ),
+              )}
+            </div>
 
             <button
+              type="button"
               onClick={goToNextPage}
               disabled={currentPage === totalPages || totalPages === 0}
               className={`flex items-center px-2 py-1 ${
