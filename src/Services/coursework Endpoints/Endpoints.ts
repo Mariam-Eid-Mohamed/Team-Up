@@ -37,11 +37,15 @@ export const deleteCoursework = (courseworkId: string, token: string) => {
 // Get available students for a coursework (students in the class who are not in any team yet)
 export const getAvailableStudentsForCoursework = (
   courseworkId: string,
+  teamId: string,
   token: string,
 ) => {
-  return Api.get(`${API_BASE}/${courseworkId}/available-students`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  return Api.get(
+    `${API_BASE}/courseworks/${courseworkId}/available-students/${teamId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 };
