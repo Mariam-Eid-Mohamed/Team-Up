@@ -83,7 +83,7 @@ export function StudentProfile() {
                 <button className="w-full sm:w-auto px-4 py-2 bg-[#1F6B6B] text-sm text-white rounded-lg font-medium hover:bg-[#164e4e] transition-colors shadow-sm cursor-pointer">
                   Message
                 </button>
-                {profile.user_id === localStorage.getItem("user_id") && (
+                {profile.user_id === id && (
                   <button className="w-full sm:w-auto px-4 py-2 border text-[#1F6B6B] border-[#1F6B6B] rounded-lg cursor-pointer hover:bg-[#1F6B6B] hover:text-white transition-colors text-sm">
                     Edit Profile
                   </button>
