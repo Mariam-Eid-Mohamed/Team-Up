@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, Search, UserPlus, RefreshCw, ShieldCheck, Loader2 } from 'lucide-react';
+import { ArrowLeft, Search, UserPlus, RefreshCw, ShieldCheck, Loader2, UserMinus } from 'lucide-react';
 import { Pagination } from '../../../components/Pagination/Pagination';
 import { getToken } from '@/utilis/token';
 import { getClassMembers, assignClassAdmin } from '@/Services/class Endpoints/Endpoints';
 import toast from 'react-hot-toast';
 import { useSessionStore } from '../../../store/sessionStore';
+import RemoveMemberModal from '@/components/RemoveMemberModal/RemoveMemberModal';
 
 export interface ClassMember {
   _id: string;
@@ -48,6 +49,23 @@ const ClassMembers: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+
+  // 1. Add these new states
+const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+const [selectedStudent, setSelectedStudent] = useState<ClassMember | null>(null);
+
+// 2. Function to open the modal
+const triggerRemoveModal = (student: ClassMember) => {
+  setSelectedStudent(student);
+  setIsRemoveModalOpen(true);
+};
+
+// 3. Function to close the modal
+const closeRemoveModal = () => {
+  setIsRemoveModalOpen(false);
+  setSelectedStudent(null);
+};
 
   const fetchMembers = useCallback(async (isRefresh = false) => {
     if (!classId) return;
@@ -301,7 +319,7 @@ const ClassMembers: React.FC = () => {
               {paginatedStudents.map((member) => (
                 <div
                   key={member._id}
-                  className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 flex items-center gap-3 sm:gap-4 shadow-sm"
+                  className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 flex items-center gap-3 sm:gap-4 group shadow-sm"
                 >
                   <div
                     className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 flex items-center justify-center font-bold uppercase border border-gray-100"
@@ -315,7 +333,19 @@ const ClassMembers: React.FC = () => {
                     </h4>
                     <p className="text-xs text-gray-400 truncate">{member.email}</p>
                   </div>
+                  {/* REMOVE BUTTON: Only visible to instructors */}
+     {/* REMOVE BUTTON: Always visible but slightly faded until hover */}
+      {isInstructor && (
+        <button
+          onClick={() => triggerRemoveModal(member)}
+          className="p-2.5 text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors flex-shrink-0 bg-gray-50/50 sm:bg-transparent group-hover:bg-red-50 group-hover:text-red-600"
+          title="Remove student"
+        >
+          <UserMinus size={18} />
+        </button>
+      )}
                 </div>
+                
               ))}
             </div>
             {filteredStudents.length === 0 && (
@@ -330,6 +360,16 @@ const ClassMembers: React.FC = () => {
           </>
         )}
       </div>
+      <RemoveMemberModal
+        isOpen={isRemoveModalOpen}
+        onClose={closeRemoveModal}
+        onConfirm={() => {
+          console.log("UI Logic: Student removed", selectedStudent?._id);
+          // Your actual API call will go here later
+          closeRemoveModal();
+        }}
+        memberName={selectedStudent ? `${selectedStudent.first_name} ${selectedStudent.last_name}` : ""}
+      />
     </div>
   );
 };
