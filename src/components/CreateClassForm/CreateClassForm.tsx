@@ -309,7 +309,7 @@ export function CreateClassForm({
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="px-4 py-2 bg-[#58a8a7] text-white rounded-lg flex items-center gap-1 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-[#1B4D49] hover:bg-[#2D7A74] text-white rounded-lg flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save size={16} />
             {isSubmitting ? "Creating..." : "Create Class"}
