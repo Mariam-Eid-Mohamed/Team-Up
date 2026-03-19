@@ -1,18 +1,30 @@
 import { useParams, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 
 import CourseHeader from "@/components/ClassStream/CourseHeader";
 import SectionDropdown from "@/components/ClassStream/SectionDropdown";
 import ActionButtons from "@/components/ClassStream/ActionButtons";
 
 import NoSectionsImg from "@/assets/Images/no-posts-yet-removebg-preview 1.png";
+import { getToken } from "@/utilis/token";
+import {
+  getAllSectionsInClass,
+  getSectionMembers,
+  type Section,
+  type SectionMember,
+} from "@/Services/section Endpoints/Endpoints";
 
 export default function SectionStream() {
   const { sectionId, id } = useParams();
   const location = useLocation();
 
   const [showInstructors, setShowInstructors] = useState(true);
+  const [members, setMembers] = useState<SectionMember[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+  const [membersError, setMembersError] = useState<string | null>(null);
+  const [sectionName, setSectionName] = useState<string | null>(null);
+  const [loadingSectionName, setLoadingSectionName] = useState(false);
 
   const role: "admin" | "instructor" | "student" =
     location.pathname.startsWith("/instructor")
@@ -22,6 +34,58 @@ export default function SectionStream() {
       : "admin";
 
   const hasSection = !!sectionId;
+  const classId = id;
+
+  useEffect(() => {
+    if (!hasSection || !classId || !sectionId) return;
+
+    const token = getToken();
+    if (!token) {
+      setMembersError("Authentication required");
+      setMembers([]);
+      setSectionName(null);
+      return;
+    }
+
+    const fetchMembersAndName = async () => {
+      setLoadingMembers(true);
+      setLoadingSectionName(true);
+      setMembersError(null);
+      try {
+        const [membersRes, sectionsRes] = await Promise.all([
+          getSectionMembers(classId, sectionId, token),
+          getAllSectionsInClass(classId, token),
+        ]);
+
+        setMembers(
+          Array.isArray(membersRes.data?.data) ? membersRes.data.data : [],
+        );
+
+        const sections: Section[] = Array.isArray(sectionsRes.data?.data)
+          ? sectionsRes.data.data
+          : [];
+        const current = sections.find((s) => s._id === sectionId);
+        setSectionName(current?.section_name || null);
+      } catch (err: any) {
+        setMembersError(
+          err?.response?.data?.message ||
+            "Failed to fetch section members. Please try again.",
+        );
+        setMembers([]);
+        setSectionName(null);
+      } finally {
+        setLoadingMembers(false);
+        setLoadingSectionName(false);
+      }
+    };
+
+    fetchMembersAndName();
+  }, [hasSection, classId, sectionId]);
+
+  const instructors = useMemo(
+    () => members.filter((m) => m.role === "Instructor"),
+    [members],
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -39,7 +103,7 @@ export default function SectionStream() {
         <>
           {/* SECTION TITLE */}
           <h2 className="mt-6 text-lg font-semibold text-gray-900">
-            Section {sectionId}
+            {loadingSectionName ? "Loading section..." : sectionName || "Section"}
           </h2>
 
           {/* STREAM CONTENT */}
@@ -71,17 +135,35 @@ export default function SectionStream() {
                 }`}
               >
                 <div className="space-y-3 pr-2">
-                  {[1, 2, 3].map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 border-b pb-2"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-gray-300" />
-                      <span className="text-sm text-gray-800">
-                        Anas Mohamed
-                      </span>
+                  {loadingMembers ? (
+                    <div className="flex items-center justify-center py-6 text-sm text-gray-500">
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Loading members...
                     </div>
-                  ))}
+                  ) : membersError ? (
+                    <div className="text-sm text-red-600">{membersError}</div>
+                  ) : instructors.length === 0 ? (
+                    <div className="text-sm text-gray-500">
+                      No instructors in this section yet.
+                    </div>
+                  ) : (
+                    instructors.map((inst) => (
+                      <div
+                        key={inst._id}
+                        className="flex items-center gap-3 border-b pb-2 last:border-b-0 last:pb-0"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-gray-300" />
+                        <div className="min-w-0">
+                          <div className="text-sm text-gray-800 font-medium truncate">
+                            {inst.first_name} {inst.last_name}
+                          </div>
+                          <div className="text-xs text-gray-500 truncate">
+                            {inst.email}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>

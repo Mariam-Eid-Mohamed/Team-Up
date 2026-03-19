@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { ArrowLeft, Search, UserPlus, X, Loader2 } from "lucide-react";
 import { Pagination } from "../../../components/Pagination/Pagination";
 import { useSessionStore } from "../../../store/sessionStore";
@@ -72,13 +72,13 @@ type AvailableStudent = {
     storagePath: string;
     uploadedAt: string;
   } | null;
+  invitation_status: "PENDING" | "REJECTED" | null;
 };
 
 const PAGE_SIZE = 9;
 
 const AvailableMembers: React.FC = () => {
   const navigate = useNavigate();
-  const { id: classId } = useParams<{ id: string }>();
   const location = useLocation();
 
   const token = useSessionStore((state) => state.token);
@@ -99,9 +99,6 @@ const AvailableMembers: React.FC = () => {
   } | null>(null);
 
   const [students, setStudents] = useState<AvailableStudent[]>([]);
-  const [invitedStudentIds, setInvitedStudentIds] = useState<Set<string>>(
-    () => new Set(),
-  );
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -110,8 +107,8 @@ const AvailableMembers: React.FC = () => {
   const [isSendingInvite, setIsSendingInvite] = useState(false);
 
   useEffect(() => {
-    if (!courseworkId || !token) {
-      setError("Missing coursework information or authentication.");
+    if (!courseworkId || !teamId || !token) {
+      setError("Missing team/coursework information or authentication.");
       return;
     }
 
@@ -146,7 +143,7 @@ const AvailableMembers: React.FC = () => {
     };
 
     fetchAvailableStudents();
-  }, [courseworkId, token]);
+  }, [courseworkId, teamId, token]);
 
   const handleInviteClick = (student: AvailableStudent) => {
     if (!teamId) {
@@ -177,8 +174,12 @@ const AvailableMembers: React.FC = () => {
         toast.success(
           response.data.message || "Team invitation sent successfully.",
         );
-        setInvitedStudentIds(
-          (prev) => new Set([...Array.from(prev), selectedStudent.id]),
+        setStudents((prev) =>
+          prev.map((student) =>
+            student.user_id === selectedStudent.id
+              ? { ...student, invitation_status: "PENDING" }
+              : student,
+          ),
         );
       } else {
         toast.error(
@@ -289,7 +290,7 @@ const AvailableMembers: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
               {paginatedStudents.map((student) => {
                 const fullName = `${student.first_name} ${student.last_name}`;
-                const isInvited = invitedStudentIds.has(student.user_id);
+                const isInviteDisabled = student.invitation_status === "PENDING";
 
                 return (
                   <Link
@@ -313,13 +314,13 @@ const AvailableMembers: React.FC = () => {
                         type="button"
                         onClick={(e) => {
                           e.preventDefault();
-                          if (!isInvited) {
+                          if (!isInviteDisabled) {
                             handleInviteClick(student);
                           }
                         }}
-                        disabled={isInvited}
+                        disabled={isInviteDisabled}
                         className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs font-semibold group cursor-pointer disabled:opacity-60 ${
-                          isInvited
+                          isInviteDisabled
                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                             : "bg-[#2D7A78]/10 text-[#2D7A78] hover:bg-[#2D7A78] hover:text-white"
                         }`}
@@ -329,7 +330,7 @@ const AvailableMembers: React.FC = () => {
                           className="group-hover:scale-110 transition-transform"
                         />
                         <span className="hidden xs:inline">
-                          {isInvited ? "Invited" : "Invite"}
+                          {isInviteDisabled ? "Pending" : "Invite"}
                         </span>
                       </button>
                     </div>
