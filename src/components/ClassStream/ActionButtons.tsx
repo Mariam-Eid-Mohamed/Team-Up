@@ -7,6 +7,7 @@ import { createAnnouncement } from "@/Services/announcement Endpoints/Endpoints"
 import { getToken } from "@/utilis/token";
 import JoinSectionModal from "../JoinSectionModal/JoinSectionModal";
 import LeaveSectionModal from "../LeaveSectionModal/LeaveSectionModal";
+import CreateSectionModal from "../CreateSectionModal/CreateSectionModal";
 
 interface ActionButtonsProps {
   role: "admin" | "instructor" | "student";
@@ -26,6 +27,8 @@ export default function ActionButtons({
   const [open, setOpen] = useState(false);
   const [isAnnounceOpen, setIsAnnounceOpen] = useState(false);
   const [isJoinSectionOpen, setIsJoinSectionOpen] = useState(false);
+  const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   // NEW STATE
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
@@ -96,6 +99,17 @@ export default function ActionButtons({
           <span>Class Details</span>
         </button>
 
+        {/* Create Section — Instructor/Admin only */}
+{(role === "instructor" || role === "admin") && (
+  <button
+    onClick={() => setIsCreateSectionOpen(true)}
+    className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white hover:bg-purple-700 text-sm"
+  >
+    <UserPlus size={16} />
+    <span className=" sm:inline">Create Section</span>
+  </button>
+)}
+
 {/* 3. CONDITIONAL BUTTON: Join vs Leave */}
         {sectionId ? (
         <button
@@ -116,7 +130,12 @@ export default function ActionButtons({
         )}
       </div>
 
-
+<CreateSectionModal
+  isOpen={isCreateSectionOpen} // Changed from isCreateOpen
+  onClose={() => setIsCreateSectionOpen(false)} // Changed from setIsCreateOpen
+  classId={id!}
+  mode="create"
+/>
 {/* NEW MODAL COMPONENT */}
       <LeaveSectionModal
         isOpen={isLeaveModalOpen}

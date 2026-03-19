@@ -25,6 +25,8 @@ export default function SectionStream() {
   const [membersError, setMembersError] = useState<string | null>(null);
   const [sectionName, setSectionName] = useState<string | null>(null);
   const [loadingSectionName, setLoadingSectionName] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+const [selectedSection, setSelectedSection] = useState<any>(null);
 
   const role: "admin" | "instructor" | "student" =
     location.pathname.startsWith("/instructor")

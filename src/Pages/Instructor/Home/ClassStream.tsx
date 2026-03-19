@@ -95,6 +95,7 @@ export default function ClassStream() {
           <div className="text-sm text-gray-600">No posts yet.</div>
         )}
       </div>
+
     </div>
   );
 }
