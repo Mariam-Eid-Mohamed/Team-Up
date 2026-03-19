@@ -6,6 +6,7 @@ import {
   UsersRound,
   Info,
   Settings,
+  LogOut,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import React from "react";
@@ -109,6 +110,11 @@ export default function Sidebar() {
           icon={<Settings size={20} />}
           label="Settings"
           to="/settings"
+        />
+         <SidebarItem
+          icon={<LogOut size={20} />}
+          label="Log Out"
+          to="/login"
         />
       </div>
     </aside>
