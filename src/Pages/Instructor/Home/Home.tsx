@@ -53,7 +53,7 @@ export function InstructorDashboard() {
             description: classItem.course_plan || "",
             year: classItem.year?.toString() || "",
             studentCount: classItem.studentCount || 0,
-            teamsCount: classItem.teamsCount || 0,
+            memberCount: classItem.memberCount || 0,
             instructorCount: classItem.instructorCount || 1,
             color: classItem.class_color || "bg-blue-500", // Default color if not provided
           }),
@@ -78,7 +78,6 @@ export function InstructorDashboard() {
     description: "",
     year: "",
     studentCount: 0,
-    teamsCount: 0,
     instructorCount: 1,
     memberCount:0,
     color: "bg-blue-500",
