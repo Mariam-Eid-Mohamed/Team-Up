@@ -59,11 +59,15 @@ export function ClassCard({ classData, onClick }: ClassCardProps) {
       <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-500 mb-3">
         <div className="flex items-center gap-1">
           <UserCheck size={14} />
-          <span>{classData.studentsCount} students</span>
+          <span>{classData.studentCount} students</span>
+        </div>
+         <div className="flex items-center gap-1">
+          <UserCheck size={14} />
+          <span>{classData.instructorCount} instructors</span>
         </div>
         <div className="flex items-center gap-1">
           <Users size={14} />
-          <span>{classData.teamsCount} teams</span>
+          <span>{classData.memberCount} members</span>
         </div>
       </div>
 

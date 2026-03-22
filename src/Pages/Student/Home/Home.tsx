@@ -42,9 +42,9 @@ export function StudentDashboard() {
           code: classItem.course_code || "",
           description: classItem.course_plan || "",
           year: classItem.year?.toString() || "",
-          studentsCount: classItem.studentsCount || 0,
-          teamsCount: classItem.teamsCount || 0,
-          instructorsCount: classItem.instructorsCount || 1,
+          studentCount: classItem.studentCount || 0,
+          memberCount: classItem.memberCount || 0,
+          instructorCount: classItem.instructorCount || 1,
           color: classItem.class_color || "bg-blue-500", // Default color if not provided
         }));
         setClasses(mappedClasses);
