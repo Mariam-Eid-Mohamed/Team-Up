@@ -111,7 +111,7 @@ const navigate=useNavigate();
         <div className="flex gap-4 mt-8">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border-2 border-[#4E8D8A] text-[#4E8D8A] font-bold rounded-xl hover:bg-teal-50 transition-colors"
+            className="flex-1 px-4 py-2 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>
@@ -119,7 +119,7 @@ const navigate=useNavigate();
           <button
             onClick={handleSubmit}
             className={`flex-1 px-4 py-2 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 ${
-              mode === "delete" ? "bg-red-500 hover:bg-red-600" : "bg-[#4E8D8A] hover:bg-[#3d6f6d]"
+              mode === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-[#4E8D8A] hover:bg-[#3d6f6d]"
             }`}
           >
             {mode === "create" && "Create"}

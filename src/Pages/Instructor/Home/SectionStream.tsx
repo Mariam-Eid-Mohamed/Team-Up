@@ -1,6 +1,6 @@
 import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, Pencil, Trash } from "lucide-react";
 
 import CourseHeader from "@/components/ClassStream/CourseHeader";
 import SectionDropdown from "@/components/ClassStream/SectionDropdown";
@@ -14,6 +14,7 @@ import {
   type Section,
   type SectionMember,
 } from "@/Services/section Endpoints/Endpoints";
+import CreateSectionModal from "@/components/CreateSectionModal/CreateSectionModal";
 
 export default function SectionStream() {
   const { sectionId, id } = useParams();
@@ -27,6 +28,8 @@ export default function SectionStream() {
   const [loadingSectionName, setLoadingSectionName] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 const [selectedSection, setSelectedSection] = useState<any>(null);
+const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "delete">("edit");
 
   const role: "admin" | "instructor" | "student" =
     location.pathname.startsWith("/instructor")
@@ -91,8 +94,34 @@ const [selectedSection, setSelectedSection] = useState<any>(null);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      {/* HEADER */}
-      <CourseHeader />
+      <div className="flex items-center justify-between">
+        <CourseHeader />
+
+        {/* Only show buttons if user is instructor and a section is actually selected */}
+        {role === "instructor" && hasSection && !loadingSectionName && (
+          <div className="flex gap-2 sm:gap-3">
+            <button
+              onClick={() => {
+                setModalMode("edit");
+                setIsModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-800 text-white text-sm transition-colors shadow-sm"
+            >
+              <Pencil size={16} /> <span className="hidden sm:inline">Edit</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setModalMode("delete");
+                setIsModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white text-sm transition-colors shadow-sm"
+            >
+              <Trash size={16} /> <span className="hidden sm:inline">Delete</span>
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* SECTION DROPDOWN + ACTIONS */}
       <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
@@ -103,10 +132,37 @@ const [selectedSection, setSelectedSection] = useState<any>(null);
       {/* ✅ IF SECTION SELECTED */}
       {hasSection ? (
         <>
-          {/* SECTION TITLE */}
-          <h2 className="mt-6 text-lg font-semibold text-gray-900">
-            {loadingSectionName ? "Loading section..." : sectionName || "Section"}
-          </h2>
+          {/* ✅ UPDATED SECTION TITLE WITH BUTTONS */}
+          <div className="mt-6 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">
+              {loadingSectionName ? "Loading section..." : sectionName || "Section"}
+            </h2>
+
+            {/* Only show if user is instructor and section is loaded */}
+            {/* {role === "instructor" && !loadingSectionName && sectionName && (
+              <div className="flex gap-2 sm:gap-3">
+                <button
+                  onClick={() => {
+                    setModalMode("edit");
+                    setIsModalOpen(true);
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-gray-700 hover:bg-gray-800 text-white text-sm transition-colors"
+                >
+                  <Pencil size={14} /> Edit
+                </button>
+
+                <button
+                  onClick={() => {
+                    setModalMode("delete");
+                    setIsModalOpen(true);
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white text-sm transition-colors"
+                >
+                  <Trash size={14} /> Delete
+                </button>
+              </div>
+            )} */}
+          </div>
 
           {/* STREAM CONTENT */}
           <div className="mt-6 space-y-6">
@@ -190,6 +246,17 @@ const [selectedSection, setSelectedSection] = useState<any>(null);
             </div>
 
           </div>
+          {/* ✅ ADD THE MODAL COMPONENT */}
+          <CreateSectionModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            classId={id!}
+            mode={modalMode}
+            sectionData={{
+              id: sectionId!,
+              name: sectionName || "",
+            }}
+          />
         </>
       ) : (
         /* ❌ NO SECTION SELECTED */

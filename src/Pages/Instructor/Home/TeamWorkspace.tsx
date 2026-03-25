@@ -6,6 +6,7 @@ import {
   Crown,
   Loader2,
   ArrowLeft,
+  UserMinus,
 } from "lucide-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useSessionStore } from "../../../store/sessionStore";
@@ -30,7 +31,29 @@ export default function TeamWorkspace() {
   const [loading, setLoading] = useState(true);
   const [isLocking, setIsLocking] = useState(false);
   const [error, setError] = useState("");
+  const [isKickModalOpen, setIsKickModalOpen] = useState(false);
+const [memberToKick, setMemberToKick] = useState<{id: string, name: string} | null>(null);
 
+const handleKickMember = async () => {
+  if (!memberToKick || !token) return;
+  
+  try {
+    // Replace with your actual service call
+    // await kickTeamMember(teamId, memberToKick.id, token);
+    
+    toast.success(`${memberToKick.name} has been removed`);
+    // Refresh data
+    setTeamData({
+      ...teamData,
+      teamMembers: teamData.teamMembers.filter((m: any) => m.id !== memberToKick.id)
+    });
+  } catch (err: any) {
+    toast.error("Failed to kick member");
+  } finally {
+    setIsKickModalOpen(false);
+    setMemberToKick(null);
+  }
+};
   useEffect(() => {
     const fetchTeamDetails = async () => {
       if (!teamId || !courseworkId) {
@@ -250,41 +273,63 @@ export default function TeamWorkspace() {
             <div className="space-y-3">
               {teamData.teamMembers?.map((member: any) => (
                 <div
-                  key={member.id}
-                  onClick={() => navigate(`/student/${member.id}/profile`)}
-                  className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 p-3 md:p-4 flex items-center justify-between hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
-                    <div
-                      className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-gray-200 flex-shrink-0 flex items-center justify-center font-bold uppercase"
-                      style={{
-                        backgroundColor: teamData.classColor || "#f3f4f6",
-                        color: teamData.classColor ? "#ffffff" : "#6b7280",
-                      }}
-                    >
-                      {member.name.charAt(0)}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-bold text-sm md:text-base text-gray-800 truncate">
-                          {member.name}
-                        </p>
-                        {member.role === "LEADER" && (
-                          <span className="flex items-center gap-1 text-[10px] md:text-xs text-yellow-600 font-semibold bg-yellow-50 px-2 py-0.5 rounded-full">
-                            <Crown size={12} className="fill-yellow-600" />
-                            Leader
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-400">Student</p>
-                    </div>
-                  </div>
-                  {member.id !== userId && (
-                    <button className="p-2 text-[#2D7A78] hover:bg-gray-50 rounded-full transition-colors flex-shrink-0 cursor-pointer">
-                      <MessageSquare size={20} />
-                    </button>
-                  )}
-                </div>
+  key={member.id}
+  onClick={() => navigate(`/student/${member.id}/profile`)}
+  className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 p-3 md:p-4 flex items-center justify-between hover:shadow-md transition-shadow"
+>
+  {/* GROUP 1: AVATAR AND NAME */}
+  <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
+    <div
+      className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-gray-200 flex-shrink-0 flex items-center justify-center font-bold uppercase"
+      style={{
+        backgroundColor: teamData.classColor || "#f3f4f6",
+        color: teamData.classColor ? "#ffffff" : "#6b7280",
+      }}
+    >
+      {member.name.charAt(0)}
+    </div>
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="font-bold text-sm md:text-base text-gray-800 truncate">
+          {member.name}
+        </p>
+        {member.role === "LEADER" && (
+          <span className="flex items-center gap-1 text-[10px] md:text-xs text-yellow-600 font-semibold bg-yellow-50 px-2 py-0.5 rounded-full">
+            <Crown size={12} className="fill-yellow-600" />
+            Leader
+          </span>
+        )}
+      </div>
+      <p className="text-xs text-gray-400">Student</p>
+    </div>
+  </div>
+
+  {/* ✅ GROUP 2: ACTION BUTTONS (The Fix) */}
+  <div className="flex items-center gap-1 flex-shrink-0">
+    {member.id !== userId && (
+      <button 
+        onClick={(e) => e.stopPropagation()} // Prevent card click
+        className="p-2 text-[#2D7A78] hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
+      >
+        <MessageSquare size={20} />
+      </button>
+    )}
+
+    {(isLeader || location.pathname.includes("/instructor")) && member.id !== userId && (
+      <button
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent card click
+          setMemberToKick({ id: member.id, name: member.name });
+          setIsKickModalOpen(true);
+        }}
+        className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
+        title="Kick Member"
+      >
+        <UserMinus size={20} />
+      </button>
+    )}
+  </div>
+</div>
               ))}
 
               {(!teamData.teamMembers || teamData.teamMembers.length === 0) && (
@@ -296,6 +341,40 @@ export default function TeamWorkspace() {
           </section>
         </div>
       )}
+
+      {/* ✅ KICK CONFIRMATION MODAL */}
+{isKickModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-[9999] backdrop-blur-sm p-4">
+    <div className="bg-white p-8 rounded-2xl w-full max-w-[400px] shadow-2xl border border-gray-100 animate-in fade-in zoom-in duration-200">
+      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+        Kick Member
+      </h2>
+      
+      <p className="text-center text-gray-600 mb-8 leading-relaxed">
+        Are you sure you want to kick <span className="font-semibold text-red-600">{memberToKick?.name}</span> from the team? This action cannot be undone.
+      </p>
+
+      <div className="flex gap-4">
+        <button
+          onClick={() => {
+            setIsKickModalOpen(false);
+            setMemberToKick(null);
+          }}
+          className="flex-1 px-4 py-2 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleKickMember}
+          className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
+        >
+          Kick
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
