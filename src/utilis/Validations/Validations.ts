@@ -45,8 +45,8 @@ export type VerifyOtpInputs = z.infer<typeof VerifyOtpSchema>;
 
 export const ResetPasswordSchema = z
   .object({
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Confirm password is required"),
+    newPassword: z.string().min(6, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(6, "Confirm password is required"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
