@@ -162,24 +162,13 @@ export function ClassDetails({
                   </div>
                   <div>
                     <p className="text-xl sm:text-2xl text-gray-900">
-                      {classData.studentsCount}
+                      {classData.studentCount}
                     </p>
                     <p className="text-sm text-gray-500">Students Enrolled</p>
                   </div>
                 </div>
 
-                {/* Teams */}
-                <div className="flex items-center gap-3">
-                  <div className="p-2 sm:p-3 bg-purple-100 rounded-lg">
-                    <Users size={24} className="text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-xl sm:text-2xl text-gray-900">
-                      {classData.teamsCount}
-                    </p>
-                    <p className="text-sm text-gray-500">Active Teams</p>
-                  </div>
-                </div>
+             
 
                 {/* Instructors */}
                 <div className="flex items-center gap-3">
@@ -188,9 +177,22 @@ export function ClassDetails({
                   </div>
                   <div>
                     <p className="text-xl sm:text-2xl text-gray-900">
-                      {classData.instructorsCount}
+                      {classData.instructorCount}
                     </p>
                     <p className="text-sm text-gray-500">Instructors</p>
+                  </div>
+                </div>
+
+                   {/* Teams */}
+                <div className="flex items-center gap-3">
+                  <div className="p-2 sm:p-3 bg-purple-100 rounded-lg">
+                    <Users size={24} className="text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-xl sm:text-2xl text-gray-900">
+                      {classData.memberCount}
+                    </p>
+                    <p className="text-sm text-gray-500">members</p>
                   </div>
                 </div>
 

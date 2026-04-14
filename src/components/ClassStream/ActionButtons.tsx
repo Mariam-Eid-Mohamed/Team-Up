@@ -1,10 +1,13 @@
-import { Pencil, FileText, Eye } from "lucide-react";
+import { Pencil, FileText, Eye, UserPlus, LogOut } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
 import AnnouncementModal from "../ClassStream/AnnouncemetModal";
 import { createAnnouncement } from "@/Services/announcement Endpoints/Endpoints";
 import { getToken } from "@/utilis/token";
+import JoinSectionModal from "../JoinSectionModal/JoinSectionModal";
+import LeaveSectionModal from "../LeaveSectionModal/LeaveSectionModal";
+import CreateSectionModal from "../CreateSectionModal/CreateSectionModal";
 
 interface ActionButtonsProps {
   role: "admin" | "instructor" | "student";
@@ -20,9 +23,21 @@ export default function ActionButtons({
   onPostCreated,
 }: ActionButtonsProps) {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id, sectionId } = useParams();
   const [open, setOpen] = useState(false);
   const [isAnnounceOpen, setIsAnnounceOpen] = useState(false);
+  const [isJoinSectionOpen, setIsJoinSectionOpen] = useState(false);
+  const [isCreateSectionOpen, setIsCreateSectionOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  // NEW STATE
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
+
+  const handleLeaveConfirm = () => {
+    // Logic for leaving (API call here)
+    console.log("Left section");
+    setIsLeaveModalOpen(false);
+    navigate(role === "instructor" ? `/instructor/classes/${id}` : `/student/classes/${id}`);
+  };
 
   const handleCreateAnnouncement = async (content: string) => {
     if (!classId || !content.trim()) return;
@@ -83,7 +98,56 @@ export default function ActionButtons({
           <Eye size={16} />
           <span>Class Details</span>
         </button>
+
+        {/* Create Section — Instructor/Admin only */}
+{(role === "instructor" || role === "admin") && (
+  <button
+    onClick={() => setIsCreateSectionOpen(true)}
+    className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] text-white hover:bg-purple-700 text-sm"
+  >
+    <UserPlus size={16} />
+    <span className=" sm:inline">Create Section</span>
+  </button>
+)}
+
+{/* 3. CONDITIONAL BUTTON: Join vs Leave */}
+        {sectionId ? (
+        <button
+            onClick={() => setIsLeaveModalOpen(true)} // Open Leave Modal
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] hover:bg-purple-700 text-white text-sm"
+          >
+            <LogOut size={16} />
+            <span>Leave Section</span>
+          </button>
+        ) : (
+          <button
+            onClick={() => setIsJoinSectionOpen(true)}
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#9B87F5] hover:bg-purple-700 text-white text-sm hover:cursor-pointer"
+          >
+            <UserPlus size={16} />
+            <span>Join Section</span>
+          </button>
+        )}
       </div>
+
+<CreateSectionModal
+  isOpen={isCreateSectionOpen} // Changed from isCreateOpen
+  onClose={() => setIsCreateSectionOpen(false)} // Changed from setIsCreateOpen
+  classId={id!}
+  mode="create"
+/>
+{/* NEW MODAL COMPONENT */}
+      <LeaveSectionModal
+        isOpen={isLeaveModalOpen}
+        sectionName={sectionId || ""}
+        onClose={() => setIsLeaveModalOpen(false)}
+        onConfirm={handleLeaveConfirm}
+      />
+      <JoinSectionModal
+  isOpen={isJoinSectionOpen}
+  onClose={() => setIsJoinSectionOpen(false)}
+  classId={id!}
+/>
       <AnnouncementModal
         isOpen={isAnnounceOpen}
         onClose={() => setIsAnnounceOpen(false)}

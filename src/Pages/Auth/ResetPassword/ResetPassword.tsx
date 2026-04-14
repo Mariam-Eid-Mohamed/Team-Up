@@ -89,7 +89,8 @@ const Login = () => {
       {/* Header below logo, aligned left */}
       <div className="mb-10 text-left">
         <p className="text-gray-500 mb-2">Welcome back!</p>
-        <h3 className="font-bold text-2xl">Login to your account</h3>
+        <h3 className="font-bold text-2xl">Reset Your Password!</h3>
+        <h5 className="text-gray-400 mb-2 text-sm">Create a new password for your account</h5>
       </div>
 
       {/* Form */}
@@ -98,110 +99,73 @@ const Login = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>E-mail</FormLabel>
-                <FormControl>
-                  <Input
-                    className="bg-[#f4f4ff]"
-                    placeholder="john@mail.com"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Password */}
+         
+  {/* Password */}
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Password</FormLabel>
+              <FormItem className="space-y-0.5">
+                <FormLabel className="text-xs">Password</FormLabel>
                 <FormControl>
                   <Input
-                    className="bg-[#f4f4ff]"
                     type="password"
+                    className="bg-[#f4f4ff] py-1.5 text-sm"
                     placeholder="Enter password"
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="text-xs" />
               </FormItem>
             )}
           />
 
-          {/* Remember Me */}
-          <div className="flex items-center justify-between mb-6">
-            {/* Remember me */}
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="accent-purple-500"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <span className="text-[var(--color-accent)] text-sm">
-                Remember me
-              </span>
-            </label>
+          {/* Confirm Password */}
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem className="space-y-0.5">
+                <FormLabel className="text-xs">Confirm Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    className="bg-[#f4f4ff] py-1.5 text-sm"
+                    placeholder="Confirm password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+       
 
-            {/* Forgot password */}
-            <button
-              onClick={() => navigate("/forget-password")}
-              type="button"
-              className="text-[var(--color-accent)] text-sm hover:underline"
-            >
-              Forgot password?
-            </button>
-          </div>
 
           {/* Submit Button */}
           <div className="flex flex-col w-full">
             {/* Login Button */}
             <Button
+            
               type="submit"
               className="w-full py-4 bg-[var(--color-primary-dark)] hover:bg-[var(--color-primary)] cursor-pointer text-white"
             >
-              Login
+             Reset Password
             </Button>
 
-            {/* Register Button */}
-            {/* Sign in with Google */}
-            <GoogleLogin
-              onSuccess={onGoogleSuccess}
-              onError={() => {
-                console.log("Login Failed");
-                form.setError("email", {
-                  message: "Google sign in failed. Please try again.",
-                });
-              }}
-              useOneTap
-              text="signin_with" // Optional: shows "Continue with Google"
-              size="large" // Optional: 'medium' or 'large'
-              width="100%" // Make it full width to match your design
-              theme="outline" // Optional: 'outline' or 'filled_blue'
-              shape="rectangular" // Optional: 'rectangular' or 'pill' or 'circle'
-              logo_alignment="center" // Optional: 'left' or 'center'
-            />
+           
 
             {/* Don't have an account? Sign up */}
           </div>
         </form>
       </Form>
       <div className="text-center mt-3 text-sm">
-        <span className="text-gray-600">Don't have an account? </span>
+        <span className="text-gray-600">Already changed your password? </span>
         <button
-          onClick={() => navigate("/register")}
+          onClick={() => navigate("/login")}
           className="text-[var(--color-accent)] font-semibold hover:underline"
         >
-          Sign up
+          Login Now
         </button>
       </div>
     </div>

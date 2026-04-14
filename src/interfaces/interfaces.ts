@@ -30,9 +30,10 @@ export interface Class {
   code: string;
   description: string;
   year: string;
-  studentsCount: number;
+  studentCount: number;
   teamsCount: number;
-  instructorsCount: number;
+  instructorCount: number;
+  memberCount: number;
   color: string;
   // role:string;
 }

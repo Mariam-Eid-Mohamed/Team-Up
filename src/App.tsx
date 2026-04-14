@@ -21,6 +21,9 @@ import TeamsPage from "./Pages/Instructor/Home/TeamsPage";
 import OwnTeams from "./Pages/Student/OwnTeams";
 import { StudentProfile } from "./Pages/Student/Profile/StudentProfile";
 import AvailableMembers from "./Pages/Instructor/Home/AvailableMembers";
+import ForgetPassword from "./Pages/Auth/ForgetPassword/ForgetPassword";
+import VerifyOtp from "./Pages/Auth/VerifyOtp/VerifyOtp";
+import ResetPassword from "./Pages/Auth/ResetPassword/ResetPassword";
 // export interface Class {
 //   id: string;
 //   name: string;
@@ -53,6 +56,18 @@ export default function App() {
           path: "register",
           element: <Register />,
         },
+        {
+          path: "forget-password",
+          element: <ForgetPassword />,
+        },
+        {
+          path: "verify-otp",
+          element: <VerifyOtp />,
+        },
+        {
+          path:"reset-password",
+          element:<ResetPassword/>
+        }
 
         // {
         //   path: "reset-Password",
