@@ -54,6 +54,6 @@ export const resetPassword = async (data: {
   confirmPassword: string;
   verificationToken: string;
 }) => {
-  const res = await Api.post("/auth/reset-password", data);
+  const res = await Api.patch("/auth/reset-password", data);
   return res.data;
 };
