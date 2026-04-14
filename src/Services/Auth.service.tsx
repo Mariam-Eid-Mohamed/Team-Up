@@ -35,3 +35,25 @@ export const googleAuth = async (data: {
   const res = await Api.post("/auth/google", data);
   return res.data;
 };
+// FORGOT PASSWORD
+export const forgotPassword = async (data: { email: string }) => {
+  const res = await Api.post("/auth/forgot-password", data);
+  return res.data;
+};
+
+// VERIFY RESET OTP
+export const verifyResetOtp = async (data: { email: string; otp: string }) => {
+  const res = await Api.post("/auth/verify-reset-otp", data);
+  return res.data;
+};
+
+// RESET PASSWORD
+export const resetPassword = async (data: {
+  email: string;
+  newPassword: string;
+  confirmPassword: string;
+  verificationToken: string;
+}) => {
+  const res = await Api.post("/auth/reset-password", data);
+  return res.data;
+};
