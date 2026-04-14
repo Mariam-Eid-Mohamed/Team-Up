@@ -6,7 +6,7 @@ export const LoginSchema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
-
+export type LoginInputs = z.infer<typeof LoginSchema>;
 /* REGISTER SCHEMA */
 export const RegisterSchema = z
   .object({
@@ -23,17 +23,38 @@ export const RegisterSchema = z
       .min(6, "Confirm Password must be at least 6 characters"),
     role: z.enum(
       ["Instructor", "Student"],
-      "Role must be Instructor or Student"
+      "Role must be Instructor or Student",
     ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords must match",
     path: ["confirmPassword"], // show error under confirmPassword
   });
-
-/* TYPES */
-export type LoginInputs = z.infer<typeof LoginSchema>;
 export type RegisterInputs = z.infer<typeof RegisterSchema>;
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+});
+
+export type ForgotPasswordInputs = z.infer<typeof ForgotPasswordSchema>;
+
+export const VerifyOtpSchema = z.object({
+  otp: z.string().min(6, "OTP must be 6 digits").max(6, "OTP must be 6 digits"),
+});
+
+export type VerifyOtpInputs = z.infer<typeof VerifyOtpSchema>;
+
+export const ResetPasswordSchema = z
+  .object({
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string().min(8, "Confirm password is required"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordInputs = z.infer<typeof ResetPasswordSchema>;
+/* TYPES */
 
 // Modals schema
 // 1)create new coursework
@@ -67,7 +88,7 @@ export const SearchUsernameSchema = z.object({
     .string()
     .refine(
       (val) => !val || val.trim().length === 0 || val.trim().length >= 3,
-      { message: "Username must be at least 3 characters" }
+      { message: "Username must be at least 3 characters" },
     ),
 });
 
