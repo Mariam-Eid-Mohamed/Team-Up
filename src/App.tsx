@@ -65,22 +65,9 @@ export default function App() {
           element: <VerifyOtp />,
         },
         {
-          path:"reset-password",
-          element:<ResetPassword/>
-        }
-
-        // {
-        //   path: "reset-Password",
-        //   element: <ResetPassword />,
-        // },
-        // {
-        //   path: "change-Password",
-        //   element: <ChangePassword />,
-        // },
-        // {
-        //   path: "forget-Password",
-        //   element: <ForgetPassword />,
-        // },
+          path: "reset-password",
+          element: <ResetPassword />,
+        },
       ],
     },
     // {
@@ -136,7 +123,10 @@ export default function App() {
         { path: "classes/:id/details", element: <ClassDetailsPage /> },
         { path: "classes/:id/sections/:sectionId", element: <SectionStream /> },
         { path: "classes/:id/members", element: <ClassMembers /> },
-        {path: "classes/:id/available-members", element: <AvailableMembers/> },
+        {
+          path: "classes/:id/available-members",
+          element: <AvailableMembers />,
+        },
         { path: "teams/:teamId", element: <TeamWorkspace /> },
         { path: "teams", element: <OwnTeams /> },
         {
@@ -146,7 +136,7 @@ export default function App() {
         {
           path: ":id/profile",
           element: <StudentProfile />,
-        }
+        },
         // Add more student pages here
       ],
     },

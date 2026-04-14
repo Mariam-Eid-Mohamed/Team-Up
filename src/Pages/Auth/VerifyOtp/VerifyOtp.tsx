@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
-  LoginSchema,
-  type LoginInputs,
+  VerifyOtpSchema,
+  type VerifyOtpInputs,
 } from "../../../utilis/Validations/Validations";
 
 import {
@@ -16,100 +16,73 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { verifyResetOtp, forgotPassword } from "../../../Services/Auth.service";
 
-import { useState } from "react";
-import { loginUser, googleAuth } from "../../../Services/Auth.service";
-import { GoogleLogin } from "@react-oauth/google";
-import { setToken, setUserId } from "../../../utilis/token";
+const VerifyOtp = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || "";
 
-const Login = () => {
-  const form = useForm<LoginInputs>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<VerifyOtpInputs>({
+    resolver: zodResolver(VerifyOtpSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      otp: "",
     },
   });
-  const [rememberMe, setRememberMe] = useState(false);
-  const navigate = useNavigate();
 
-  const onGoogleSuccess = async (credentialResponse: any) => {
+  const onSubmit = async (data: VerifyOtpInputs) => {
     try {
-      const response = await googleAuth({
-        token: credentialResponse.credential,
+      const response = await verifyResetOtp({
+        email,
+        otp: data.otp,
       });
-      if (response.token) {
-        setToken(response.token);
-      }
-      if (response.data?.user?.id || response.data?.user?._id) {
-        setUserId(response.data.user.id || response.data.user._id);
-      }
-      const role = response.data.user.role;
-      navigate(role === "Student" ? "/student" : "/instructor");
+
+      navigate("/reset-password", {
+        state: {
+          email,
+          verificationToken: response.verificationToken,
+        },
+      });
     } catch (error: any) {
-      form.setError("email", {
-        message:
-          error.response?.data?.message ||
-          "Google sign in failed. Please try again.",
+      form.setError("otp", {
+        message: error.response?.data?.message || "Invalid or expired OTP.",
       });
-      console.error("Google sign in failed:", error);
     }
   };
 
-  const onSubmit = async (data: LoginInputs) => {
+  const handleResendOtp = async () => {
     try {
-      const response = await loginUser({
-        email: data.email,
-        password: data.password,
-        rememberMe,
-      });
-      console.log("Login successful:", response);
-      if (response.token) {
-        setToken(response.token);
-      }
-      if (response.data?.user?.id || response.data?.user?._id) {
-        setUserId(response.data.user.id || response.data.user._id);
-      }
-      const role = response.data.user.role;
-      if (role === "Student") {
-        navigate("/student");
-      } else {
-        navigate("/instructor");
-      }
-    } catch (error: any) {
-      form.setError("email", {
-        message: error.response?.data?.message || "Login failed",
-      });
-      console.error("Login failed:", error);
+      await forgotPassword({ email });
+    } catch (error) {
+      console.error("Resend OTP failed:", error);
     }
   };
 
   return (
     <div className="w-full">
-      {/* Header below logo, aligned left */}
       <div className="mb-10 text-left">
         <p className="text-gray-500 mb-2">Welcome back!</p>
         <h3 className="font-bold text-2xl">Verify OTP!</h3>
-        <h5 className="text-gray-400 mb-2 text-sm">Enter the 6 digit OTP sent to your email</h5>
+        <h5 className="text-gray-400 mb-2 text-sm">
+          Enter the 6 digit OTP sent to your email
+        </h5>
       </div>
 
-      {/* Form */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 w-full"
         >
-         
-  <FormField
+          <FormField
             control={form.control}
-            name="password"
+            name="otp"
             render={({ field }) => (
               <FormItem className="space-y-3">
                 <FormLabel>OTP</FormLabel>
                 <FormControl>
                   <Input
                     className="bg-[#f4f4ff]"
-                    type="Text"
+                    type="text"
                     placeholder="Enter 6 digit OTP"
                     {...field}
                   />
@@ -118,30 +91,22 @@ const Login = () => {
               </FormItem>
             )}
           />
-       
 
-
-          {/* Submit Button */}
           <div className="flex flex-col w-full">
-            {/* Login Button */}
             <Button
-               onClick={() => navigate("/reset-password")}
               type="submit"
               className="w-full py-4 bg-[var(--color-primary-dark)] hover:bg-[var(--color-primary)] cursor-pointer text-white"
             >
               Verify Code
             </Button>
-
-           
-
-            {/* Don't have an account? Sign up */}
           </div>
         </form>
       </Form>
+
       <div className="text-center mt-3 text-sm">
-        <span className="text-gray-600">Didnot recieve a code? </span>
+        <span className="text-gray-600">Didn’t receive a code? </span>
         <button
-        //   onClick={() => navigate("/forget-password")}
+          onClick={handleResendOtp}
           className="text-[var(--color-accent)] font-semibold hover:underline"
         >
           Resend OTP
@@ -151,4 +116,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default VerifyOtp;
