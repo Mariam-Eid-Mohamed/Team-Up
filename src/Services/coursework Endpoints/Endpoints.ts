@@ -40,12 +40,9 @@ export const getAvailableStudentsForCoursework = (
   teamId: string,
   token: string,
 ) => {
-  return Api.get(
-    `${API_BASE}/courseworks/${courseworkId}/available-students/${teamId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  return Api.get(`${API_BASE}/${courseworkId}/available-students/${teamId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 };
