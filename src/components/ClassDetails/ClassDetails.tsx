@@ -7,10 +7,12 @@ import {
   UserCheck,
   Layers,
   User,
+  LogOut,
 } from "lucide-react";
 import type { Class } from "../../interfaces/interfaces";
 import { CreateClassModal } from "../CreateClassModal/CreateClassModal";
 import { useNavigate } from "react-router-dom";
+import LeaveClassModal from "../LeaveClassModal/LeaveClassModal";
 
 interface ClassDetailsProps {
   classData: Class;
@@ -30,7 +32,8 @@ export function ClassDetails({
   const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
+const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
+  const currentClassName = "IS598 - Web Development";
   // Check if color is a hex value (starts with #) or a Tailwind class
   const isHexColor = (color: string) => color?.startsWith("#");
   const getColorStyle = (color: string) => 
@@ -41,6 +44,13 @@ export function ClassDetails({
   const handleDelete = () => {
     onDelete();
   };
+
+  const handleConfirmLeave = () => {
+    console.log("User has left the class");
+    // Add your API logic here
+    setShowLeaveModal(false);
+  };
+  
 
   return (
     <>
@@ -99,6 +109,14 @@ export function ClassDetails({
                   </button>
                 </>
               )}
+
+             <button
+        onClick={() => setShowLeaveModal(true)}
+        className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm border rounded-md bg-[#9B87F5] hover:bg-purple-700 text-white text-sm flex items-center gap-2"
+      >
+        <LogOut size={18} />
+        Leave Class
+      </button>
             </div>
           </div>
         </div>
@@ -245,6 +263,8 @@ export function ClassDetails({
         />
       )}
 
+      
+
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -271,6 +291,13 @@ export function ClassDetails({
           </div>
         </div>
       )}
+<LeaveClassModal 
+        isOpen={showLeaveModal} 
+        onClose={() => setShowLeaveModal(false)} 
+        onConfirm={handleConfirmLeave} 
+        className={currentClassName}
+      />
+      
     </>
   );
 }
