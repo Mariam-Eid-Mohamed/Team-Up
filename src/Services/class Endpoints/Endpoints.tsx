@@ -164,3 +164,12 @@ export const removeStudentFromClass = async (
     },
   });
 };
+
+// Student leave class
+export const leaveClass = async (classId: string, token: string) => {
+  return Api.delete(`${API_BASE}/${classId}/members/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

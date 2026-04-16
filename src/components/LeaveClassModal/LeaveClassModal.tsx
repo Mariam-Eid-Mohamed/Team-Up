@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface LeaveClassModalProps {
   isOpen: boolean;
@@ -7,11 +7,11 @@ interface LeaveClassModalProps {
   className: string;
 }
 
-const LeaveClassModal: React.FC<LeaveClassModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  className 
+const LeaveClassModal: React.FC<LeaveClassModalProps> = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  className,
 }) => {
   // If the modal isn't open, don't render anything
   if (!isOpen) return null;
@@ -22,7 +22,7 @@ const LeaveClassModal: React.FC<LeaveClassModalProps> = ({
         <div className="text-center mb-8">
           <h3 className="text-2xl font-bold text-gray-900 mb-4">Leave Class</h3>
           <p className="text-gray-600">
-            Are you sure you want to leave <span className="font-semibold text-gray-800">{className}</span>?
+            Are you sure you want to leave this class?
           </p>
         </div>
 

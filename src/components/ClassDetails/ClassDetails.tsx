@@ -13,6 +13,9 @@ import type { Class } from "../../interfaces/interfaces";
 import { CreateClassModal } from "../CreateClassModal/CreateClassModal";
 import { useNavigate } from "react-router-dom";
 import LeaveClassModal from "../LeaveClassModal/LeaveClassModal";
+import { leaveClass } from "../../Services/class Endpoints/Endpoints";
+import { useSessionStore } from "../../store/sessionStore";
+import toast from "react-hot-toast";
 
 interface ClassDetailsProps {
   classData: Class;
@@ -30,27 +33,42 @@ export function ClassDetails({
   onDelete,
 }: ClassDetailsProps) {
   const navigate = useNavigate();
+  const token = useSessionStore((state) => state.token);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
+  const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
   const currentClassName = "IS598 - Web Development";
   // Check if color is a hex value (starts with #) or a Tailwind class
   const isHexColor = (color: string) => color?.startsWith("#");
-  const getColorStyle = (color: string) => 
+  const getColorStyle = (color: string) =>
     isHexColor(color) ? { backgroundColor: color } : {};
-  const getColorClass = (color: string) => 
-    isHexColor(color) ? "w-12 h-12 sm:w-16 sm:h-16 rounded-lg" : `w-12 h-12 sm:w-16 sm:h-16 rounded-lg ${color}`;
+  const getColorClass = (color: string) =>
+    isHexColor(color)
+      ? "w-12 h-12 sm:w-16 sm:h-16 rounded-lg"
+      : `w-12 h-12 sm:w-16 sm:h-16 rounded-lg ${color}`;
 
   const handleDelete = () => {
     onDelete();
   };
 
-  const handleConfirmLeave = () => {
-    console.log("User has left the class");
-    // Add your API logic here
-    setShowLeaveModal(false);
+  const handleConfirmLeave = async () => {
+    if (!token) {
+      toast.error("You must be logged in to leave a class.");
+      return;
+    }
+
+    try {
+      await leaveClass(classData.id, token);
+      toast.success("You have successfully left the class.");
+      setShowLeaveModal(false);
+      // Navigate back or call onDelete to refresh the list
+      navigate(-2); // or some other appropriate action like going to the dashboard
+    } catch (error: any) {
+      const errorMsg =
+        error?.response?.data?.message || "Failed to leave the class.";
+      toast.error(errorMsg);
+    }
   };
-  
 
   return (
     <>
@@ -104,19 +122,18 @@ const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
                     Class Stream
                   </button>
                   <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#313a3a] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
-                    <Layers size={18} />
-                    + Join Section
+                    <Layers size={18} />+ Join Section
                   </button>
                 </>
               )}
 
-             <button
-        onClick={() => setShowLeaveModal(true)}
-        className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm border rounded-md bg-[#9B87F5] hover:bg-purple-700 text-white text-sm flex items-center gap-2"
-      >
-        <LogOut size={18} />
-        Leave Class
-      </button>
+              <button
+                onClick={() => setShowLeaveModal(true)}
+                className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm border rounded-md bg-red-600 hover:bg-red-700 text-white text-sm flex items-center gap-2"
+              >
+                <LogOut size={18} />
+                Leave Class
+              </button>
             </div>
           </div>
         </div>
@@ -133,34 +150,34 @@ const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
               </h2>
 
               <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm text-gray-500 mb-1">
-                      Class Code
-                    </label>
-                    <p className="text-gray-900">{classData.code}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500 mb-1">
-                      Description
-                    </label>
-                    <p className="text-gray-900">{classData.description}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500 mb-1">
-                      Semester
-                    </label>
-                    <p className="text-gray-900">{classData.year}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-500 mb-1">
-                      Color Theme
-                    </label>
-                    <div
-                      className={getColorClass(classData.color)}
-                      style={getColorStyle(classData.color)}
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm text-gray-500 mb-1">
+                    Class Code
+                  </label>
+                  <p className="text-gray-900">{classData.code}</p>
                 </div>
+                <div>
+                  <label className="block text-sm text-gray-500 mb-1">
+                    Description
+                  </label>
+                  <p className="text-gray-900">{classData.description}</p>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-500 mb-1">
+                    Semester
+                  </label>
+                  <p className="text-gray-900">{classData.year}</p>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-500 mb-1">
+                    Color Theme
+                  </label>
+                  <div
+                    className={getColorClass(classData.color)}
+                    style={getColorStyle(classData.color)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -186,8 +203,6 @@ const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
                   </div>
                 </div>
 
-             
-
                 {/* Instructors */}
                 <div className="flex items-center gap-3">
                   <div className="p-2 sm:p-3 bg-green-100 rounded-lg">
@@ -201,7 +216,7 @@ const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
                   </div>
                 </div>
 
-                   {/* Teams */}
+                {/* Teams */}
                 <div className="flex items-center gap-3">
                   <div className="p-2 sm:p-3 bg-purple-100 rounded-lg">
                     <Users size={24} className="text-purple-600" />
@@ -214,7 +229,7 @@ const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
                   </div>
                 </div>
 
-   <button 
+                <button
                   onClick={() =>
                     navigate(`/${role}/classes/${classData.id}/members`, {
                       state: { className: classData.name },
@@ -227,8 +242,6 @@ const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
                 </button>
               </div>
             </div>
-
-           
 
             {/* Quick Actions */}
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200 p-4 sm:p-6">
@@ -263,8 +276,6 @@ const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
         />
       )}
 
-      
-
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -291,13 +302,12 @@ const [showLeaveModal, setShowLeaveModal] = useState<boolean>(false);
           </div>
         </div>
       )}
-<LeaveClassModal 
-        isOpen={showLeaveModal} 
-        onClose={() => setShowLeaveModal(false)} 
-        onConfirm={handleConfirmLeave} 
+      <LeaveClassModal
+        isOpen={showLeaveModal}
+        onClose={() => setShowLeaveModal(false)}
+        onConfirm={handleConfirmLeave}
         className={currentClassName}
       />
-      
     </>
   );
 }
