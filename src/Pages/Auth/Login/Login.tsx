@@ -23,6 +23,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { setToken, setUserId } from "../../../utilis/token";
 
 const Login = () => {
+  const [loginError, setLoginError] = useState("");
   const form = useForm<LoginInputs>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -57,6 +58,7 @@ const Login = () => {
   };
 
   const onSubmit = async (data: LoginInputs) => {
+    setLoginError("");
     try {
       const response = await loginUser({
         email: data.email,
@@ -77,9 +79,9 @@ const Login = () => {
         navigate("/instructor");
       }
     } catch (error: any) {
-      form.setError("email", {
-        message: error.response?.data?.message || "Login failed",
-      });
+      setLoginError(
+        error.response?.data?.message || "Invalid email or password.",
+      );
       console.error("Login failed:", error);
     }
   };
@@ -161,7 +163,11 @@ const Login = () => {
               Forgot Password?
             </button>
           </div>
-
+          {loginError && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+              {loginError}
+            </div>
+          )}
           {/* Submit Button */}
           <div className="flex flex-col w-full">
             {/* Login Button */}
