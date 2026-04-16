@@ -5,7 +5,7 @@ import {
   LoginSchema,
   type LoginInputs,
 } from "../../../utilis/Validations/Validations";
-
+import { useSessionStore } from "@/store/sessionStore";
 import {
   Form,
   FormField,
@@ -33,6 +33,7 @@ const Login = () => {
   });
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const setRole = useSessionStore((state) => state.setRole);
 
   const onGoogleSuccess = async (credentialResponse: any) => {
     try {
@@ -46,6 +47,8 @@ const Login = () => {
         setUserId(response.data.user.id || response.data.user._id);
       }
       const role = response.data.user.role;
+      setRole(role);
+
       navigate(role === "Student" ? "/student" : "/instructor");
     } catch (error: any) {
       form.setError("email", {
@@ -73,6 +76,7 @@ const Login = () => {
         setUserId(response.data.user.id || response.data.user._id);
       }
       const role = response.data.user.role;
+      setRole(role);
       if (role === "Student") {
         navigate("/student");
       } else {
