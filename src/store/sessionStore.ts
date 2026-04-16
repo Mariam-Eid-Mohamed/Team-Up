@@ -10,7 +10,7 @@ type SessionState = {
 
   setUserId: (userId: string) => void;
   removeUserId: () => void;
-
+  clearSession: () => void;
   hasToken: () => boolean;
 };
 
@@ -25,7 +25,7 @@ export const useSessionStore = create<SessionState>()(
 
       setUserId: (userId) => set({ userId }),
       removeUserId: () => set({ userId: null }),
-
+      clearSession: () => set({ token: null, userId: null }),
       hasToken: () => get().token !== null,
     }),
     {
@@ -33,3 +33,7 @@ export const useSessionStore = create<SessionState>()(
     },
   ),
 );
+export function clearLegacySession() {
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("user_id");
+}
