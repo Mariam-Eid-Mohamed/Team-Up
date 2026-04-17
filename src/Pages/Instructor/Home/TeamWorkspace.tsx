@@ -15,6 +15,14 @@ import {
   lockTeam,
 } from "../../../Services/team Endpoints/Endpoints";
 import toast from "react-hot-toast";
+import AssignInstructorMenu from "@/components/AssignInstructor/AssignInstructorMenu";
+
+const INSTRUCTORS_DATA: Instructor[] = [
+  { id: 1, name: "Nourhan Ihab", avatar: "/avatars/nourhan.jpg" },
+  { id: 2, name: "Ahmed Ali", avatar: "/avatars/ahmed.jpg" },
+  { id: 3, name: "Sara Mohamed", avatar: "/avatars/sara.jpg" },
+  { id: 4, name: "Omar Hassan", avatar: "/avatars/omar.jpg" },
+];
 
 export default function TeamWorkspace() {
   const navigate = useNavigate();
@@ -33,7 +41,14 @@ export default function TeamWorkspace() {
   const [error, setError] = useState("");
   const [isKickModalOpen, setIsKickModalOpen] = useState(false);
 const [memberToKick, setMemberToKick] = useState<{id: string, name: string} | null>(null);
+const [showModal, setShowModal] = useState<boolean>(false);
 
+const handleAssign = (id: number | string) => {
+    const selected = INSTRUCTORS_DATA.find(i => i.id === id);
+    console.log(`Assigning ${selected?.name} to the team...`);
+    // Your logic here
+    setShowModal(false);
+  };
 const handleKickMember = async () => {
   if (!memberToKick || !token) return;
   
@@ -174,6 +189,16 @@ const handleKickMember = async () => {
         </div>
 
         <div className="flex gap-2 w-full sm:w-auto">
+
+          <button
+            onClick={() => setShowModal(true)}
+            disabled={teamData.isLocked}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-white rounded-lg text-sm font-semibold transition-colors
+              ${teamData.isLocked ? "bg-gray-400 cursor-not-allowed" : "bg-[#528E8C] hover:bg-[#437674] cursor-pointer"}`}
+          >
+            <UserPlus size={16} />
+            <span className="inline">Assign instructor</span>
+          </button>
           <button
             onClick={handleInviteClick}
             disabled={teamData.isLocked}
@@ -341,7 +366,12 @@ const handleKickMember = async () => {
           </section>
         </div>
       )}
-
+<AssignInstructorMenu 
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        instructors={INSTRUCTORS_DATA}
+        onAssign={handleAssign}
+      />
       {/* ✅ KICK CONFIRMATION MODAL */}
 {isKickModalOpen && (
   <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-[9999] backdrop-blur-sm p-4">
