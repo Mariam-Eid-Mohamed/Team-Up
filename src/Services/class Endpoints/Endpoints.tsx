@@ -173,3 +173,21 @@ export const leaveClass = async (classId: string, token: string) => {
     },
   });
 };
+
+// Get class instructors
+export const getClassInstructors = async (classId: string, token: string) => {
+  return Api.get(`${API_BASE}/${classId}/instructors`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+// Create a new section
+export const createSection = async (
+  classId: string,
+  payload: { section_name: string; instructorIds: string[] },
+  token: string,
+) => {
+  return Api.post(`${API_BASE}/${classId}/sections`, payload, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};

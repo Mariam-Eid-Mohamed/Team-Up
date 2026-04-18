@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getClassInstructors, createSection } from "../../Services/class Endpoints/Endpoints";
+import { useSessionStore } from "../../store/sessionStore";
+import toast from "react-hot-toast";
 
 interface Props {
   isOpen: boolean;
@@ -21,25 +24,80 @@ export default function CreateSectionModal({
   sectionData,
 }: Props) {
   const [sectionName, setSectionName] = useState("");
-  const [instructor, setInstructor] = useState("Mariam Eid");
+  const [instructor, setInstructor] = useState<{ id: string; name: string } | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-const navigate=useNavigate();
-  const instructors = ["Mariam Eid", "Dalia Adel", "Ahmed Rayan"];
+  const [instructorsList, setInstructorsList] = useState<{ id: string; name: string }[]>([]);
+  const navigate = useNavigate();
+  const token = useSessionStore((state) => state.token);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if ((mode === "edit" || mode === "delete") && sectionData) {
       setSectionName(sectionData.name);
     } else {
       setSectionName("");
+      setInstructor(null);
     }
   }, [mode, sectionData, isOpen]);
 
+  useEffect(() => {
+    if (isOpen && classId && token) {
+      const fetchInstructors = async () => {
+        try {
+          const res = await getClassInstructors(classId, token);
+          if (res.data?.success) {
+             const formattedList = res.data.data.map((inst: any) => ({
+                id: inst._id,
+                name: `${inst.first_name} ${inst.last_name}`.trim() || inst.username
+             }));
+             setInstructorsList(formattedList);
+          }
+        } catch (error) {
+           console.error("Failed to fetch instructors", error);
+           toast.error("Failed to fetch instructors");
+        }
+      };
+      fetchInstructors();
+    }
+  }, [isOpen, classId, token]);
+
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
-    console.log({ mode, sectionName, instructor, classId });
-    onClose();
-    navigate(`/instructor/classes/${classId}/sections/${mockNewSectionId}`);
+  const handleSubmit = async () => {
+    if (mode === "create") {
+      if (!sectionName.trim()) {
+        toast.error("Please enter a section name");
+        return;
+      }
+      if (!instructor) {
+        toast.error("Please select an instructor");
+        return;
+      }
+      if (!token) {
+        toast.error("No authentication token found");
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const payload = {
+           section_name: sectionName.trim(),
+           instructorIds: [instructor.id]
+        };
+        const res = await createSection(classId, payload, token);
+        toast.success("Section created successfully");
+        onClose();
+        const newSectionId = res.data?.data?._id;
+        navigate(`/instructor/classes/${classId}/sections/${newSectionId}`);
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message || "Failed to create section");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+       console.log({ mode, sectionName, instructor, classId });
+       onClose();
+       // Mock for edit/delete if needed
+    }
   };
 
   return (
@@ -82,25 +140,28 @@ const navigate=useNavigate();
                 className="w-full border border-gray-300 p-3 rounded-lg flex justify-between items-center cursor-pointer bg-white hover:border-gray-400 transition-colors"
               >
                 <span className={instructor ? "text-gray-800" : "text-gray-400"}>
-                  {instructor || "Select Instructor"}
+                  {instructor?.name || "Select Instructor"}
                 </span>
                 {isDropdownOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </div>
 
               {isDropdownOpen && (
-                <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-10 overflow-hidden">
-                  {instructors.map((name) => (
+                <div className="absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-20 max-h-48 overflow-y-auto">
+                  {instructorsList.map((inst) => (
                     <div
-                      key={name}
+                      key={inst.id}
                       onClick={() => {
-                        setInstructor(name);
+                        setInstructor(inst);
                         setIsDropdownOpen(false);
                       }}
                       className="px-4 py-3 hover:bg-[#F3F4F6] cursor-pointer text-gray-700 border-b last:border-none transition-colors"
                     >
-                      {name}
+                      {inst.name}
                     </div>
                   ))}
+                  {instructorsList.length === 0 && (
+                    <div className="px-4 py-3 text-gray-500">No instructors found</div>
+                  )}
                 </div>
               )}
             </div>
@@ -118,13 +179,14 @@ const navigate=useNavigate();
 
           <button
             onClick={handleSubmit}
-            className={`flex-1 px-4 py-2 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 ${
+            disabled={isLoading}
+            className={`flex-1 px-4 py-2 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-50 cursor-pointer ${
               mode === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-[#4E8D8A] hover:bg-[#3d6f6d]"
             }`}
           >
-            {mode === "create" && "Create"}
-            {mode === "edit" && "Save"}
-            {mode === "delete" && "Delete"}
+            {isLoading 
+              ? "Processing..." 
+              : mode === "create" ? "Create" : mode === "edit" ? "Save" : "Delete"}
           </button>
         </div>
       </div>
