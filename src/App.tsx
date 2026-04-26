@@ -17,6 +17,7 @@ import ClassMembers from "./Pages/Instructor/Home/ClassMembers";
 import TeamWorkspace from "./Pages/Instructor/Home/TeamWorkspace";
 import TeamsPage from "./Pages/Instructor/Home/TeamsPage";
 import OwnTeams from "./Pages/Student/OwnTeams";
+import InstructorOwnTeams from "./Pages/Instructor/Home/OwnTeams";
 import { StudentProfile } from "./Pages/Student/Profile/StudentProfile";
 import AvailableMembers from "./Pages/Instructor/Home/AvailableMembers";
 import ForgetPassword from "./Pages/Auth/ForgetPassword/ForgetPassword";
@@ -81,7 +82,8 @@ export default function App() {
               element: <SectionStream />,
             },
             { path: "classes/:id/members", element: <ClassMembers /> },
-            { path: "teams", element: <OwnTeams /> },
+            { path: "teams", element: <InstructorOwnTeams /> },
+            { path: "teams/:teamId", element: <TeamWorkspace /> },
           ],
         },
       ],
