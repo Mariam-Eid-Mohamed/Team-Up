@@ -25,6 +25,7 @@ import VerifyOtp from "./Pages/Auth/VerifyOtp/VerifyOtp";
 import ResetPassword from "./Pages/Auth/ResetPassword/ResetPassword";
 import ProtectedRoute from "@/components/ProtectedRoutes/ProtectedRoutes";
 import PublicRoute from "@/components/PublicRoutes/PublicRoutes";
+import  ChatBot  from  "./Pages/Student/ChatBot/ChatBot";
 
 export default function App() {
   const routes = createBrowserRouter([
@@ -119,6 +120,10 @@ export default function App() {
             {
               path: ":id/profile",
               element: <StudentProfile />,
+            },
+              {
+              path: "AI-Chat",
+              element: <ChatBot />,
             },
           ],
         },

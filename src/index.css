@@ -4,6 +4,8 @@
 body {
   margin: 0;
 }
+
+
 /* Custom dark selector */
 @custom-variant dark (&:is(.dark *));
 
