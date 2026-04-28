@@ -79,16 +79,16 @@ const ChatBot: React.FC = () => {
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                 {msg.role === 'bot' && (
-                  <div className="h-8 w-8 rounded-full border border-indigo-100 flex items-center justify-center bg-indigo-50 shrink-0">
-                     <img src={Bot} className="w-6" alt="bot" />
+                  <div className="h-8 w-8 rounded-full border border-emerald-50 flex items-center justify-center bg-transparent shrink-0">
+                     <img src={Bot} className="bg-cover bg-center h-auto" alt="bot" />
                   </div>
                 )}
                 <div className={`max-w-[85%] rounded-2xl p-4 text-sm leading-relaxed break-words shadow-sm
-                  ${msg.role === 'bot' ? 'rounded-tl-none bg-emerald-50 text-slate-700' : 'rounded-tr-none bg-teal-600 text-white'}`}>
+                  ${msg.role === 'bot' ? 'rounded-tl-none bg-[#D6EFEF] text-slate-700' : 'rounded-tr-none bg-teal-600 text-white'}`}>
                   {msg.text}
                 </div>
                 {msg.role === 'user' && (
-                  <div className="h-8 w-8 rounded-full bg-slate-200 overflow-hidden border-2 border-slate-100 shrink-0">
+                  <div className="h-8 w-8 rounded-full bg-[#3DA0A0] overflow-hidden border-2 border-slate-100 shrink-0">
                     <img src="https://i.pravatar.cc/150?u=menna" alt="user" />
                   </div>
                 )}
@@ -104,7 +104,7 @@ const ChatBot: React.FC = () => {
                 <button 
                   key={i}
                   onClick={() => setView(btn.v as any)}
-                  className="flex w-fit items-center gap-2 rounded-lg border border-indigo-200 px-4 py-2 text-sm text-indigo-500 hover:bg-indigo-50 transition-colors whitespace-nowrap"
+                  className="flex w-fit items-center gap-2 rounded-lg border border-[#8C80D9] px-4 py-2 text-sm text-[#8C80D9] hover:bg-[#EFECF8] transition-colors whitespace-nowrap"
                 >
                   {btn.icon} {btn.label}
                 </button>
@@ -132,11 +132,12 @@ const ChatBot: React.FC = () => {
       </aside>
 
       {/* --- RIGHT SIDE: Main Results --- */}
-      <main className="flex-1 bg-slate-50/30 p-4 md:p-8 lg:p-12 transition-all">
+      <main className="flex-1 bg-[#FCFBFE] p-4 md:p-8 lg:p-12 transition-all">
         {view === 'empty' && (
           <div className="flex h-full min-h-[400px] flex-col items-center justify-center text-center">
-            <img src={AIHelper} alt="Bot Result" className="w-48 lg:w-64 mb-8 animate-pulse" />
+            <img src={AIHelper} alt="Bot Result" className="w-48 lg:w-80 h-auto mb-8 " />
             <h2 className="text-2xl lg:text-3xl font-bold text-slate-800">Your results will appear here</h2>
+            <p className="text-sm text-slate-500">Select an option from the menu to get started</p>
           </div>
         )}
 
@@ -151,16 +152,19 @@ const ChatBot: React.FC = () => {
                     <img src={person.image} className="h-14 w-14 rounded-full object-cover shrink-0" alt={person.name} />
                     <div className="min-w-0 flex-1">
                       <h3 className="font-bold text-slate-800 truncate">{person.name}</h3>
-                      <p className="text-sm text-teal-500 font-medium">{person.role}</p>
+                      <p className="text-sm text-[#2E7E7D] font-medium">{person.role}</p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {person.skills.map(s => (
-                          <span key={s} className="rounded bg-slate-50 px-2 py-0.5 text-[10px] font-bold text-slate-400 uppercase">{s}</span>
+                          <span key={s} className="rounded bg-[#F5F2FE] px-2 py-0.5 text-[10px] font-bold text-slate-500 uppercase">{s}</span>
                         ))}
                       </div>
                     </div>
                   </div>
                   <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 pt-3 sm:pt-0 border-t sm:border-0">
-                    <span className="text-teal-500 font-bold text-sm whitespace-nowrap">⚡ {person.compatibility}%</span>
+                    <div className="text-right shrink-0">
+                        <span className="text-teal-500 font-bold flex items-center gap-1 text-sm">⚡ {person.compatibility}%</span>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">Compatibility</p>
+                      </div>
                     <button className="rounded-lg bg-indigo-600 px-6 py-2 text-sm font-medium text-white whitespace-nowrap">Invite</button>
                   </div>
                 </div>
@@ -183,16 +187,16 @@ const ChatBot: React.FC = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <span className="text-teal-500 font-bold flex items-center gap-1 text-sm">⚡ {team.matchScore}%</span>
-                        <p className="text-[10px] text-slate-300 font-bold uppercase">Match Score</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">Match Score</p>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                      <div className="bg-indigo-50/50 p-3 rounded-xl border border-indigo-50">
+                      <div className="bg-[#F5F2FE] p-3 rounded-xl border border-indigo-50">
                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Looking For</p>
                         <p className="text-sm font-semibold text-indigo-600 truncate">{team.lookingFor}</p>
                       </div>
-                      <div className="bg-slate-50 p-3 rounded-xl">
+                      <div className="bg-[#F5F2FE] p-3 rounded-xl">
                         <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Members</p>
                         <p className="text-sm font-semibold">{team.membersCount}</p>
                       </div>
@@ -200,7 +204,7 @@ const ChatBot: React.FC = () => {
 
                     <button 
                       onClick={() => setExpandedTeam(expandedTeam === idx ? null : idx)}
-                      className="w-full flex items-center justify-between px-4 py-2 border border-slate-100 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 transition-colors mb-4 group"
+                      className="w-full flex items-center justify-between p-3 border border-slate-300 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 transition-colors mb-4 group"
                     >
                       View Team Members 
                       <ChevronDown size={14} className={`transition-transform ${expandedTeam === idx ? 'rotate-180' : ''}`} />
