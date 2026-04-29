@@ -20,7 +20,7 @@ export interface StudentProfileData {
   fullName: string;
   email: string;
   gpa: number | null;
-  availability: string[];
+  availability: "morning" | "evening" | "night" | "all day" | null;
   skills: string[];
   links: ProfileLink[];
   cv: {

@@ -94,3 +94,60 @@ export const SearchUsernameSchema = z.object({
 
 /* TYPES */
 export type SearchUsernameInputs = z.infer<typeof SearchUsernameSchema>;
+
+/* EDIT PROFILE SCHEMA */
+export const EditProfileSchema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .transform((val) => val.trim().toLowerCase()),
+
+  first_name: z
+    .string()
+    .min(1, "First name is required")
+    .transform((val) => val.trim()),
+
+  last_name: z
+    .string()
+    .min(1, "Last name is required")
+    .transform((val) => val.trim()),
+
+  gpa: z
+    .union([
+      z.literal("").transform(() => undefined),
+      z.coerce
+        .number({
+          invalid_type_error: "GPA must be a valid number (e.g. 3.5).",
+        })
+        .min(0, "GPA cannot be negative.")
+        .max(4, "GPA cannot exceed 4.0."),
+    ])
+    .optional(),
+
+  availability: z.enum(["morning", "evening", "night", "all day"]).optional(),
+
+  skills: z.array(z.string().trim()).optional(),
+
+  links: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Link name is required").trim(),
+        url: z
+          .string()
+          .url("Please provide a valid URL")
+          .refine((val) => val.startsWith("http"), {
+            message: "URL must start with http or https",
+          }),
+      }),
+    )
+    .optional(),
+
+  cv: z.object({
+    filename: z.string().nullable().optional(),
+  }),
+  profile_picture: z.object({
+    filename: z.string().nullable().optional(),
+  }),
+});
+
+export type EditProfileInputs = z.infer<typeof EditProfileSchema>;
