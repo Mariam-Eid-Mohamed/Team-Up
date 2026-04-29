@@ -75,3 +75,22 @@ export interface StudentTeamItem {
   teamName: string;
   courseworkName: string;
 }
+export interface ClassMember {
+  _id: string;
+  first_name: string;
+  last_name: string;
+  username: string;
+  email: string;
+  role: string;
+  classRole: string;
+  joined_date: string;
+}
+export interface ClassMembersResponse {
+  success: boolean;
+  data: {
+    admins: ClassMember[];
+    instructors: ClassMember[];
+    students: ClassMember[];
+    class_color?: string;
+  };
+}

@@ -13,8 +13,19 @@ import { useSessionStore } from "../../../store/sessionStore";
 import {
   getTeamDetails,
   lockTeam,
+  assignInstructor,
+  getInstructorTeams,
+  kickStudentFromTeam,
 } from "../../../Services/team Endpoints/Endpoints";
 import toast from "react-hot-toast";
+import AssignInstructorMenu from "@/components/AssignInstructor/AssignInstructorMenu";
+
+interface Instructor {
+  id: string | number;
+  name: string;
+  avatar?: string;
+}
+import { getClassInstructors } from "../../../Services/class Endpoints/Endpoints";
 
 export default function TeamWorkspace() {
   const navigate = useNavigate();
@@ -32,28 +43,86 @@ export default function TeamWorkspace() {
   const [isLocking, setIsLocking] = useState(false);
   const [error, setError] = useState("");
   const [isKickModalOpen, setIsKickModalOpen] = useState(false);
-const [memberToKick, setMemberToKick] = useState<{id: string, name: string} | null>(null);
+  const [memberToKick, setMemberToKick] = useState<{ id: string, name: string } | null>(null);
+  const [isKicking, setIsKicking] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
 
-const handleKickMember = async () => {
-  if (!memberToKick || !token) return;
-  
-  try {
-    // Replace with your actual service call
-    // await kickTeamMember(teamId, memberToKick.id, token);
-    
-    toast.success(`${memberToKick.name} has been removed`);
-    // Refresh data
-    setTeamData({
-      ...teamData,
-      teamMembers: teamData.teamMembers.filter((m: any) => m.id !== memberToKick.id)
-    });
-  } catch (err: any) {
-    toast.error("Failed to kick member");
-  } finally {
-    setIsKickModalOpen(false);
-    setMemberToKick(null);
-  }
-};
+  const [instructorsList, setInstructorsList] = useState<Instructor[]>([]);
+
+  const isInstructorRoute = location.pathname.includes("/instructor");
+  const [isAssignedInstructor, setIsAssignedInstructor] = useState(false);
+
+  const handleAssign = async (id: number | string) => {
+    if (!teamId || !token) return;
+    try {
+      const response = await assignInstructor(teamId, id.toString(), token);
+      if (response.data.success) {
+        toast.success("Instructor assigned successfully.");
+        setShowModal(false);
+        setTeamData({
+          ...teamData,
+          instructor: response.data.data.instructor.name
+        });
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to assign instructor");
+    }
+  };
+
+  const fetchInstructors = async () => {
+    const classIdToUse = teamData?.classId;
+    if (!classIdToUse) {
+      toast.error("Could not find class ID to fetch instructors.");
+      return;
+    }
+    if (!token) return;
+
+    try {
+      const resp = await getClassInstructors(classIdToUse, token);
+
+      const responseData = resp.data?.data || resp.data;
+      if (Array.isArray(responseData)) {
+        const mapped = responseData.map((inv: any) => ({
+          id: inv.id || inv._id,
+          name: inv.first_name + ' ' + inv.last_name || inv.username || 'Unknown',
+          avatar: inv.profile_picture || inv.avatar || undefined
+        }));
+        setInstructorsList(mapped);
+      } else {
+        toast.error("Invalid response format for instructors");
+      }
+    } catch (err) {
+      toast.error("Failed to fetch instructors");
+    }
+  };
+  const handleKickMember = async () => {
+    if (!memberToKick || !token || !teamId || isKicking) return;
+    if (!isInstructorRoute || !isAssignedInstructor) {
+      toast.error("Only the assigned instructor can remove team members.");
+      return;
+    }
+
+    setIsKicking(true);
+    try {
+      const response = await kickStudentFromTeam(teamId, memberToKick.id, token);
+      toast.success(
+        response.data?.message || `${memberToKick.name} has been removed`,
+      );
+
+      setTeamData({
+        ...teamData,
+        teamMembers: teamData.teamMembers.filter(
+          (m: any) => m.id !== memberToKick.id,
+        ),
+      });
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to kick member");
+    } finally {
+      setIsKicking(false);
+      setIsKickModalOpen(false);
+      setMemberToKick(null);
+    }
+  };
   useEffect(() => {
     const fetchTeamDetails = async () => {
       if (!teamId || !courseworkId) {
@@ -86,6 +155,24 @@ const handleKickMember = async () => {
 
     fetchTeamDetails();
   }, [teamId, courseworkId, token]);
+
+  useEffect(() => {
+    const checkInstructorStatus = async () => {
+      if (isInstructorRoute && token && userId && teamId) {
+        try {
+           const response = await getInstructorTeams(userId, token);
+           const data = response.data?.data || response.data;
+           if (Array.isArray(data)) {
+              const ownsTeam = data.some((team: any) => team.teamId === teamId);
+              setIsAssignedInstructor(ownsTeam);
+           }
+        } catch (err) {
+           console.error("Failed to verify instructor team ownership:", err);
+        }
+      }
+    };
+    checkInstructorStatus();
+  }, [isInstructorRoute, token, userId, teamId]);
 
   const handleInviteClick = () => {
     if (!teamData || teamData.isLocked) return;
@@ -164,51 +251,69 @@ const handleKickMember = async () => {
           >
             <ArrowLeft size={20} className="text-gray-600" />
           </button>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+          <div><h1 className="text-xl md:text-2xl font-bold text-gray-900">
             {teamData.teamName}
           </h1>
-          <p className="text-gray-500 text-sm">
-            {teamData.classCode} {teamData.className} ·{" "}
-            {teamData.courseworkName}
-          </p>
+            <p className="text-gray-500 text-sm">
+              {teamData.className} -{" "}
+              {teamData.courseworkName}
+            </p></div>
+
         </div>
 
-        <div className="flex gap-2 w-full sm:w-auto">
-          <button
-            onClick={handleInviteClick}
-            disabled={teamData.isLocked}
-            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-white rounded-lg text-sm font-semibold transition-colors
-              ${teamData.isLocked ? "bg-gray-400 cursor-not-allowed" : "bg-[#528E8C] hover:bg-[#437674] cursor-pointer"}`}
-          >
-            <UserPlus size={16} />
-            <span className="inline">Invite</span>
-          </button>
+        {!isInstructorRoute && (
+          <div className="flex gap-2 w-full sm:w-auto">
 
-          {isLeader && !teamData.isLocked && (
+            {isLeader && !teamData.instructor && (
+              <button
+                onClick={() => {
+                  fetchInstructors();
+                  setShowModal(true);
+                }}
+                disabled={teamData.isLocked}
+                className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-white rounded-lg text-sm font-semibold transition-colors
+                  ${teamData.isLocked ? "bg-gray-400 cursor-not-allowed" : "bg-[#528E8C] hover:bg-[#437674] cursor-pointer"}`}
+              >
+                <UserPlus size={16} />
+                <span className="inline">Assign instructor</span>
+              </button>
+            )}
             <button
-              onClick={handleLockTeam}
-              disabled={isLocking}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 bg-[#528E8C] text-white rounded-lg text-sm font-semibold hover:bg-[#437674] transition-colors cursor-pointer disabled:opacity-50"
+              onClick={handleInviteClick}
+              disabled={teamData.isLocked}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-white rounded-lg text-sm font-semibold transition-colors
+                ${teamData.isLocked ? "bg-gray-400 cursor-not-allowed" : "bg-[#528E8C] hover:bg-[#437674] cursor-pointer"}`}
             >
-              {isLocking ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
+              <UserPlus size={16} />
+              <span className="inline">Invite</span>
+            </button>
+
+            {isLeader && !teamData.isLocked && (
+              <button
+                onClick={handleLockTeam}
+                disabled={isLocking}
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 bg-[#528E8C] text-white rounded-lg text-sm font-semibold hover:bg-[#437674] transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isLocking ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Lock size={16} />
+                )}
+                <span className="inline">Lock Team</span>
+              </button>
+            )}
+
+            {teamData.isLocked && (
+              <button
+                disabled
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed"
+              >
                 <Lock size={16} />
-              )}
-              <span className="inline">Lock Team</span>
-            </button>
-          )}
-
-          {teamData.isLocked && (
-            <button
-              disabled
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 bg-gray-400 text-white rounded-lg text-sm font-semibold cursor-not-allowed"
-            >
-              <Lock size={16} />
-              <span className="inline">Team Locked</span>
-            </button>
-          )}
-        </div>
+                <span className="inline">Team Locked</span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Navigation Tabs - Scrollable on mobile */}
@@ -257,11 +362,11 @@ const handleKickMember = async () => {
                   <p className="text-xs text-gray-400">Instructor</p>
                 </div>
               </div>
-              {teamData.instructor && (
+              {/* {teamData.instructor && (
                 <button className="p-2 text-[#2D7A78] hover:bg-gray-50 rounded-full transition-colors cursor-pointer">
                   <MessageSquare size={20} />
                 </button>
-              )}
+              )} */}
             </div>
           </section>
 
@@ -273,63 +378,65 @@ const handleKickMember = async () => {
             <div className="space-y-3">
               {teamData.teamMembers?.map((member: any) => (
                 <div
-  key={member.id}
-  onClick={() => navigate(`/student/${member.id}/profile`)}
-  className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 p-3 md:p-4 flex items-center justify-between hover:shadow-md transition-shadow"
->
-  {/* GROUP 1: AVATAR AND NAME */}
-  <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
-    <div
-      className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-gray-200 flex-shrink-0 flex items-center justify-center font-bold uppercase"
-      style={{
-        backgroundColor: teamData.classColor || "#f3f4f6",
-        color: teamData.classColor ? "#ffffff" : "#6b7280",
-      }}
-    >
-      {member.name.charAt(0)}
-    </div>
-    <div className="min-w-0">
-      <div className="flex flex-wrap items-center gap-2">
-        <p className="font-bold text-sm md:text-base text-gray-800 truncate">
-          {member.name}
-        </p>
-        {member.role === "LEADER" && (
-          <span className="flex items-center gap-1 text-[10px] md:text-xs text-yellow-600 font-semibold bg-yellow-50 px-2 py-0.5 rounded-full">
-            <Crown size={12} className="fill-yellow-600" />
-            Leader
-          </span>
-        )}
-      </div>
-      <p className="text-xs text-gray-400">Student</p>
-    </div>
-  </div>
+                  key={member.id}
+                  onClick={() => navigate(`/student/${member.id}/profile`)}
+                  className="cursor-pointer bg-white rounded-xl shadow-sm border border-gray-100 p-3 md:p-4 flex items-center justify-between hover:shadow-md transition-shadow"
+                >
+                  {/* GROUP 1: AVATAR AND NAME */}
+                  <div className="flex items-center gap-3 md:gap-4 overflow-hidden">
+                    <div
+                      className="w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-gray-200 flex-shrink-0 flex items-center justify-center font-bold uppercase"
+                      style={{
+                        backgroundColor: teamData.classColor || "#f3f4f6",
+                        color: teamData.classColor ? "#ffffff" : "#6b7280",
+                      }}
+                    >
+                      {member.name.charAt(0)}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-bold text-sm md:text-base text-gray-800 truncate">
+                          {member.name}
+                        </p>
+                        {member.role === "LEADER" && (
+                          <span className="flex items-center gap-1 text-[10px] md:text-xs text-yellow-600 font-semibold bg-yellow-50 px-2 py-0.5 rounded-full">
+                            <Crown size={12} className="fill-yellow-600" />
+                            Leader
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-400">Student</p>
+                    </div>
+                  </div>
 
-  {/* ✅ GROUP 2: ACTION BUTTONS (The Fix) */}
-  <div className="flex items-center gap-1 flex-shrink-0">
-    {member.id !== userId && (
-      <button 
-        onClick={(e) => e.stopPropagation()} // Prevent card click
-        className="p-2 text-[#2D7A78] hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
-      >
-        <MessageSquare size={20} />
-      </button>
-    )}
+                  {/* ✅ GROUP 2: ACTION BUTTONS (The Fix) */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {/* {member.id !== userId && (
+                      <button
+                        onClick={(e) => e.stopPropagation()} // Prevent card click
+                        className="p-2 text-[#2D7A78] hover:bg-gray-50 rounded-full transition-colors cursor-pointer"
+                      >
+                        <MessageSquare size={20} />
+                      </button>
+                    )} */}
 
-    {(isLeader || location.pathname.includes("/instructor")) && member.id !== userId && (
-      <button
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent card click
-          setMemberToKick({ id: member.id, name: member.name });
-          setIsKickModalOpen(true);
-        }}
-        className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
-        title="Kick Member"
-      >
-        <UserMinus size={20} />
-      </button>
-    )}
-  </div>
-</div>
+                    {isInstructorRoute &&
+                      isAssignedInstructor &&
+                      member.id !== userId && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click
+                          setMemberToKick({ id: member.id, name: member.name });
+                          setIsKickModalOpen(true);
+                        }}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
+                        title="Kick Member"
+                      >
+                        <UserMinus size={20} />
+                      </button>
+                    )}
+                  </div>
+                </div>
               ))}
 
               {(!teamData.teamMembers || teamData.teamMembers.length === 0) && (
@@ -341,40 +448,55 @@ const handleKickMember = async () => {
           </section>
         </div>
       )}
-
+      <AssignInstructorMenu
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        instructors={instructorsList}
+        onAssign={handleAssign}
+      />
       {/* ✅ KICK CONFIRMATION MODAL */}
-{isKickModalOpen && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-[9999] backdrop-blur-sm p-4">
-    <div className="bg-white p-8 rounded-2xl w-full max-w-[400px] shadow-2xl border border-gray-100 animate-in fade-in zoom-in duration-200">
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
-        Kick Member
-      </h2>
-      
-      <p className="text-center text-gray-600 mb-8 leading-relaxed">
-        Are you sure you want to kick <span className="font-semibold text-red-600">{memberToKick?.name}</span> from the team? This action cannot be undone.
-      </p>
+      {isKickModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-[9999] backdrop-blur-sm p-4">
+          <div className="bg-white p-8 rounded-2xl w-full max-w-[400px] shadow-2xl border border-gray-100 animate-in fade-in zoom-in duration-200">
+            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
+              Kick Member
+            </h2>
 
-      <div className="flex gap-4">
-        <button
-          onClick={() => {
-            setIsKickModalOpen(false);
-            setMemberToKick(null);
-          }}
-          className="flex-1 px-4 py-2 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
-        >
-          Cancel
-        </button>
+            <p className="text-center text-gray-600 mb-8 leading-relaxed">
+              Are you sure you want to kick <span className="font-semibold text-red-600">{memberToKick?.name}</span> from the team? This action cannot be undone.
+            </p>
 
-        <button
-          onClick={handleKickMember}
-          className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
-        >
-          Kick
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  if (isKicking) return;
+                  setIsKickModalOpen(false);
+                  setMemberToKick(null);
+                }}
+                disabled={isKicking}
+                className="flex-1 px-4 py-2 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleKickMember}
+                disabled={isKicking}
+                className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed disabled:active:scale-100 flex items-center justify-center gap-2"
+              >
+                {isKicking ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Kicking...
+                  </>
+                ) : (
+                  "Kick"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

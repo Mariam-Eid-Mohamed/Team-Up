@@ -135,7 +135,7 @@ const AvailableMembers: React.FC = () => {
       } catch (err: any) {
         setError(
           err?.response?.data?.message ||
-            "An unexpected error occurred while loading students.",
+          "An unexpected error occurred while loading students.",
         );
       } finally {
         setLoading(false);
@@ -189,7 +189,7 @@ const AvailableMembers: React.FC = () => {
     } catch (err: any) {
       toast.error(
         err?.response?.data?.message ||
-          "An unexpected error occurred while sending the invitation.",
+        "An unexpected error occurred while sending the invitation.",
       );
     } finally {
       setIsSendingInvite(false);
@@ -223,7 +223,7 @@ const AvailableMembers: React.FC = () => {
   }, [searchQuery]);
 
   const headerTitle =
-    (classCode && className && `${classCode} - ${className}`) ||
+    (className && courseworkName && `${className} - ${courseworkName}`) ||
     className ||
     courseworkName ||
     "Available Members";
@@ -319,11 +319,10 @@ const AvailableMembers: React.FC = () => {
                           }
                         }}
                         disabled={isInviteDisabled}
-                        className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs font-semibold group cursor-pointer disabled:opacity-60 ${
-                          isInviteDisabled
-                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : "bg-[#2D7A78]/10 text-[#2D7A78] hover:bg-[#2D7A78] hover:text-white"
-                        }`}
+                        className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all text-xs font-semibold group cursor-pointer disabled:opacity-60 ${isInviteDisabled
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          : "bg-[#2D7A78]/10 text-[#2D7A78] hover:bg-[#2D7A78] hover:text-white"
+                          }`}
                       >
                         <UserPlus
                           size={14}

@@ -101,3 +101,43 @@ export const respondToJoinRequest = async (
     },
   );
 };
+
+export const assignInstructor = async (
+  teamId: string,
+  instructorId: string,
+  token: string,
+) => {
+  return Api.patch(
+    `${API_BASE}/${teamId}/assign-instructor`,
+    { instructorId },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};
+
+// Get all Instructor's own teams
+export const getInstructorTeams = async (
+  instructorId: string,
+  token: string,
+  courseCode?: string,
+) => {
+  return Api.get(`/teams/instructors/${instructorId}/teams`, {
+    headers: { Authorization: `Bearer ${token}` },
+    params: courseCode ? { courseCode } : undefined,
+  });
+};
+
+// Kick Student from Team (Instructor only)
+export const kickStudentFromTeam = async (
+  teamId: string,
+  studentId: string,
+  token: string,
+) => {
+  return Api.delete(`${API_BASE}/${teamId}/members/${studentId}/kick`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+

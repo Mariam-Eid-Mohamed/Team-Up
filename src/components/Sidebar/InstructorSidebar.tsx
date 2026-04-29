@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   BookOpen,
@@ -7,23 +8,42 @@ import {
   Info,
   Settings,
   LogOut,
+  Bot,
+  
 } from "lucide-react";
+import { logoutUser } from "@/Services/Helpers/Logout";
 import { Link, useLocation } from "react-router-dom";
-import React from "react";
 
 interface SidebarItemProps {
   icon: React.ReactNode;
   label: string;
-  to: string;
+  to?: string;
+  onClick?: () => void;
 }
 
-function SidebarItem({ icon, label, to }: SidebarItemProps) {
+function SidebarItem({ icon, label, to, onClick }: SidebarItemProps) {
   const location = useLocation();
-  const isActive = location.pathname === to;
+  const isActive = to ? location.pathname === to : false;
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="
+          w-full flex items-center justify-center lg:justify-start gap-3 px-3 py-3 rounded-md
+          transition-colors cursor-pointer text-gray-800 hover:bg-gray-100
+        "
+      >
+        {icon}
+        <span className="hidden lg:inline text-sm font-medium">{label}</span>
+      </button>
+    );
+  }
 
   return (
     <Link
-      to={to}
+      to={to || "#"}
       className={`
         flex items-center justify-center lg:justify-start gap-3 px-3 py-3 rounded-md
         transition-colors cursor-pointer
@@ -41,9 +61,14 @@ function SidebarItem({ icon, label, to }: SidebarItemProps) {
 }
 
 export default function Sidebar() {
+  const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ ROLE DERIVED FROM PATH (TYPE-SAFE)
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/login");
+  };
+
   const role: "admin" | "instructor" | "student" = location.pathname.startsWith(
     "/instructor",
   )
@@ -63,9 +88,7 @@ export default function Sidebar() {
         transition-all duration-300 ease-in-out
       "
     >
-      {/* Top menu */}
       <div className="space-y-2">
-        {/* ✅ DASHBOARD HANDLED HERE ONLY */}
         <SidebarItem
           icon={<LayoutDashboard size={20} />}
           label="Dashboard"
@@ -83,27 +106,34 @@ export default function Sidebar() {
           label="My Classes"
           to="/classes"
         />
+
         <SidebarItem
           icon={<Bell size={20} />}
           label="Notifications"
           to="/notifications"
         />
+
         <SidebarItem
           icon={<Users size={20} />}
           label="Teams"
           to={role === "student" ? "/student/teams" : "/instructor/teams"}
         />
 
-        {/* Instructor-only */}
-
         <SidebarItem
           icon={<UsersRound size={20} />}
           label="Students"
           to="/students"
         />
+
+       {role === "student" && (
+          <SidebarItem
+            icon={<Bot size={20} />}
+            label="AI Assistant"
+            to="/student/AI-Chat"
+          />
+        )}
       </div>
 
-      {/* Bottom menu */}
       <div className="space-y-2 border-t mt-2 pt-2">
         <SidebarItem icon={<Info size={20} />} label="About us" to="/about" />
         <SidebarItem
@@ -111,10 +141,10 @@ export default function Sidebar() {
           label="Settings"
           to="/settings"
         />
-         <SidebarItem
+        <SidebarItem
           icon={<LogOut size={20} />}
           label="Log Out"
-          to="/login"
+          onClick={handleLogout}
         />
       </div>
     </aside>

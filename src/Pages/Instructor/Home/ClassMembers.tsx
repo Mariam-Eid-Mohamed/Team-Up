@@ -1,33 +1,28 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, Search, UserPlus, RefreshCw, ShieldCheck, Loader2, UserMinus } from 'lucide-react';
-import { Pagination } from '../../../components/Pagination/Pagination';
-import { getToken } from '@/utilis/token';
-import { getClassMembers, assignClassAdmin } from '@/Services/class Endpoints/Endpoints';
-import toast from 'react-hot-toast';
-import { useSessionStore } from '../../../store/sessionStore';
-import RemoveMemberModal from '@/components/RemoveMemberModal/RemoveMemberModal';
-
-export interface ClassMember {
-  _id: string;
-  first_name: string;
-  last_name: string;
-  username: string;
-  email: string;
-  role: string;
-  classRole: string;
-  joined_date: string;
-}
-
-interface ClassMembersResponse {
-  success: boolean;
-  data: {
-    admins: ClassMember[];
-    instructors: ClassMember[];
-    students: ClassMember[];
-    class_color?: string;
-  };
-}
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  ArrowLeft,
+  Search,
+  UserPlus,
+  RefreshCw,
+  ShieldCheck,
+  Loader2,
+  UserMinus,
+} from "lucide-react";
+import { Pagination } from "../../../components/Pagination/Pagination";
+import { getToken } from "@/utilis/token";
+import {
+  getClassMembers,
+  assignClassAdmin,
+  removeStudentFromClass,
+} from "@/Services/class Endpoints/Endpoints";
+import toast from "react-hot-toast";
+import { useSessionStore } from "../../../store/sessionStore";
+import RemoveMemberModal from "@/components/RemoveMemberModal/RemoveMemberModal";
+import {
+  type ClassMember,
+  type ClassMembersResponse,
+} from "@/interfaces/interfaces";
 
 const MEMBERS_PER_PAGE = 9;
 
@@ -35,11 +30,12 @@ const ClassMembers: React.FC = () => {
   const navigate = useNavigate();
   const { id: classId } = useParams<{ id: string }>();
   const location = useLocation();
-  const isInstructor = location.pathname.includes('/instructor');
-  const className = (location.state as { className?: string } | null)?.className;
+  const isInstructor = location.pathname.includes("/instructor");
+  const className = (location.state as { className?: string } | null)
+    ?.className;
   const userId = useSessionStore((state) => state.userId);
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [admins, setAdmins] = useState<ClassMember[]>([]);
   const [instructors, setInstructors] = useState<ClassMember[]>([]);
@@ -49,62 +45,67 @@ const ClassMembers: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-
-
+  const [removingStudent, setRemovingStudent] = useState(false);
   // 1. Add these new states
-const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-const [selectedStudent, setSelectedStudent] = useState<ClassMember | null>(null);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<ClassMember | null>(
+    null,
+  );
 
-// 2. Function to open the modal
-const triggerRemoveModal = (student: ClassMember) => {
-  setSelectedStudent(student);
-  setIsRemoveModalOpen(true);
-};
+  // 2. Function to open the modal
+  const triggerRemoveModal = (student: ClassMember) => {
+    setSelectedStudent(student);
+    setIsRemoveModalOpen(true);
+  };
 
-// 3. Function to close the modal
-const closeRemoveModal = () => {
-  setIsRemoveModalOpen(false);
-  setSelectedStudent(null);
-};
+  // 3. Function to close the modal
+  const closeRemoveModal = () => {
+    setIsRemoveModalOpen(false);
+    setSelectedStudent(null);
+  };
 
-  const fetchMembers = useCallback(async (isRefresh = false) => {
-    if (!classId) return;
-    const token = getToken();
-    if (!token) {
-      setError('Please sign in to view class members.');
-      setLoading(false);
-      return;
-    }
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
-    setError(null);
-    try {
-      const response = await getClassMembers(classId, token);
-      const data = (response.data as ClassMembersResponse).data;
-      const adminsList = data?.admins ?? [];
-      const adminIds = new Set(adminsList.map((a: ClassMember) => a._id));
-      const instructorsOnly = (data?.instructors ?? []).filter(
-        (inst: ClassMember) => !adminIds.has(inst._id)
-      );
+  const fetchMembers = useCallback(
+    async (isRefresh = false) => {
+      if (!classId) return;
+      const token = getToken();
+      if (!token) {
+        setError("Please sign in to view class members.");
+        setLoading(false);
+        return;
+      }
+      if (isRefresh) setRefreshing(true);
+      else setLoading(true);
+      setError(null);
+      try {
+        const response = await getClassMembers(classId, token);
+        const data = (response.data as ClassMembersResponse).data;
+        const adminsList = data?.admins ?? [];
+        const adminIds = new Set(adminsList.map((a: ClassMember) => a._id));
+        const instructorsOnly = (data?.instructors ?? []).filter(
+          (inst: ClassMember) => !adminIds.has(inst._id),
+        );
 
-      setAdmins(adminsList);
-      setInstructors(instructorsOnly);
-      setStudents(data?.students ?? []);
-      setClassColor(data?.class_color ?? null);
-    } catch (err: unknown) {
-      const message =
-        err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-          : 'Failed to load class members.';
-      setError(message ?? 'Failed to load class members.');
-      setAdmins([]);
-      setInstructors([]);
-      setStudents([]);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [classId]);
+        setAdmins(adminsList);
+        setInstructors(instructorsOnly);
+        setStudents(data?.students ?? []);
+        setClassColor(data?.class_color ?? null);
+      } catch (err: unknown) {
+        const message =
+          err && typeof err === "object" && "response" in err
+            ? (err as { response?: { data?: { message?: string } } }).response
+                ?.data?.message
+            : "Failed to load class members.";
+        setError(message ?? "Failed to load class members.");
+        setAdmins([]);
+        setInstructors([]);
+        setStudents([]);
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [classId],
+  );
 
   useEffect(() => {
     fetchMembers(false);
@@ -116,28 +117,34 @@ const closeRemoveModal = () => {
 
   const filteredAdmins = admins.filter(
     (m) =>
-      `${m.first_name} ${m.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.email.toLowerCase().includes(searchQuery.toLowerCase())
+      `${m.first_name} ${m.last_name}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      m.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const filteredInstructors = instructors.filter(
     (m) =>
-      `${m.first_name} ${m.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.email.toLowerCase().includes(searchQuery.toLowerCase())
+      `${m.first_name} ${m.last_name}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      m.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   const filteredStudents = students.filter(
     (m) =>
-      `${m.first_name} ${m.last_name}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.email.toLowerCase().includes(searchQuery.toLowerCase())
+      `${m.first_name} ${m.last_name}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      m.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const totalStudentPages = Math.max(
     1,
-    Math.ceil(filteredStudents.length / MEMBERS_PER_PAGE)
+    Math.ceil(filteredStudents.length / MEMBERS_PER_PAGE),
   );
   const paginatedStudents = filteredStudents.slice(
     (currentPage - 1) * MEMBERS_PER_PAGE,
-    currentPage * MEMBERS_PER_PAGE
+    currentPage * MEMBERS_PER_PAGE,
   );
 
   const isClassAdmin = admins.some((admin) => admin._id === userId);
@@ -151,13 +158,54 @@ const closeRemoveModal = () => {
     try {
       const resp = await assignClassAdmin(classId, member._id, token);
       if (resp.data.success) {
-        toast.success(resp.data.message || 'Instructor promoted to admin successfully.');
+        toast.success(
+          resp.data.message || "Instructor promoted to admin successfully.",
+        );
         fetchMembers(true);
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to assign admin.');
+      toast.error(err?.response?.data?.message || "Failed to assign admin.");
     } finally {
       setUpdatingId(null);
+    }
+  };
+  const handleRemoveStudent = async () => {
+    if (!classId || !selectedStudent) return;
+
+    const token = getToken();
+    if (!token) {
+      toast.error("Please sign in again.");
+      return;
+    }
+
+    setRemovingStudent(true);
+
+    try {
+      const response = await removeStudentFromClass(
+        classId,
+        selectedStudent._id,
+        token,
+      );
+
+      if (response.data?.success) {
+        toast.success(
+          response.data.message || "Student removed from class successfully.",
+        );
+
+        // Option 1: update local state immediately
+        setStudents((prev) =>
+          prev.filter((student) => student._id !== selectedStudent._id),
+        );
+
+        // close modal
+        closeRemoveModal();
+
+        await fetchMembers(true);
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to remove student.");
+    } finally {
+      setRemovingStudent(false);
     }
   };
 
@@ -182,7 +230,7 @@ const closeRemoveModal = () => {
               <ArrowLeft size={20} className="text-gray-600" />
             </button>
             <h1 className="text-base sm:text-xl md:text-2xl font-semibold text-gray-800 leading-snug truncate">
-              {className ?? 'Class Members'}
+              {className ?? "Class Members"}
             </h1>
           </div>
           <button
@@ -191,7 +239,7 @@ const closeRemoveModal = () => {
             className="p-2 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-600 hover:text-[#2D7A78] hover:border-[#2D7A78]/30 transition-colors disabled:opacity-50 flex-shrink-0"
             title="Refresh members"
           >
-            <RefreshCw size={20} className={refreshing ? 'animate-spin' : ''} />
+            <RefreshCw size={20} className={refreshing ? "animate-spin" : ""} />
           </button>
         </div>
 
@@ -203,7 +251,8 @@ const closeRemoveModal = () => {
             </h2>
             {!loading && !error && (
               <p className="text-gray-500 text-sm mt-1 font-medium">
-                Instructors ({filteredInstructors.length + filteredAdmins.length})
+                Instructors (
+                {filteredInstructors.length + filteredAdmins.length})
               </p>
             )}
           </div>
@@ -274,7 +323,10 @@ const closeRemoveModal = () => {
                   <div className="flex items-center gap-3 w-full sm:w-auto">
                     <div
                       className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 flex items-center justify-center font-bold uppercase border border-gray-100"
-                      style={{ backgroundColor: classColor || '#e5e7eb', color: classColor ? '#ffffff' : '#6b7280' }}
+                      style={{
+                        backgroundColor: classColor || "#e5e7eb",
+                        color: classColor ? "#ffffff" : "#6b7280",
+                      }}
                     >
                       {member.first_name.charAt(0)}
                     </div>
@@ -303,9 +355,12 @@ const closeRemoveModal = () => {
                   )}
                 </div>
               ))}
-              {filteredInstructors.length === 0 && filteredAdmins.length === 0 && (
-                <p className="text-gray-500 text-sm py-2">No instructors or admins match your search.</p>
-              )}
+              {filteredInstructors.length === 0 &&
+                filteredAdmins.length === 0 && (
+                  <p className="text-gray-500 text-sm py-2">
+                    No instructors or admins match your search.
+                  </p>
+                )}
             </div>
 
             {/* Students Header */}
@@ -323,7 +378,10 @@ const closeRemoveModal = () => {
                 >
                   <div
                     className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0 flex items-center justify-center font-bold uppercase border border-gray-100"
-                    style={{ backgroundColor: classColor || '#f3f4f6', color: classColor ? '#ffffff' : '#9ca3af' }}
+                    style={{
+                      backgroundColor: classColor || "#f3f4f6",
+                      color: classColor ? "#ffffff" : "#9ca3af",
+                    }}
                   >
                     {member.first_name.charAt(0)}
                   </div>
@@ -331,25 +389,28 @@ const closeRemoveModal = () => {
                     <h4 className="font-semibold text-sm sm:text-base text-gray-900 truncate">
                       {member.first_name} {member.last_name}
                     </h4>
-                    <p className="text-xs text-gray-400 truncate">{member.email}</p>
+                    <p className="text-xs text-gray-400 truncate">
+                      {member.email}
+                    </p>
                   </div>
                   {/* REMOVE BUTTON: Only visible to instructors */}
-     {/* REMOVE BUTTON: Always visible but slightly faded until hover */}
-      {isInstructor && (
-        <button
-          onClick={() => triggerRemoveModal(member)}
-          className="p-2.5 text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors flex-shrink-0 bg-gray-50/50 sm:bg-transparent group-hover:bg-red-50 group-hover:text-red-600"
-          title="Remove student"
-        >
-          <UserMinus size={18} />
-        </button>
-      )}
+                  {/* REMOVE BUTTON: Always visible but slightly faded until hover */}
+                  {isInstructor && (
+                    <button
+                      onClick={() => triggerRemoveModal(member)}
+                      className="p-2.5 text-gray-800 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors flex-shrink-0 bg-gray-50/50 sm:bg-transparent group-hover:bg-red-50 group-hover:text-red-600"
+                      title="Remove student"
+                    >
+                      <UserMinus size={18} />
+                    </button>
+                  )}
                 </div>
-                
               ))}
             </div>
             {filteredStudents.length === 0 && (
-              <p className="text-gray-500 text-sm py-2">No students match your search.</p>
+              <p className="text-gray-500 text-sm py-2">
+                No students match your search.
+              </p>
             )}
 
             <Pagination
@@ -363,12 +424,13 @@ const closeRemoveModal = () => {
       <RemoveMemberModal
         isOpen={isRemoveModalOpen}
         onClose={closeRemoveModal}
-        onConfirm={() => {
-          console.log("UI Logic: Student removed", selectedStudent?._id);
-          // Your actual API call will go here later
-          closeRemoveModal();
-        }}
-        memberName={selectedStudent ? `${selectedStudent.first_name} ${selectedStudent.last_name}` : ""}
+        onConfirm={handleRemoveStudent}
+        loading={removingStudent}
+        memberName={
+          selectedStudent
+            ? `${selectedStudent.first_name} ${selectedStudent.last_name}`
+            : ""
+        }
       />
     </div>
   );
