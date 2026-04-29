@@ -182,8 +182,8 @@ const ChatBot: React.FC = () => {
                 <div key={idx} className="relative overflow-hidden rounded-2xl border-l-4 border-l-teal-500 border border-slate-100 bg-white shadow-sm p-6">
                     <div className="flex justify-between items-start mb-4 gap-2">
                       <div className="min-w-0">
-                        <h3 className="text-lg font-bold flex items-center gap-2 truncate">Team: {team.name}</h3>
-                        <p className="text-xs text-slate-400 flex items-center gap-1 uppercase font-semibold truncate"><Rocket size={12}/> Project: {team.project}</p>
+                        <h3 className="text-lg font-bold flex items-center gap-2 ">Team: {team.name}</h3>
+                        <p className="text-xs text-slate-400 flex items-center gap-1 uppercase font-semibold "><Rocket size={12}/> Project: {team.project}</p>
                       </div>
                       <div className="text-right shrink-0">
                         <span className="text-teal-500 font-bold flex items-center gap-1 text-sm">⚡ {team.matchScore}%</span>
