@@ -51,7 +51,6 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
     set({ isSaving: true, saveError: null });
     try {
       const res = await editStudentProfile(userId, token, formData);
-      console.log(res.data.data.skills);
       set({ profile: res.data.data, isSaving: false });
       return true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
