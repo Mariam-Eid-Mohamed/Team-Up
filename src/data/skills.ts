@@ -8,7 +8,7 @@ export const skills: Skill[] = [
     { "label": "C++", "value": "c++" },
     { "label": "HTML", "value": "html" },
     { "label": "CSS", "value": "css" },
-    { "label": "SASS/SCSS", "value": "sass_scss" },
+    { "label": "SASS/SCSS", "value": "sass scss" },
 
     { "label": "React.js", "value": "reactjs" },
     { "label": "Next.js", "value": "nextjs" },
@@ -25,56 +25,56 @@ export const skills: Skill[] = [
     { "label": "Redis", "value": "redis" },
     { "label": "Firebase", "value": "firebase" },
 
-    { "label": "REST API Development", "value": "rest_api_development" },
+    { "label": "REST API Development", "value": "rest api development" },
     { "label": "GraphQL", "value": "graphql" },
-    { "label": "API Integration", "value": "api_integration" },
-    { "label": "Authentication & Authorization", "value": "auth_and_authorization" },
+    { "label": "API Integration", "value": "api integration" },
+    { "label": "Authentication & Authorization", "value": "auth and authorization" },
 
     { "label": "Git", "value": "git" },
     { "label": "GitHub", "value": "github" },
     { "label": "Docker", "value": "docker" },
     { "label": "CI/CD", "value": "cicd" },
 
-    { "label": "Frontend Development", "value": "frontend_development" },
-    { "label": "Backend Development", "value": "backend_development" },
-    { "label": "Full Stack Development", "value": "fullstack_development" },
-    { "label": "Web Development", "value": "web_development" },
+    { "label": "Frontend Development", "value": "frontend development" },
+    { "label": "Backend Development", "value": "backend development" },
+    { "label": "Full Stack Development", "value": "fullstack development" },
+    { "label": "Web Development", "value": "web development" },
 
-    { "label": "Data Structures and Algorithms", "value": "data_structures_and_algorithms" },
-    { "label": "Problem Solving", "value": "problem_solving" },
+    { "label": "Data Structures and Algorithms", "value": "data structures and algorithms" },
+    { "label": "Problem Solving", "value": "problem solving" },
     { "label": "Debugging", "value": "debugging" },
-    { "label": "System Design", "value": "system_design" },
+    { "label": "System Design", "value": "system design" },
 
     { "label": "Object-Oriented Programming", "value": "oop" },
-    { "label": "Functional Programming", "value": "functional_programming" },
+    { "label": "Functional Programming", "value": "functional programming" },
 
-    { "label": "Agile Methodology", "value": "agile_methodology" },
+    { "label": "Agile Methodology", "value": "agile methodology" },
     { "label": "Scrum", "value": "scrum" },
-    { "label": "Project Management", "value": "project_management" },
+    { "label": "Project Management", "value": "project management" },
 
     { "label": "Communication", "value": "communication" },
     { "label": "Teamwork", "value": "teamwork" },
     { "label": "Leadership", "value": "leadership" },
-    { "label": "Time Management", "value": "time_management" },
+    { "label": "Time Management", "value": "time management" },
     { "label": "Adaptability", "value": "adaptability" },
-    { "label": "Critical Thinking", "value": "critical_thinking" },
+    { "label": "Critical Thinking", "value": "critical thinking" },
     { "label": "Creativity", "value": "creativity" },
 
-    { "label": "UI/UX Design", "value": "ui_ux_design" },
-    { "label": "Responsive Design", "value": "responsive_design" },
+    { "label": "UI/UX Design", "value": "ui ux design" },
+    { "label": "Responsive Design", "value": "responsive design" },
 
     { "label": "Testing", "value": "testing" },
-    { "label": "Unit Testing", "value": "unit_testing" },
+    { "label": "Unit Testing", "value": "unit testing" },
     { "label": "Jest", "value": "jest" },
     { "label": "Cypress", "value": "cypress" },
 
-    { "label": "Cloud Computing", "value": "cloud_computing" },
+    { "label": "Cloud Computing", "value": "cloud computing" },
     { "label": "AWS", "value": "aws" },
     { "label": "Azure", "value": "azure" },
     { "label": "Google Cloud Platform", "value": "gcp" },
 
-    { "label": "Machine Learning", "value": "machine_learning" },
-    { "label": "Artificial Intelligence", "value": "artificial_intelligence" }
+    { "label": "Machine Learning", "value": "machine learning" },
+    { "label": "Artificial Intelligence", "value": "artificial intelligence" }
 ]
 
 export const skillMap: Record<string, string> = Object.fromEntries(

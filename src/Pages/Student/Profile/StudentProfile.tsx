@@ -8,6 +8,7 @@ import EditProfileModal from "@/components/EditProfileModal/EditProfileModal";
 import { useProfileStore } from "@/store/ProfileStore/userProfileStore";
 import { skillMap } from "@/data/skills";
 import { availabilityMap } from "@/data/availability";
+import { formatSkill } from "@/utilis/formatSkill";
 
 export function StudentProfile() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,7 @@ export function StudentProfile() {
   return (
     <>
       {isLoading && (
-        <div className="w-full h-[400px] flex items-center justify-center absolute top-0 left-0 bg-white bg-opacity-75 z-10">
+        <div className="w-full overflow-x-hidden pt-6 min-h-screen flex items-center justify-center">
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="animate-spin" size={24} />
             <p className="text-gray-500">Loading profile...</p>
@@ -79,10 +80,7 @@ export function StudentProfile() {
                           Edit Profile
                         </DialogTrigger>
                         <DialogContent>
-                          <EditProfileModal
-                            userId={id}
-                            token={token!}
-                          />
+                          <EditProfileModal userId={id} token={token!} />
                         </DialogContent>
                       </Dialog>
                     )}
@@ -101,9 +99,7 @@ export function StudentProfile() {
                 <div className="bg-white shadow-sm border border-gray-100 rounded-lg px-4">
                   <div className="flex flex-col">
                     <div className="flex py-4 items-center flex-row justify-between gap-4">
-                      <h2 className="text-xl text-[#1F6B6B] shrink-0">
-                        GPA
-                      </h2>
+                      <h2 className="text-xl text-[#1F6B6B] shrink-0">GPA</h2>
                       <p className="text-sm text-gray-500 text-right truncate">
                         {profile?.gpa ?? "N/A"}
                       </p>
@@ -117,7 +113,8 @@ export function StudentProfile() {
                       </h2>
                       <p className="text-sm text-gray-500 text-right truncate">
                         {profile?.availability
-                          ? availabilityMap[profile.availability] || profile.availability
+                          ? availabilityMap[profile.availability] ||
+                            profile.availability
                           : "Not set"}
                       </p>
                     </div>
@@ -125,7 +122,7 @@ export function StudentProfile() {
                 </div>
 
                 {/* Skills + Links + CV */}
-                <div className="bg-white shadow-sm border border-gray-100 rounded-lg px-4 min-w-0">
+                <div className="bg-white shadow-sm border border-gray-100 rounded-lg px-4 min-w-0 h-full">
                   <div className="flex flex-col">
                     {/* Skills */}
                     <div className="flex py-4 flex-col gap-4">
@@ -137,7 +134,7 @@ export function StudentProfile() {
                               key={i}
                               className="text-sm text-white bg-[#9B87F5] px-3 py-1.5 rounded-md"
                             >
-                              {skillMap[skill] || skill}
+                              {skillMap[skill] ?? formatSkill(skill)}
                             </p>
                           ))
                         ) : (
@@ -161,9 +158,7 @@ export function StudentProfile() {
                               className="flex items-center gap-2 min-w-0"
                             >
                               <Link size={16} className="shrink-0" />
-                              <h4 className="text-sm shrink-0">
-                                {link.name}
-                              </h4>
+                              <h4 className="text-sm shrink-0">{link.name}</h4>
                               <RouterLink
                                 to={link.url}
                                 target="_blank"
@@ -213,7 +208,7 @@ export function StudentProfile() {
 
               {/* Ratings */}
               <div className="bg-white shadow-sm border border-gray-100 rounded-lg p-4 lg:col-span-2 min-w-0">
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 h-full">
                   <h2 className="text-xl text-[#1F6B6B]">Ratings</h2>
                   {(profile?.ratings ?? []).length > 0 ? (
                     <div className="flex flex-col gap-4">

@@ -1,7 +1,10 @@
 // stores/profileStore.ts
 import { create } from "zustand";
 import type { StudentProfileData } from "@/interfaces/ProfileInterfaces/profileInterface";
-import { getStudentProfile, editStudentProfile } from "@/Services/profile Endpoints/Endpoints";
+import {
+  getStudentProfile,
+  editStudentProfile,
+} from "@/Services/profile Endpoints/Endpoints";
 
 interface ProfileStore {
   profile: StudentProfileData | null;
@@ -11,7 +14,11 @@ interface ProfileStore {
   saveError: string | null;
 
   fetchProfile: (userId: string, token: string) => Promise<void>;
-  editProfile: (userId: string, token: string, formData: FormData) => Promise<boolean>;
+  editProfile: (
+    userId: string,
+    token: string,
+    formData: FormData,
+  ) => Promise<boolean>;
   setProfile: (profile: StudentProfileData) => void;
   clearProfile: () => void;
 }
@@ -31,7 +38,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
     try {
       const res = await getStudentProfile(userId, token);
       set({ profile: res.data.data, isLoading: false });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       set({
         error: err?.response?.data?.message ?? "Failed to fetch profile.",
@@ -44,6 +51,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
     set({ isSaving: true, saveError: null });
     try {
       const res = await editStudentProfile(userId, token, formData);
+      console.log(res.data.data.skills);
       set({ profile: res.data.data, isSaving: false });
       return true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
