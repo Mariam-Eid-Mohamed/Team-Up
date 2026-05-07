@@ -30,10 +30,9 @@ export function StudentProfile() {
     if (!id || !token) return;
 
     if (isOwnProfile) {
-      if (!profile) {
-        useProfileStore.getState().fetchProfile(id, token);
-      }
+      useProfileStore.getState().fetchProfile(id, token);
     } else {
+      setVisitedProfile(null);
       setVisitedLoading(true);
       setVisitedError(null);
       getStudentProfile(id, token)
@@ -41,7 +40,7 @@ export function StudentProfile() {
         .catch((err) => setVisitedError(err?.response?.data?.message ?? "Failed to load profile."))
         .finally(() => setVisitedLoading(false));
     }
-  }, [id, token]);
+  }, [id, token, isOwnProfile]);
 
   return (
     <>
@@ -56,7 +55,7 @@ export function StudentProfile() {
 
       {displayError && (
         <div className="w-full h-[400px] flex items-center justify-center absolute top-0 left-0 bg-white bg-opacity-75 z-10">
-          <p className="text-red-500">{error}</p>
+          <p className="text-red-500">{displayError}</p>
         </div>
       )}
 

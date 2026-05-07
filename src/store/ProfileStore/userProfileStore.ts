@@ -8,6 +8,7 @@ import {
 
 interface ProfileStore {
   profile: StudentProfileData | null;
+  profileUserId: string | null;
   isLoading: boolean;
   isSaving: boolean;
   error: string | null;
@@ -25,19 +26,21 @@ interface ProfileStore {
 
 export const useProfileStore = create<ProfileStore>((set, get) => ({
   profile: null,
+  profileUserId: null,
   isLoading: false,
   isSaving: false,
   error: null,
   saveError: null,
 
   fetchProfile: async (userId, token) => {
-    const { profile, isLoading } = get();
-    if (profile !== null || isLoading) return;
+    const { profile, profileUserId, isLoading } = get();
+    if (isLoading) return;
+    if (profile !== null && profileUserId === userId) return;
 
     set({ isLoading: true, error: null });
     try {
       const res = await getStudentProfile(userId, token);
-      set({ profile: res.data.data, isLoading: false });
+      set({ profile: res.data.data, profileUserId: userId, isLoading: false });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       set({
@@ -51,7 +54,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
     set({ isSaving: true, saveError: null });
     try {
       const res = await editStudentProfile(userId, token, formData);
-      set({ profile: res.data.data, isSaving: false });
+      set({ profile: res.data.data, profileUserId: userId, isSaving: false });
       return true;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -70,5 +73,6 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
 
   setProfile: (profile) => set({ profile }),
 
-  clearProfile: () => set({ profile: null, error: null, saveError: null }),
+  clearProfile: () =>
+    set({ profile: null, profileUserId: null, error: null, saveError: null }),
 }));
