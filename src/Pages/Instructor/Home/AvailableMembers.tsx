@@ -235,7 +235,7 @@ const AvailableMembers: React.FC = () => {
         <div className="flex items-center gap-3 mb-6 sm:mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 bg-white border border-gray-200 rounded-lg shadow-sm cursor-pointer"
+            className="p-2 hover:bg-gray-200 rounded-lg"
           >
             <ArrowLeft size={20} className="text-gray-600" />
           </button>

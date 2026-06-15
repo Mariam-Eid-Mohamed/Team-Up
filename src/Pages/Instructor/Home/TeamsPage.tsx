@@ -167,7 +167,7 @@ const TeamsPage: React.FC = () => {
         <div className="flex items-start md:items-center gap-3 mb-1">
           <button
             onClick={() => navigate(-1)}
-            className="text-gray-600 hover:text-black transition-colors pt-1 md:pt-0"
+            className="p-2 hover:bg-gray-200 rounded-lg"
           >
             <ArrowLeft size={22} />
           </button>
