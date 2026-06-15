@@ -97,14 +97,14 @@ export function InstructorDashboard() {
               <div className="flex gap-3 w-full sm:w-auto">
                  <button
               onClick={() => setIsModalOpen(true)}
-              className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-[#9B87F5] hover:bg-[#8B77E5] text-white px-6 py-3 rounded-lg  shadow-lg shadow-teal-900/10 transition-all active:scale-95"
+              className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-[#8c80d9] hover:bg-[#8B77E5] text-white px-6 py-3 rounded-lg  shadow-lg shadow-teal-900/10 transition-all active:scale-95"
             >
               <span className="text-sm md:text-base">Join Class</span>
               <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </button>
                 <button
                   onClick={() => setIsInviteModalOpen(true)}
-                  className="flex-1 sm:flex-none px-4 py-2.5 text-sm bg-[#9B87F5] hover:bg-[#8B77E5] text-white rounded-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                  className="flex-1 sm:flex-none px-4 py-2.5 text-sm bg-[#8c80d9] hover:bg-[#8B77E5] text-white rounded-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Invite Students</span>
@@ -112,7 +112,7 @@ export function InstructorDashboard() {
 
                 <button
                   onClick={() => setIsCreating(true)}
-                  className="flex-1 sm:flex-none px-4 py-2.5 text-sm bg-[#9B87F5] hover:bg-[#8B77E5] text-white rounded-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                  className="flex-1 sm:flex-none px-4 py-2.5 text-sm bg-[#8c80d9] hover:bg-[#8B77E5] text-white rounded-lg flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Create Class</span>
@@ -156,7 +156,7 @@ export function InstructorDashboard() {
                     <p className="text-gray-500 mb-4">No classes found.</p>
                     <button
                       onClick={() => setIsCreating(true)}
-                      className="px-4 py-2 bg-[#9B87F5] text-white rounded-lg hover:bg-[#8B77E5]"
+                      className="px-4 py-2 bg-[#8c80d9] text-white rounded-lg hover:bg-[#8B77E5]"
                     >
                       Create Your First Class
                     </button>

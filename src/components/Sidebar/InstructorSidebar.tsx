@@ -79,7 +79,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="
+      className="z-50
         bg-gray-50 border-r flex flex-col justify-between
         fixed top-14 left-0
         w-16 lg:w-64

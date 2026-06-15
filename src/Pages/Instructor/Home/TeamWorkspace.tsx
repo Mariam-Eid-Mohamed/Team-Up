@@ -26,6 +26,7 @@ interface Instructor {
   avatar?: string;
 }
 import { getClassInstructors } from "../../../Services/class Endpoints/Endpoints";
+import InsightsDashboard from "@/components/InsightsDashboard/InsightsDashboard";
 
 export default function TeamWorkspace() {
   const navigate = useNavigate();
@@ -448,6 +449,10 @@ export default function TeamWorkspace() {
           </section>
         </div>
       )}
+
+      {activeTab === "Insights" && (
+  <InsightsDashboard />
+)}
       <AssignInstructorMenu
         isOpen={showModal}
         onClose={() => setShowModal(false)}

@@ -151,7 +151,7 @@ export function StudentProfile() {
                           displayProfile?.skills.map((skill, i) => (
                             <p
                               key={i}
-                              className="text-sm text-white bg-[#9B87F5] px-3 py-1.5 rounded-md"
+                              className="text-sm text-white bg-[#8c80d9] px-3 py-1.5 rounded-md"
                             >
                               {skillMap[skill] ?? formatSkill(skill)}
                             </p>
