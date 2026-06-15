@@ -161,9 +161,9 @@ const TeamsPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8 font-sans">
       {/* Back Button and Title */}
-      <div className="max-w-4xl mx-auto mb-6 md:mb-8">
+      <div className="max-w-6xl mx-auto mb-6 md:mb-8">
         <div className="flex items-start md:items-center gap-3 mb-1">
           <button
             onClick={() => navigate(-1)}
@@ -182,7 +182,7 @@ const TeamsPage: React.FC = () => {
         </h2>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-4">
+      <div className="max-w-6xl mx-auto space-y-4">
         {/* Search Bar */}
         <div className="relative mb-6">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />

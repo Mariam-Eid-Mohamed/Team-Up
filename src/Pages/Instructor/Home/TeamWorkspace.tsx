@@ -242,7 +242,7 @@ export default function TeamWorkspace() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-6 bg-[#F9FAFB] min-h-screen">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
         <div className="flex items-center gap-3">
