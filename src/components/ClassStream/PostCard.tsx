@@ -1,4 +1,4 @@
-import { Pencil, Trash, Download, Users, UserPlus } from "lucide-react";
+import { Pencil, Trash, Download, Users, UserPlus, MessageSquareCode } from "lucide-react";
 import { useState } from "react";
 import type { Post } from "@/Types/posts";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
@@ -131,6 +131,19 @@ const handleCreateTeam = () => {
             />
           </div>
         )}
+
+        {/* Student Chatbot Icon */}
+{role === "student" && post.type === "COURSEWORK" && (
+  <button
+    onClick={() => navigate("/student/AI-Chat")}
+    title="AI Chat"
+    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+  >
+    <MessageSquareCode size={16} />
+    <span className="text-xs font-medium">AI Chat</span>
+  </button>
+)}
+
       </div>
 
       <hr className="border-t border-gray-300 mt-4" />
