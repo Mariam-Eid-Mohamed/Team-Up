@@ -94,3 +94,10 @@ export interface ClassMembersResponse {
     class_color?: string;
   };
 }
+export interface TaskFormData {
+  title: string;
+  description: string;
+  deadline: string;
+  assignedTo: string;
+  status: string;
+}
