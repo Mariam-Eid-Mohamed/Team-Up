@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useTeamStore } from "@/store/TeamStore";
+import { useEffect, useState } from "react";
 
 import {
   Search,
@@ -18,6 +17,7 @@ import toast from "react-hot-toast";
 import { createTask } from "@/Services/Task Endpoints/Endpoints";
 import { useParams } from "react-router-dom";
 import { useSessionStore } from "@/store/sessionStore";
+import { useTeamStore } from "@/store/TeamStore";
 
 export default function TaskDashboard({
   tasks,
@@ -29,7 +29,7 @@ export default function TaskDashboard({
   const [statusFilter, setStatusFilter] = useState<string>("Status");
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const { teamId } = useParams();
-  const members = useTeamStore((state) => state.members);
+
   const token = useSessionStore((state) => state.token);
   // Filter tasks based on search string and dropdown status
   const filteredTasks = tasks.filter((task) => {
@@ -43,6 +43,8 @@ export default function TaskDashboard({
   const handleUpdateTask = async (data: TaskModalData) => {
     console.log("Update task:", data);
   };
+  const members = useTeamStore((s) => s.members);
+  console.log("STORE MEMBERS:", members);
   const handleCreateTask = async (data: TaskModalData) => {
     try {
       await createTask(teamId!, token!, {

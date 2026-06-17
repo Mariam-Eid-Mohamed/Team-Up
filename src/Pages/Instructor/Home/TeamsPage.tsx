@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ChevronDown, ChevronUp, Search, ArrowLeft, UserPlus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Search,
+  ArrowLeft,
+  UserPlus,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import JoinTeamModal from "../../../components/JoinTeamModal/JoinTeamModal";
 import { getToken } from "@/utilis/token";
 import { getCourseworkTeams } from "@/Services/class Endpoints/Endpoints";
 import { sendJoinRequest } from "@/Services/team Endpoints/Endpoints";
 import toast from "react-hot-toast";
-
+import { useTeamStore } from "@/store/TeamStore";
 interface TeamMember {
   id: string;
   name: string;
@@ -68,7 +74,10 @@ function mapApiTeamToTeam(apiTeam: ApiTeam): Team {
 
 const TeamsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { id: classId, courseworkId } = useParams<{ id: string; courseworkId: string }>();
+  const { id: classId, courseworkId } = useParams<{
+    id: string;
+    courseworkId: string;
+  }>();
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
@@ -79,7 +88,7 @@ const TeamsPage: React.FC = () => {
   const [className, setClassName] = useState<string>("Class");
   const [isJoining, setIsJoining] = useState(false);
   const [pendingTeams, setPendingTeams] = useState<Set<string>>(new Set());
-
+  const setMembers = useTeamStore((state) => state.setMembers);
   const fetchTeams = useCallback(async () => {
     if (!classId || !courseworkId) return;
     const token = getToken();
@@ -91,9 +100,15 @@ const TeamsPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await getCourseworkTeams(classId, courseworkId, token, { locked: false });
+      const response = await getCourseworkTeams(classId, courseworkId, token, {
+        locked: false,
+      });
       const { data } = response.data as CourseworkTeamsResponse;
       const list = Array.isArray(data) ? data : [];
+      if (list.length > 0) {
+        setMembers(list[0].teamMembers);
+      }
+      console.log("API teams:", list);
       setTeams(list.map(mapApiTeamToTeam));
       if (list.length > 0) {
         setCourseworkName(list[0].courseworkName ?? "Coursework");
@@ -102,7 +117,8 @@ const TeamsPage: React.FC = () => {
     } catch (err: unknown) {
       const message =
         err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          ? (err as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
           : "Failed to load teams.";
       setError(message ?? "Failed to load teams.");
       setTeams([]);
@@ -119,7 +135,9 @@ const TeamsPage: React.FC = () => {
     if (!selectedTeam) return;
 
     if (!selectedTeam.id) {
-      toast.error("Cannot join team: this team is missing an ID. Check the developer console for details.");
+      toast.error(
+        "Cannot join team: this team is missing an ID. Check the developer console for details.",
+      );
       return;
     }
 
@@ -148,7 +166,8 @@ const TeamsPage: React.FC = () => {
     } catch (err: unknown) {
       const message =
         err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          ? (err as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
           : "Failed to send join request. Please try again.";
       toast.error(message ?? "Failed to send join request. Please try again.");
     } finally {
@@ -157,7 +176,7 @@ const TeamsPage: React.FC = () => {
   };
 
   const filteredTeams = teams.filter((team) =>
-    team.name.toLowerCase().includes(searchQuery.toLowerCase())
+    team.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -185,7 +204,10 @@ const TeamsPage: React.FC = () => {
       <div className="max-w-6xl mx-auto space-y-4">
         {/* Search Bar */}
         <div className="relative mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
+          />
           <input
             type="text"
             placeholder="Search for a team..."
@@ -212,75 +234,102 @@ const TeamsPage: React.FC = () => {
         {/* Empty state */}
         {!loading && !error && filteredTeams.length === 0 && (
           <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center text-gray-500">
-            {teams.length === 0 ? "No teams available for this coursework yet." : "No teams match your search."}
+            {teams.length === 0
+              ? "No teams available for this coursework yet."
+              : "No teams match your search."}
           </div>
         )}
 
         {/* Teams List */}
-        {!loading && !error && filteredTeams.map((team) => (
-          <div key={team.id} className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-            {/* Team Header - Stacked on mobile, row on tablet+ */}
-            <div className="p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3 md:gap-4">
+        {!loading &&
+          !error &&
+          filteredTeams.map((team) => (
+            <div
+              key={team.id}
+              className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden"
+            >
+              {/* Team Header - Stacked on mobile, row on tablet+ */}
+              <div className="p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <button
+                    onClick={() =>
+                      setExpandedTeam(expandedTeam === team.id ? null : team.id)
+                    }
+                    className="text-gray-500 hover:text-black transition-colors"
+                  >
+                    {expandedTeam === team.id ? (
+                      <ChevronUp size={20} />
+                    ) : (
+                      <ChevronDown size={20} />
+                    )}
+                  </button>
+                  <div>
+                    <h3 className="font-semibold text-base md:text-lg text-gray-800">
+                      {team.name}
+                    </h3>
+                    <p className="text-[10px] md:text-xs text-gray-400">
+                      {team.members.length} member(s)
+                    </p>
+                  </div>
+                </div>
+
                 <button
-                  onClick={() => setExpandedTeam(expandedTeam === team.id ? null : team.id)}
-                  className="text-gray-500 hover:text-black transition-colors"
-                >
-                  {expandedTeam === team.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                </button>
-                <div>
-                  <h3 className="font-semibold text-base md:text-lg text-gray-800">{team.name}</h3>
-                  <p className="text-[10px] md:text-xs text-gray-400">{team.members.length} member(s)</p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setSelectedTeam(team)}
-                disabled={pendingTeams.has(team.id)}
-                className={`flex items-center justify-center gap-2 px-4 md:px-6 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto ${pendingTeams.has(team.id)
-                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                  : "bg-[#2D7A78] hover:bg-[#23615f] text-white"
+                  type="button"
+                  onClick={() => setSelectedTeam(team)}
+                  disabled={pendingTeams.has(team.id)}
+                  className={`flex items-center justify-center gap-2 px-4 md:px-6 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto ${
+                    pendingTeams.has(team.id)
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "bg-[#2D7A78] hover:bg-[#23615f] text-white"
                   }`}
-              >
-                {pendingTeams.has(team.id) ? (
-                  "Pending"
-                ) : (
-                  <>
-                    Join Team <UserPlus size={16} />
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Expanded Member List */}
-            {expandedTeam === team.id && (
-              <div className="border-t border-gray-50 bg-white">
-                <div className="px-4 md:px-5 py-2 md:py-3 bg-gray-50/50">
-                  <span className="text-xs md:text-sm font-semibold text-[#2D7A78]">Team Members</span>
-                </div>
-                <div className="divide-y divide-gray-50">
-                  {team.members.map((member) => (
-                    <div key={member.id} className="px-4 md:px-5 py-3 md:py-4 flex items-center gap-3">
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 flex-shrink-0" />
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">{member.name}</span>
-                        {member.role === "Leader" && (
-                          <span className="flex items-center text-[9px] md:text-[10px] text-yellow-600 font-bold uppercase tracking-wider bg-yellow-50 px-2 py-0.5 rounded">
-                            👑 Leader
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  {team.members.length === 0 && (
-                    <div className="p-5 text-sm text-gray-400 italic">No members yet</div>
+                >
+                  {pendingTeams.has(team.id) ? (
+                    "Pending"
+                  ) : (
+                    <>
+                      Join Team <UserPlus size={16} />
+                    </>
                   )}
-                </div>
+                </button>
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* Expanded Member List */}
+              {expandedTeam === team.id && (
+                <div className="border-t border-gray-50 bg-white">
+                  <div className="px-4 md:px-5 py-2 md:py-3 bg-gray-50/50">
+                    <span className="text-xs md:text-sm font-semibold text-[#2D7A78]">
+                      Team Members
+                    </span>
+                  </div>
+                  <div className="divide-y divide-gray-50">
+                    {team.members.map((member) => (
+                      <div
+                        key={member.id}
+                        className="px-4 md:px-5 py-3 md:py-4 flex items-center gap-3"
+                      >
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 flex-shrink-0" />
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-medium text-gray-700">
+                            {member.name}
+                          </span>
+                          {member.role === "Leader" && (
+                            <span className="flex items-center text-[9px] md:text-[10px] text-yellow-600 font-bold uppercase tracking-wider bg-yellow-50 px-2 py-0.5 rounded">
+                              👑 Leader
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {team.members.length === 0 && (
+                      <div className="p-5 text-sm text-gray-400 italic">
+                        No members yet
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
       </div>
 
       <JoinTeamModal
