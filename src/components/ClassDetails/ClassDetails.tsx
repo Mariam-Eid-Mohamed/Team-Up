@@ -235,7 +235,7 @@ export function ClassDetails({
                       state: { className: classData.name },
                     })
                   }
-                  className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2D7A78] hover:bg-[#246361] text-white rounded-lg font-medium transition-all shadow-sm"
+                  className="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg font-medium transition-all shadow-sm"
                 >
                   <Users size={18} />
                   View Class Members

@@ -93,7 +93,7 @@ export default function ActionButtons({
 
         {/* Dropdown Menu Overlay List */}
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-full sm:w-56 rounded-xl bg-white border border-slate-100 shadow-xl z-50 py-1.5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="absolute right-0 mt-2 w-full sm:w-56 rounded-xl bg-white border border-slate-100 shadow-xl  py-1.5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-150">
             
             {/* New Post Option */}
             {(role === "instructor" || role === "admin") && (

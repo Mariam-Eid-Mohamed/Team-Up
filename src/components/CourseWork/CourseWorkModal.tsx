@@ -584,23 +584,23 @@ export default function CourseworkModal({
               </div>
 
               {/* ACTIONS */}
-              <div className="flex justify-end gap-3 pt-6">
-                <button
-                  onClick={onClose}
-                  className="px-4 py-2 rounded-md border cursor-pointer border-purple-500 text-purple-600"
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </button>
+  <div className="flex justify-center items-center gap-12 w-full pt-6">
+  <button
+    onClick={onClose}
+    className="w-44 px-6 py-2.5 rounded-md border cursor-pointer border-purple-500 text-purple-600 hover:bg-purple-50 transition-colors"
+    disabled={isSubmitting}
+  >
+    Cancel
+  </button>
 
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                  className="px-6 py-2 rounded-md bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white disabled:opacity-50"
-                >
-                  {isSubmitting ? "Creating..." : isEdit ? "Save" : "Create"}
-                </button>
-              </div>
+  <button
+    onClick={handleSubmit}
+    disabled={isSubmitting}
+    className="w-44 py-2.5 rounded-md bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-center"
+  >
+    {isSubmitting ? "Creating..." : isEdit ? "Save" : "Create"}
+  </button>
+</div>
             </>
           )}
         </div>

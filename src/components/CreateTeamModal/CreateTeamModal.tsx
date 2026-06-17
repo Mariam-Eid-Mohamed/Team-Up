@@ -107,7 +107,7 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex-1 py-2.5 bg-[#1B4D49] hover:bg-[#2D7A74] text-white rounded-lg font-bold flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+            className="flex-1 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg font-bold flex items-center justify-center gap-2  disabled:opacity-50"
           >
             {isSubmitting ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
