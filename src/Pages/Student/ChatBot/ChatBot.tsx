@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Send, Paperclip, MoreVertical, UserPlus, Users, RotateCcw, ChevronDown, Rocket, Loader2 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { Send, Paperclip, MoreVertical, UserPlus, Users, RotateCcw, ChevronDown, Rocket, Loader2, ArrowLeft } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Bot from "@/assets/images/AI-helper.png";
 import AIHelper from "@/assets/images/bot-image.png";
@@ -27,6 +27,7 @@ interface ChatLocationState {
 
 const ChatBot: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const locationState = (location.state as ChatLocationState | null) ?? {};
   const courseworkId = locationState.courseworkId;
   const courseworkName = locationState.courseworkName;
@@ -362,22 +363,34 @@ const ChatBot: React.FC = () => {
       <aside className={`flex flex-col border-r border-slate-100 bg-white transition-all duration-300 lg:sticky lg:top-[64px] lg:h-[calc(100vh-64px)]
         ${isSidebarOpen ? 'h-auto lg:w-[400px] w-full' : 'h-0 overflow-hidden lg:w-20'}`}>
 
-        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-slate-50 bg-white z-10">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-indigo-600 p-2 text-white shrink-0">
-              <img src={Bot} alt="Bot" className="h-6 w-6 rounded-full" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-sm font-bold truncate">AI Assistant</h1>
-              <div className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                <span className="text-[10px] text-slate-400 whitespace-nowrap">Always active</span>
-              </div>
-            </div>
-          </div>
-          <MoreVertical className="h-5 w-5 text-slate-400 cursor-pointer shrink-0" />
-        </div>
+       {/* Make sure to add ArrowLeft to your 'lucide-react' imports at the top */}
+<div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-slate-50 bg-white z-10">
+  <div className="flex items-center gap-3">
+    
+      <button 
+        onClick={() => navigate(-1)}
+        className="mr-1 p-1 rounded-lg hover:bg-slate-100 text-slate-500 transition-colors shrink-0"
+        aria-label="Go back"
+      >
+        <ArrowLeft className="h-5 w-5" />
+      </button>
+    
 
+    <div className="rounded-xl bg-indigo-600 p-2 text-white shrink-0">
+      <img src={Bot} alt="Bot" className="h-6 w-6 rounded-full" />
+    </div>
+    
+    <div className="min-w-0">
+      <h1 className="text-sm font-bold truncate">AI Assistant</h1>
+      <div className="flex items-center gap-1">
+        <span className="h-2 w-2 rounded-full bg-green-500"></span>
+        <span className="text-[10px] text-slate-400 whitespace-nowrap">Always active</span>
+      </div>
+    </div>
+  </div>
+  
+  <MoreVertical className="h-5 w-5 text-slate-400 cursor-pointer shrink-0" />
+</div>
         <div className="flex flex-col flex-1 overflow-hidden relative">
           <div className="flex-1 overflow-y-scroll p-4 space-y-6 pb-24 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {messages.map((msg, idx) => (

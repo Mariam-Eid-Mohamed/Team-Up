@@ -1,6 +1,6 @@
-import { Pencil, FileText, Eye, UserPlus, LogOut } from "lucide-react";
+import { Pencil, FileText, Eye, UserPlus, LogOut, ChevronDown } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import CourseworkModal from "../CourseWork/CourseWorkModal";
 import AnnouncementModal from "../ClassStream/AnnouncemetModal";
 import { createAnnouncement } from "@/Services/announcement Endpoints/Endpoints";
@@ -24,6 +24,9 @@ export default function ActionButtons({
 }: ActionButtonsProps) {
   const navigate = useNavigate();
   const { id, sectionId } = useParams();
+  // Dropdown UI State
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [isAnnounceOpen, setIsAnnounceOpen] = useState(false);
   const [isJoinSectionOpen, setIsJoinSectionOpen] = useState(false);
@@ -32,6 +35,17 @@ export default function ActionButtons({
   // NEW STATE
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
 
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const handleLeaveConfirm = () => {
     // Logic for leaving (API call here)
     console.log("Left section");
@@ -61,72 +75,98 @@ export default function ActionButtons({
     }
   };
 
+  const executeAction = (action: () => void) => {
+    action();
+    setIsDropdownOpen(false);
+  };
   return (
     <>
-      <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
-        {/* New Post — Instructor only */}
-        {(role === "instructor" || role === "admin") && (
-          <button
-            onClick={() => setIsAnnounceOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#8c80d9] text-white hover:bg-purple-700 text-sm"
-          >
-            <Pencil size={16} />
-            <span className="hidden sm:inline">New post</span>
-          </button>
-        )}
-
-        {role === "instructor" && !hideCoursework && (
-          <button
-            onClick={() => setOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#8c80d9] text-white hover:bg-purple-700 text-sm"
-          >
-            <FileText size={16} />
-            <span className="hidden sm:inline">New Coursework</span>
-          </button>
-        )}
-
+      <div className="relative inline-block text-left w-full sm:w-auto" ref={dropdownRef}>
+        {/* Dropdown Trigger Button */}
         <button
-          onClick={() =>
-            navigate(
-              role === "instructor"
-                ? `/instructor/classes/${id}/details`
-                : `/student/classes/${id}/details`,
-            )
-          }
-          className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#8c80d9] hover:bg-purple-700 text-white text-sm"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          className="flex items-center justify-between gap-2 w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[#8c80d9] text-white hover:bg-purple-700 text-sm font-medium shadow-sm transition-all duration-200"
         >
-          <Eye size={16} />
-          <span>Class Details</span>
+          <span>Actions Menu</span>
+          <ChevronDown size={16} className={`transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
         </button>
 
-        {/* Create Section — Instructor/Admin only */}
-{(role === "instructor" || role === "admin") && (
-  <button
-    onClick={() => setIsCreateSectionOpen(true)}
-    className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#8c80d9] text-white hover:bg-purple-700 text-sm"
-  >
-    <UserPlus size={16} />
-    <span className=" sm:inline">Create Section</span>
-  </button>
-)}
+        {/* Dropdown Menu Overlay List */}
+        {isDropdownOpen && (
+          <div className="absolute right-0 mt-2 w-full sm:w-56 rounded-xl bg-white border border-slate-100 shadow-xl z-50 py-1.5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-150">
+            
+            {/* New Post Option */}
+            {(role === "instructor" || role === "admin") && (
+              <button
+                onClick={() => executeAction(() => setIsAnnounceOpen(true))}
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
+              >
+                <Pencil size={16} className="text-slate-400" />
+                <span>New post</span>
+              </button>
+            )}
 
-{/* 3. CONDITIONAL BUTTON: Join vs Leave */}
-        {sectionId ? (
-        <button
-            onClick={() => setIsLeaveModalOpen(true)} // Open Leave Modal
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#8c80d9] hover:bg-purple-700 text-white text-sm"
-          >
-            <LogOut size={16} />
-            <span>Leave Section</span>
-          </button>
-        ) : (
-          <button
-            onClick={() => setIsJoinSectionOpen(true)}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md bg-[#8c80d9] hover:bg-purple-700 text-white text-sm"
-          >
-            <UserPlus size={16} />
-            <span>Join Section</span>
-          </button>
+            {/* New Coursework Option */}
+            {role === "instructor" && !hideCoursework && (
+              <button
+                onClick={() => executeAction(() => setOpen(true))}
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
+              >
+                <FileText size={16} className="text-slate-400" />
+                <span>New Coursework</span>
+              </button>
+            )}
+
+            {/* Class Details Option */}
+            <button
+              onClick={() =>
+                executeAction(() =>
+                  navigate(
+                    role === "instructor"
+                      ? `/instructor/classes/${id}/details`
+                      : `/student/classes/${id}/details`,
+                  )
+                )
+              }
+              className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
+            >
+              <Eye size={16} className="text-slate-400" />
+              <span>Class Details</span>
+            </button>
+
+            {/* Create Section Option */}
+            {(role === "instructor" || role === "admin") && (
+              <button
+                onClick={() => executeAction(() => setIsCreateSectionOpen(true))}
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
+              >
+                <UserPlus size={16} className="text-slate-400" />
+                <span>Create Section</span>
+              </button>
+            )}
+
+            {/* Divider */}
+            <hr className="my-1 border-slate-100" />
+
+            {/* Conditional Handle Join/Leave Section Option */}
+            {sectionId ? (
+              <button
+                onClick={() => executeAction(() => setIsLeaveModalOpen(true))}
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50/50 transition-colors text-left font-medium"
+              >
+                <LogOut size={16} className="text-red-400" />
+                <span>Leave Section</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => executeAction(() => setIsJoinSectionOpen(true))}
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-teal-600 hover:bg-teal-50/50 transition-colors text-left font-medium"
+              >
+                <UserPlus size={16} className="text-teal-500" />
+                <span>Join Section</span>
+              </button>
+            )}
+          </div>
         )}
       </div>
 
