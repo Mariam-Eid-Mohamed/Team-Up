@@ -54,8 +54,10 @@ export default function TaskDetailsSidebar({ isOpen, onClose }: TaskDetailsSideb
           <hr className="border-gray-200/70 w-full" />
         </div>
 
-        {/* Scrollable Form Body Content */}
-        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+        {/* UPDATED LINE BELOW: 
+          Forced vertical scroll, then hid the scrollbar track for Chrome/Safari/Edge, IE, and Firefox 
+        */}
+        <div className="flex-1 overflow-y-scroll px-8 py-6 space-y-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           
           {/* Status Row */}
           <div className="flex items-center justify-between relative">

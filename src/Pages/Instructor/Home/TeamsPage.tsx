@@ -189,7 +189,7 @@ const TeamsPage: React.FC = () => {
           <input
             type="text"
             placeholder="Search for a team..."
-            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-[#2D7A78] transition-all text-sm md:text-base"
+            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-full bg-white  focus:outline-none focus:ring-2 focus:ring-[#2D7A78]/20 shadow-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
