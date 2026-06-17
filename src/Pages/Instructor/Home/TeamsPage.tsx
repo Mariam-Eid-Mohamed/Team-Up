@@ -281,6 +281,13 @@ const TeamsPage: React.FC = () => {
                     pendingTeams.has(team.id)
                       ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                       : "bg-[#2D7A78] hover:bg-[#23615f] text-white"
+              <button
+                type="button"
+                onClick={() => setSelectedTeam(team)}
+                disabled={pendingTeams.has(team.id)}
+                className={`flex items-center justify-center gap-2 px-4 md:px-6 py-2 rounded-lg text-sm font-medium transition-colors w-full sm:w-auto ${pendingTeams.has(team.id)
+                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                  : "bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white"
                   }`}
                 >
                   {pendingTeams.has(team.id) ? (

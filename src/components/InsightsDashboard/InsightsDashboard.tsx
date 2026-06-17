@@ -293,7 +293,7 @@ export default function InsightsDashboard() {
                 placeholder="Search by task name or assignee..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-full text-xs focus:outline-none focus:ring-1 focus:ring-[#2D7A78] focus:border-[#2D7A78]"
+                className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-[#2D7A78]/20 shadow-sm"
               />
             </div>
           </div>
