@@ -16,6 +16,7 @@ export default function TaskModal({
   mode,
   initialData,
   onSubmit,
+  members,
 }: TaskModalProps) {
   const {
     register,

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useTeamStore } from "@/store/TeamStore";
+
 import {
   Search,
   Plus,
@@ -27,6 +29,7 @@ export default function TaskDashboard({
   const [statusFilter, setStatusFilter] = useState<string>("Status");
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const { teamId } = useParams();
+  const members = useTeamStore((state) => state.members);
   const token = useSessionStore((state) => state.token);
   // Filter tasks based on search string and dropdown status
   const filteredTasks = tasks.filter((task) => {
@@ -226,7 +229,7 @@ export default function TaskDashboard({
         open={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         mode={selectedTask ? "edit" : "create"}
-        members={teamMembers}
+        members={members}
         initialData={
           selectedTask
             ? {

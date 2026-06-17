@@ -1,19 +1,17 @@
-import axios from "axios";
+import Api from "../Api";
 
+const API_BASE = "/tasks/teams";
 export const createTask = (
   teamId: string,
   token: string,
-  data: {
-    name: string;
-    description: string;
-    deadline: string;
-    deliverable_type: string;
-    assignee_id?: string;
-  },
+  formData: FormData,
 ) => {
-  return axios.post(`/api/tasks/teams/${teamId}/tasks`, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  return Api.post(
+    `${API_BASE}/${teamId}/tasks`,
+    formData,
+
+    {
+      headers: { Authorization: `Bearer ${token}` },
     },
-  });
+  );
 };

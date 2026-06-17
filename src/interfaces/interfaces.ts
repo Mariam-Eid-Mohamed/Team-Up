@@ -75,6 +75,15 @@ export interface StudentTeamItem {
   teamName: string;
   courseworkName: string;
 }
+
+interface TeamMember {
+  _id: string;
+  first_name: string;
+  last_name: string;
+  username: string;
+  role: string;
+}
+
 export interface ClassMember {
   _id: string;
   first_name: string;
@@ -115,7 +124,7 @@ export interface TaskModalProps {
   mode: "create" | "edit";
   initialData?: TaskModalData | null;
   onSubmit: (data: TaskModalData) => void;
-  members: ClassMember[];
+  members: TeamMember[];
 }
 export interface Task {
   id: string;

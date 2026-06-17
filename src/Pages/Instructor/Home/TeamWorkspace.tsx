@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  MessageSquare,
   UserPlus,
   Lock,
   Crown,
@@ -45,7 +44,10 @@ export default function TeamWorkspace() {
   const [isLocking, setIsLocking] = useState(false);
   const [error, setError] = useState("");
   const [isKickModalOpen, setIsKickModalOpen] = useState(false);
-  const [memberToKick, setMemberToKick] = useState<{ id: string, name: string } | null>(null);
+  const [memberToKick, setMemberToKick] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [isKicking, setIsKicking] = useState(false);
   const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -53,7 +55,7 @@ export default function TeamWorkspace() {
 
   const isInstructorRoute = location.pathname.includes("/instructor");
   const [isAssignedInstructor, setIsAssignedInstructor] = useState(false);
-const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const handleAssign = async (id: number | string) => {
     if (!teamId || !token) return;
@@ -64,7 +66,7 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
         setShowModal(false);
         setTeamData({
           ...teamData,
-          instructor: response.data.data.instructor.name
+          instructor: response.data.data.instructor.name,
         });
       }
     } catch (err: any) {
@@ -87,8 +89,9 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
       if (Array.isArray(responseData)) {
         const mapped = responseData.map((inv: any) => ({
           id: inv.id || inv._id,
-          name: inv.first_name + ' ' + inv.last_name || inv.username || 'Unknown',
-          avatar: inv.profile_picture || inv.avatar || undefined
+          name:
+            inv.first_name + " " + inv.last_name || inv.username || "Unknown",
+          avatar: inv.profile_picture || inv.avatar || undefined,
         }));
         setInstructorsList(mapped);
       } else {
@@ -107,7 +110,11 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
 
     setIsKicking(true);
     try {
-      const response = await kickStudentFromTeam(teamId, memberToKick.id, token);
+      const response = await kickStudentFromTeam(
+        teamId,
+        memberToKick.id,
+        token,
+      );
       toast.success(
         response.data?.message || `${memberToKick.name} has been removed`,
       );
@@ -163,14 +170,14 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
     const checkInstructorStatus = async () => {
       if (isInstructorRoute && token && userId && teamId) {
         try {
-           const response = await getInstructorTeams(userId, token);
-           const data = response.data?.data || response.data;
-           if (Array.isArray(data)) {
-              const ownsTeam = data.some((team: any) => team.teamId === teamId);
-              setIsAssignedInstructor(ownsTeam);
-           }
+          const response = await getInstructorTeams(userId, token);
+          const data = response.data?.data || response.data;
+          if (Array.isArray(data)) {
+            const ownsTeam = data.some((team: any) => team.teamId === teamId);
+            setIsAssignedInstructor(ownsTeam);
+          }
         } catch (err) {
-           console.error("Failed to verify instructor team ownership:", err);
+          console.error("Failed to verify instructor team ownership:", err);
         }
       }
     };
@@ -217,7 +224,7 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
     (m: any) => m.id === userId && m.role === "LEADER",
   );
 
-   const [tasks, setTasks] = useState([
+  const [tasks, setTasks] = useState([
     {
       id: "1",
       name: "Backend - API Get",
@@ -225,8 +232,9 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
       deadline: "25/6/2026",
       createdBy: "Nada Mohammed",
       assignedTo: null,
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pretium tellus duis convallis tempus leo eu aenean.",
-      deliverable: null
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pretium tellus duis convallis tempus leo eu aenean.",
+      deliverable: null,
     },
     {
       id: "2",
@@ -235,8 +243,13 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
       deadline: "25/6/2026",
       createdBy: "Nada Mohammed",
       assignedTo: "Nada Mohammed",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pretium tellus duis convallis tempus leo eu aenean. Iaculis massa nisl malesuada lacinia integer nunc posuere. Conubia nostra inceptos himenaeos orci varius natoque penatibus. Nulla molestie mattis scelerisque maximus eget fermentum odio. Blandit quis suspendisse aliquet nisi sodales consequat magna.",
-      deliverable: { name: "Final_Report.pdf", size: "1.2 MB", uploadedAt: "on 15 Jun 2026, 11:45 AM" }
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pretium tellus duis convallis tempus leo eu aenean. Iaculis massa nisl malesuada lacinia integer nunc posuere. Conubia nostra inceptos himenaeos orci varius natoque penatibus. Nulla molestie mattis scelerisque maximus eget fermentum odio. Blandit quis suspendisse aliquet nisi sodales consequat magna.",
+      deliverable: {
+        name: "Final_Report.pdf",
+        size: "1.2 MB",
+        uploadedAt: "on 15 Jun 2026, 11:45 AM",
+      },
     },
     {
       id: "3",
@@ -245,8 +258,9 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
       deadline: "25/6/2026",
       createdBy: "Nada Mohammed",
       assignedTo: "Dalia Adel",
-      description: "Implement user-facing components based on approved system interface guidelines.",
-      deliverable: null
+      description:
+        "Implement user-facing components based on approved system interface guidelines.",
+      deliverable: null,
     },
     {
       id: "4",
@@ -255,9 +269,10 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
       deadline: "25/6/2026",
       createdBy: "Nada Mohammed",
       assignedTo: "Helana Nemr",
-      description: "Connect core logic elements to handle application response payloads.",
-      deliverable: null
-    }
+      description:
+        "Connect core logic elements to handle application response payloads.",
+      deliverable: null,
+    },
   ]);
 
   if (loading) {
@@ -286,17 +301,24 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
     );
   }
 
- 
-
-  const handleUpdateStatus = (taskId: string, newStatus: "To Do" | "In Progress" | "Done") => {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+  const handleUpdateStatus = (
+    taskId: string,
+    newStatus: "To Do" | "In Progress" | "Done",
+  ) => {
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)),
+    );
     if (selectedTask?.id === taskId) {
       setSelectedTask((prev: any) => ({ ...prev, status: newStatus }));
     }
   };
 
   const handleUpdateAssignee = (taskId: string, newAssignee: string | null) => {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, assignedTo: newAssignee } : t));
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId ? { ...t, assignedTo: newAssignee } : t,
+      ),
+    );
     if (selectedTask?.id === taskId) {
       setSelectedTask((prev: any) => ({ ...prev, assignedTo: newAssignee }));
     }
@@ -313,19 +335,18 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
           >
             <ArrowLeft size={20} className="text-gray-600" />
           </button>
-          <div><h1 className="text-xl md:text-2xl font-bold text-gray-900">
-            {teamData.teamName}
-          </h1>
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+              {teamData.teamName}
+            </h1>
             <p className="text-gray-500 text-sm">
-              {teamData.className} -{" "}
-              {teamData.courseworkName}
-            </p></div>
-
+              {teamData.className} - {teamData.courseworkName}
+            </p>
+          </div>
         </div>
 
         {!isInstructorRoute && (
           <div className="flex gap-2 w-full sm:w-auto">
-
             {isLeader && !teamData.instructor && (
               <button
                 onClick={() => {
@@ -384,10 +405,11 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`pb-3 text-sm font-medium transition-all relative whitespace-nowrap cursor-pointer ${activeTab === tab
-              ? "text-[#2D7A78]"
-              : "text-gray-500 hover:text-gray-700"
-              }`}
+            className={`pb-3 text-sm font-medium transition-all relative whitespace-nowrap cursor-pointer ${
+              activeTab === tab
+                ? "text-[#2D7A78]"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
           >
             {tab}
             {activeTab === tab && (
@@ -495,18 +517,21 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
                     {isInstructorRoute &&
                       isAssignedInstructor &&
                       member.id !== userId && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click
-                          setMemberToKick({ id: member.id, name: member.name });
-                          setIsKickModalOpen(true);
-                        }}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
-                        title="Kick Member"
-                      >
-                        <UserMinus size={20} />
-                      </button>
-                    )}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click
+                            setMemberToKick({
+                              id: member.id,
+                              name: member.name,
+                            });
+                            setIsKickModalOpen(true);
+                          }}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors cursor-pointer"
+                          title="Kick Member"
+                        >
+                          <UserMinus size={20} />
+                        </button>
+                      )}
                   </div>
                 </div>
               ))}
@@ -521,11 +546,9 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
         </div>
       )}
 
-      {activeTab === "Insights" && (
-  <InsightsDashboard />
-)}
+      {activeTab === "Insights" && <InsightsDashboard />}
 
-<TaskDetailsSidebar
+      <TaskDetailsSidebar
         isOpen={isSidebarOpen}
         onClose={() => {
           setIsSidebarOpen(false);
@@ -551,7 +574,11 @@ const [selectedTask, setSelectedTask] = useState<any>(null);
             </h2>
 
             <p className="text-center text-gray-600 mb-8 leading-relaxed">
-              Are you sure you want to kick <span className="font-semibold text-red-600">{memberToKick?.name}</span> from the team? This action cannot be undone.
+              Are you sure you want to kick{" "}
+              <span className="font-semibold text-red-600">
+                {memberToKick?.name}
+              </span>{" "}
+              from the team? This action cannot be undone.
             </p>
 
             <div className="flex gap-4">
