@@ -8,12 +8,14 @@ interface CreateTeamModalProps {
   isOpen: boolean;
   onClose: () => void;
   courseworkId: string;
+  onTeamCreated?: (teamId: string) => void;
 }
 
 const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
   isOpen,
   onClose,
   courseworkId,
+  onTeamCreated,
 }) => {
   const [teamName, setTeamName] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -41,12 +43,16 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
       const response = await createTeam(teamName, courseworkId, token);
 
       if (response.data?.success) {
+        const teamId = response.data.data._id;
+        setTeamName("");
         setIsSubmitting(false);
         onClose();
 
-        const teamId = response.data.data._id;
-        // Navigate to the student team path, passing courseworkId in state
-        navigate(`/student/teams/${teamId}`, { state: { courseworkId } });
+        if (onTeamCreated) {
+          onTeamCreated(teamId);
+        } else {
+          navigate(`/student/teams/${teamId}`, { state: { courseworkId } });
+        }
       } else {
         setError(response.data?.message || "Failed to create team.");
         setIsSubmitting(false);

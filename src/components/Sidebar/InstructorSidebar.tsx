@@ -9,7 +9,6 @@ import {
   Settings,
   LogOut,
   Bot,
-  
 } from "lucide-react";
 import { logoutUser } from "@/Services/Helpers/Logout";
 import { Link, useLocation } from "react-router-dom";
@@ -125,13 +124,13 @@ export default function Sidebar() {
           to="/students"
         />
 
-       {role === "student" && (
+        {/* {role === "student" && (
           <SidebarItem
             icon={<Bot size={20} />}
             label="AI Assistant"
             to="/student/AI-Chat"
           />
-        )}
+        )} */}
       </div>
 
       <div className="space-y-2 border-t mt-2 pt-2">

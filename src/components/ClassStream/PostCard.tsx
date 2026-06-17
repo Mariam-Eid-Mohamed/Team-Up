@@ -135,12 +135,19 @@ const handleCreateTeam = () => {
         {/* Student Chatbot Icon */}
 {role === "student" && post.type === "COURSEWORK" && (
   <button
-    onClick={() => navigate("/student/AI-Chat")}
+    onClick={() =>
+      navigate("/student/AI-Chat", {
+        state: {
+          courseworkId: post.courseworkId._id,
+          courseworkName: post.courseworkId.name,
+        },
+      })
+    }
     title="AI Chat"
     className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
   >
     <MessageSquareCode size={16} />
-    <span className="text-xs font-medium">AI Chat</span>
+    <span className="text-xs font-semibold">AI Chat</span>
   </button>
 )}
 

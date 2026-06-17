@@ -5,16 +5,28 @@ import {
   getStudentProfile,
   editStudentProfile,
 } from "@/Services/profile Endpoints/Endpoints";
+import { getStudentTeams } from "@/Services/team Endpoints/Endpoints";
+
+export interface StudentTeamItem {
+  teamId: string;
+  courseworkId: string;
+  classCode: string;
+  classColor: string;
+  teamName: string;
+  courseworkName: string;
+}
 
 interface ProfileStore {
   profile: StudentProfileData | null;
   profileUserId: string | null;
+  teams: StudentTeamItem[];
   isLoading: boolean;
   isSaving: boolean;
   error: string | null;
   saveError: string | null;
 
   fetchProfile: (userId: string, token: string) => Promise<void>;
+  fetchTeams: (userId: string, token: string) => Promise<void>;
   editProfile: (
     userId: string,
     token: string,
@@ -27,6 +39,7 @@ interface ProfileStore {
 export const useProfileStore = create<ProfileStore>((set, get) => ({
   profile: null,
   profileUserId: null,
+  teams: [],
   isLoading: false,
   isSaving: false,
   error: null,
@@ -39,14 +52,38 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
-      const res = await getStudentProfile(userId, token);
-      set({ profile: res.data.data, profileUserId: userId, isLoading: false });
+      const [profileRes, teamsRes] = await Promise.all([
+        getStudentProfile(userId, token),
+        getStudentTeams(userId, token).catch(() => ({ data: { data: [] } }))
+      ]);
+
+      const teamsData = (teamsRes.data?.success && Array.isArray(teamsRes.data.data))
+        ? teamsRes.data.data
+        : [];
+
+      set({
+        profile: profileRes.data.data,
+        teams: teamsData,
+        profileUserId: userId,
+        isLoading: false
+      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       set({
         error: err?.response?.data?.message ?? "Failed to fetch profile.",
         isLoading: false,
       });
+    }
+  },
+
+  fetchTeams: async (userId, token) => {
+    try {
+      const res = await getStudentTeams(userId, token);
+      if (res.data?.success && Array.isArray(res.data.data)) {
+        set({ teams: res.data.data });
+      }
+    } catch (err) {
+      console.error("Failed to fetch teams in store:", err);
     }
   },
 
@@ -74,5 +111,5 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
   setProfile: (profile) => set({ profile }),
 
   clearProfile: () =>
-    set({ profile: null, profileUserId: null, error: null, saveError: null }),
+    set({ profile: null, teams: [], profileUserId: null, error: null, saveError: null }),
 }));
