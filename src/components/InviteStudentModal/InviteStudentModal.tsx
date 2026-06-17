@@ -242,7 +242,7 @@ export const InviteStudentsModal: React.FC<InviteStudentsModalProps> = ({ isOpen
         
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-800">Invite Students</h2>
+          <h2 className="text-xl font-bold  text-gray-800">Invite Students</h2>
           <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
             <X className="w-5 h-5" />
           </button>
@@ -272,13 +272,13 @@ export const InviteStudentsModal: React.FC<InviteStudentsModalProps> = ({ isOpen
             <p className="text-xs text-center text-gray-500 pt-4">Select a class to generate an invite code</p>
             
             <div className="flex gap-3 mt-6">
-              <button onClick={handleClose} className="flex-1 py-2.5 border border-purple-200 text-gray-700 rounded-lg font-bold">
+              <button onClick={handleClose} className="flex-1 py-2.5 border border-purple-200 text-gray-700 rounded-lg font-bold cursor-pointer">
                 Cancel
               </button>
               <button 
                 onClick={handleNextStep}
                 disabled={!selectedClassId}
-                className="flex-1 py-2.5 bg-[#2D7A74] disabled:bg-gray-300 text-white rounded-lg font-bold transition-colors"
+                className="flex-1 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] disabled:bg-gray-300 text-white rounded-lg font-bold transition-colors"
               >
                 Done
               </button>

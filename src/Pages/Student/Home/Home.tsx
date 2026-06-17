@@ -75,7 +75,7 @@ export function StudentDashboard() {
             {/* Dark Green Responsive Button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="group w-full sm:w-auto flex items-center justify-center gap-2 bg-[#1B4D49] hover:bg-[#2D7A74] text-white px-6 py-3 rounded-lg font-bold shadow-lg shadow-teal-900/10 transition-all active:scale-95"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md  bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white  "
             >
               <span className="text-sm md:text-base">Join Class</span>
               <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />

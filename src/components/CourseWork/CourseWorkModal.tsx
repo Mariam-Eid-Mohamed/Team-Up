@@ -587,7 +587,7 @@ export default function CourseworkModal({
               <div className="flex justify-end gap-3 pt-6">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 rounded-md border border-purple-500 text-purple-600"
+                  className="px-4 py-2 rounded-md border cursor-pointer border-purple-500 text-purple-600"
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -596,7 +596,7 @@ export default function CourseworkModal({
                 <button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="px-6 py-2 rounded-md bg-teal-600 text-white disabled:opacity-50"
+                  className="px-6 py-2 rounded-md bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white disabled:opacity-50"
                 >
                   {isSubmitting ? "Creating..." : isEdit ? "Save" : "Create"}
                 </button>

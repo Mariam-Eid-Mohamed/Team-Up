@@ -300,7 +300,7 @@ export function CreateClassForm({
         <div className="flex justify-center gap-6 px-6 py-4 border-t">
           <button
             onClick={onCancel}
-            className="px-4 py-2 border rounded-lg text-gray-700 flex items-center gap-1 hover:bg-gray-50"
+            className="px-4 py-2 border rounded-lg cursor-pointer text-gray-700 flex items-center gap-1 hover:bg-gray-50"
           >
             <X size={16} />
             Cancel
@@ -309,7 +309,7 @@ export function CreateClassForm({
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="px-4 py-2 bg-[#1B4D49] hover:bg-[#2D7A74] text-white rounded-lg flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save size={16} />
             {isSubmitting ? "Creating..." : "Create Class"}

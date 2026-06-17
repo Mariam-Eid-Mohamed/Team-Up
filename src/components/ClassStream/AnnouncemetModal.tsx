@@ -34,13 +34,13 @@ export default function AnnouncementModal({
       title: "New Announcement",
       icon: <Megaphone className="text-teal-600" size={20} />,
       buttonText: "Post",
-      buttonClass: "bg-[#4f928d] hover:bg-[#3d716d]",
+      buttonClass: "bg-[#2D7A78] cursor-pointer hover:bg-[#23615f]",
     },
     edit: {
       title: "Edit Announcement",
       icon: <Megaphone className="text-teal-600" size={20} />,
       buttonText: "Save Changes",
-      buttonClass: "bg-[#4f928d] hover:bg-[#3d716d]",
+      buttonClass: "bg-[#2D7A78] cursor-pointer hover:bg-[#23615f]",
     },
     delete: {
       title: "Delete Announcement",
@@ -78,7 +78,7 @@ export default function AnnouncementModal({
           <div className="flex gap-4 mt-6 justify-center">
             <button
               onClick={onClose}
-              className="px-10 py-1.5 border border-purple-400 text-purple-600 rounded-full text-sm font-medium hover:bg-purple-50 transition-colors"
+              className="px-10 py-1.5 border  rounded-full text-sm font-medium cursor-pointer hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>

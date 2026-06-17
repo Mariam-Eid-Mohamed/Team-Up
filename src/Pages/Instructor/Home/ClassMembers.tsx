@@ -343,7 +343,7 @@ const ClassMembers: React.FC = () => {
                     <button
                       onClick={() => handleAssignAdmin(member)}
                       disabled={updatingId === member._id}
-                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-[#2D7A78] text-white rounded-lg text-sm font-medium hover:bg-[#246361] transition-all cursor-pointer disabled:opacity-50"
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg text-sm font-medium  transition-all disabled:opacity-50"
                     >
                       {updatingId === member._id ? (
                         <Loader2 size={16} className="animate-spin" />

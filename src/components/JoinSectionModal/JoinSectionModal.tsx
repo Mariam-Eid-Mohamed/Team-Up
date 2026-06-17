@@ -170,7 +170,7 @@ export default function JoinSectionModal({
               void doJoin();
             }}
             disabled={!selected || loading || isJoining}
-            className="px-5 py-1.5 bg-[#2f6f73] text-white rounded-md text-sm hover:bg-[#285f62] disabled:opacity-60 disabled:cursor-not-allowed"
+            className="px-5 py-1.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-md text-sm ] disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isJoining ? "Joining..." : "Done"}
           </button>

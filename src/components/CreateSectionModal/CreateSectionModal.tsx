@@ -181,7 +181,7 @@ export default function CreateSectionModal({
             onClick={handleSubmit}
             disabled={isLoading}
             className={`flex-1 px-4 py-2 text-white font-bold rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-50 cursor-pointer ${
-              mode === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-[#4E8D8A] hover:bg-[#3d6f6d]"
+              mode === "delete" ? "bg-red-600 hover:bg-red-700" : "bg-[#2D7A78] cursor-pointer hover:bg-[#23615f]"
             }`}
           >
             {isLoading 

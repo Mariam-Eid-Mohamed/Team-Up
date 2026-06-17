@@ -140,7 +140,7 @@ const JoinClassModal: React.FC<JoinClassModalProps> = ({ isOpen, onClose, onSucc
           <button 
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex-1 py-2.5 bg-[#1B4D49] hover:bg-[#2D7A74] text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>

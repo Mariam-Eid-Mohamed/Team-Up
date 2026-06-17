@@ -177,7 +177,7 @@ const Login = () => {
             {/* Login Button */}
             <Button
               type="submit"
-              className="w-full py-4 bg-[var(--color-primary-dark)] hover:bg-[var(--color-primary)] cursor-pointer text-white"
+              className="w-full py-4 bg-[#2D7A78]  hover:bg-[#23615f] cursor-pointer text-white"
             >
               Login
             </Button>

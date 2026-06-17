@@ -292,7 +292,7 @@ export default function TeamWorkspace() {
           </p>
           <button
             onClick={() => navigate(-1)}
-            className="px-4 py-2 bg-[#2D7A78] text-white rounded-md text-sm cursor-pointer"
+            className="px-4 py-2 bg-[#2D7A78] hover:bg-[#23615f] text-white rounded-md text-sm cursor-pointer"
           >
             Go Back
           </button>
@@ -355,7 +355,7 @@ export default function TeamWorkspace() {
                 }}
                 disabled={teamData.isLocked}
                 className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-white rounded-lg text-sm font-semibold transition-colors
-                  ${teamData.isLocked ? "bg-gray-400 cursor-not-allowed" : "bg-[#528E8C] hover:bg-[#437674] cursor-pointer"}`}
+                  ${teamData.isLocked ? "bg-gray-400 cursor-not-allowed" : "bg-[#2D7A78] cursor-pointer hover:bg-[#23615f]"}`}
               >
                 <UserPlus size={16} />
                 <span className="inline">Assign instructor</span>
@@ -365,7 +365,7 @@ export default function TeamWorkspace() {
               onClick={handleInviteClick}
               disabled={teamData.isLocked}
               className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 text-white rounded-lg text-sm font-semibold transition-colors
-                ${teamData.isLocked ? "bg-gray-400 cursor-not-allowed" : "bg-[#528E8C] hover:bg-[#437674] cursor-pointer"}`}
+                ${teamData.isLocked ? "bg-gray-400 cursor-not-allowed" : "bg-[#2D7A78] cursor-pointer hover:bg-[#23615f]"}`}
             >
               <UserPlus size={16} />
               <span className="inline">Invite</span>
@@ -375,7 +375,7 @@ export default function TeamWorkspace() {
               <button
                 onClick={handleLockTeam}
                 disabled={isLocking}
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 bg-[#528E8C] text-white rounded-lg text-sm font-semibold hover:bg-[#437674] transition-colors cursor-pointer disabled:opacity-50"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 md:px-4 py-2 bg-[#2D7A78] hover:bg-[#23615f] text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
               >
                 {isLocking ? (
                   <Loader2 size={16} className="animate-spin" />

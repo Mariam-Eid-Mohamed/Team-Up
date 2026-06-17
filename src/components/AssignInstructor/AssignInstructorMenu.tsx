@@ -90,7 +90,7 @@ const AssignInstructorModal: React.FC<AssignInstructorModalProps> = ({
             disabled={selectedId === null}
             className={`w-full py-3 rounded-lg font-bold text-white transition-all transform active:scale-[0.98]
               ${selectedId !== null 
-                ? "bg-[#528E8C] hover:bg-[#437674] shadow-md" 
+                ? "bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] shadow-md" 
                 : "bg-gray-300 cursor-not-allowed"}`}
           >
             Assign
