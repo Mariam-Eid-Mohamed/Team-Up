@@ -379,7 +379,7 @@ const ChatBot: React.FC = () => {
         </div>
 
         <div className="flex flex-col flex-1 overflow-hidden relative">
-          <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin pb-24">
+          <div className="flex-1 overflow-y-scroll p-4 space-y-6 pb-24 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                 {msg.role === 'bot' && (
