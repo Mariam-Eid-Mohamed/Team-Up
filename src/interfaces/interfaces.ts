@@ -101,3 +101,38 @@ export interface TaskFormData {
   assignedTo: string;
   status: string;
 }
+export interface TaskModalData {
+  taskName: string;
+  taskDescription: string;
+  deliverableType: string;
+  deadline: string;
+  assignee?: string;
+}
+
+export interface TaskModalProps {
+  open: boolean;
+  onClose: () => void;
+  mode: "create" | "edit";
+  initialData?: TaskModalData | null;
+  onSubmit: (data: TaskModalData) => void;
+  members: ClassMember[];
+}
+export interface Task {
+  id: string;
+  name: string;
+  status: "To Do" | "In Progress" | "Done";
+  deadline: string;
+  createdBy: string;
+  assignedTo: string | null;
+  description: string;
+  deliverable?: {
+    name: string;
+    size: string;
+    uploadedAt?: string;
+  } | null;
+}
+
+export interface TaskDashboardProps {
+  tasks: Task[];
+  onViewTask: (task: Task) => void;
+}

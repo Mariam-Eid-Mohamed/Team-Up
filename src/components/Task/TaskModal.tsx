@@ -1,21 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { X } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-interface TaskFormData {
-  taskName: string;
-  taskDescription: string;
-  deliverableType: string;
-  deadline: string;
-  assignee: string;
-}
+import {
+  TaskSchema,
+  type TaskInputs,
+} from "../../utilis/Validations/TaskValidations";
 
-interface TaskModalProps {
-  open: boolean;
-  onClose: () => void;
-  mode: "create" | "edit";
-  initialData?: TaskFormData | null;
-  onSubmit: (data: TaskFormData) => void;
-}
+import type { TaskModalProps } from "../../interfaces/interfaces";
 
 export default function TaskModal({
   open,
@@ -24,29 +17,38 @@ export default function TaskModal({
   initialData,
   onSubmit,
 }: TaskModalProps) {
-  const [form, setForm] = useState<TaskFormData>({
-    taskName: "",
-    taskDescription: "",
-    deliverableType: "",
-    deadline: "",
-    assignee: "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<TaskInputs>({
+    resolver: zodResolver(TaskSchema),
+
+    defaultValues: {
+      taskName: "",
+      taskDescription: "",
+      deliverableType: "",
+      deadline: "",
+      assignee: "",
+    },
   });
 
   useEffect(() => {
     if (initialData) {
-      setForm(initialData);
+      reset(initialData);
     }
-  }, [initialData]);
+  }, [initialData, reset]);
 
   if (!open) return null;
 
-  const handleSubmit = () => {
-    onSubmit(form);
+  const submitForm = (data: TaskInputs) => {
+    onSubmit(data);
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-      {/* 💡 Added max-h-[90vh] and flex flex-col so the modal card can manage internal heights */}
+      {/*  Added max-h-[90vh] and flex flex-col so the modal card can manage internal heights */}
       <div className="bg-white w-full max-w-md max-h-[90vh] rounded-2xl shadow-2xl p-6 relative flex flex-col animate-in fade-in zoom-in duration-200">
         {/* Header Layout (Fixed at the top) */}
         <div className="flex justify-between items-center mb-4 shrink-0">
@@ -61,7 +63,6 @@ export default function TaskModal({
           </button>
         </div>
 
-        {/* 💡 Scrollable Body Container (Only this section scrolls if content is too tall) */}
         <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-6 text-left base-scrollbar">
           {/* Task Name */}
           <div>
@@ -69,17 +70,16 @@ export default function TaskModal({
               Task Name
             </label>
             <input
+              {...register("taskName")}
               type="text"
               placeholder="e.g. UI Wireframe creation"
-              value={form.taskName}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  taskName: e.target.value,
-                })
-              }
-              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
+            {errors.taskName && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.taskName.message}
+              </p>
+            )}
           </div>
 
           {/* Description */}
@@ -88,17 +88,17 @@ export default function TaskModal({
               Task Description
             </label>
             <textarea
+              {...register("taskDescription")}
               rows={3}
               placeholder="Describe what needs to be done..."
-              value={form.taskDescription}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  taskDescription: e.target.value,
-                })
-              }
-              className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
+
+            {errors.taskDescription && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.taskDescription.message}
+              </p>
+            )}
           </div>
 
           {/* Deliverable Type */}
@@ -107,21 +107,28 @@ export default function TaskModal({
               Deliverable Type
             </label>
             <select
-              value={form.deliverableType}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  deliverableType: e.target.value,
-                })
-              }
-              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              {...register("deliverableType")}
+              className="w-full rounded-xl border border-gray-200 px-3 py-2"
             >
               <option value="">Select Type</option>
-              <option value="pdf">PDF</option>
-              <option value="image">Image</option>
-              <option value="document">Document</option>
-              <option value="zip">ZIP</option>
+
+              <option value=".pdf">PDF</option>
+              <option value=".docx">DOCX</option>
+              <option value=".pptx">PPTX</option>
+              <option value=".xlsx">XLSX</option>
+              <option value=".zip">ZIP</option>
+              <option value=".txt">TXT</option>
+              <option value=".py">PY</option>
+              <option value=".jpg">JPG</option>
+              <option value=".jpeg">JPEG</option>
+              <option value=".png">PNG</option>
             </select>
+
+            {errors.deliverableType && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.deliverableType.message}
+              </p>
+            )}
           </div>
 
           {/* Deadline */}
@@ -130,16 +137,16 @@ export default function TaskModal({
               Deadline
             </label>
             <input
+              {...register("deadline")}
               type="date"
-              value={form.deadline}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  deadline: e.target.value,
-                })
-              }
-              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              className="w-full rounded-xl border border-gray-200 px-3 py-2"
             />
+
+            {errors.deadline && (
+              <p className="mt-1 text-xs text-red-500">
+                {errors.deadline.message}
+              </p>
+            )}
           </div>
 
           {/* Assignee */}
@@ -147,18 +154,18 @@ export default function TaskModal({
             <label className="mb-1.5 block text-sm font-semibold text-gray-700">
               Assignee (optional)
             </label>
-            <input
-              type="text"
-              placeholder="Assign or search member..."
-              value={form.assignee}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  assignee: e.target.value,
-                })
-              }
-              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-            />
+            <select
+              {...register("assignee")}
+              className="w-full rounded-xl border border-gray-200 px-3 py-2"
+            >
+              <option value="">Unassigned</option>
+
+              {members.map((member) => (
+                <option key={member._id} value={member._id}>
+                  {member.first_name} {member.last_name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -172,7 +179,7 @@ export default function TaskModal({
           </button>
 
           <button
-            onClick={handleSubmit}
+            onClick={handleSubmit(submitForm)}
             className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg font-bold transition active:scale-95 cursor-pointer"
           >
             {mode === "edit" ? "Save Changes" : "Create Task"}

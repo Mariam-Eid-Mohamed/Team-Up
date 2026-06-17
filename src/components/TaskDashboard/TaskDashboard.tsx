@@ -7,26 +7,15 @@ import {
   ChevronRight,
 } from "lucide-react";
 import TaskModal from "../Task/TaskModal";
-
-interface Task {
-  id: string;
-  name: string;
-  status: "To Do" | "In Progress" | "Done";
-  deadline: string;
-  createdBy: string;
-  assignedTo: string | null;
-  description: string;
-  deliverable?: {
-    name: string;
-    size: string;
-    uploadedAt?: string;
-  } | null;
-}
-
-interface TaskDashboardProps {
-  tasks: Task[];
-  onViewTask: (task: Task) => void;
-}
+import type {
+  Task,
+  TaskDashboardProps,
+  TaskModalData,
+} from "@/interfaces/interfaces";
+import toast from "react-hot-toast";
+import { createTask } from "@/Services/Task Endpoints/Endpoints";
+import { useParams } from "react-router-dom";
+import { useSessionStore } from "@/store/sessionStore";
 
 export default function TaskDashboard({
   tasks,
@@ -37,7 +26,8 @@ export default function TaskDashboard({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("Status");
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
-
+  const { teamId } = useParams();
+  const token = useSessionStore((state) => state.token);
   // Filter tasks based on search string and dropdown status
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch = task.name
@@ -47,6 +37,28 @@ export default function TaskDashboard({
       statusFilter === "Status" || task.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+  const handleUpdateTask = async (data: TaskModalData) => {
+    console.log("Update task:", data);
+  };
+  const handleCreateTask = async (data: TaskModalData) => {
+    try {
+      await createTask(teamId!, token!, {
+        name: data.taskName,
+        description: data.taskDescription,
+        deadline: data.deadline,
+        deliverable_type: data.deliverableType,
+        assignee_id: data.assignee || undefined,
+      });
+
+      setIsTaskModalOpen(false);
+
+      toast.success("Task created successfully");
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Failed to create task");
+    }
+  };
 
   // Open modal in CREATE mode
   const handleCreateClick = () => {
@@ -209,10 +221,12 @@ export default function TaskDashboard({
       </div>
 
       {/* Dynamic TaskModal Injection Integration */}
+
       <TaskModal
         open={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         mode={selectedTask ? "edit" : "create"}
+        members={teamMembers}
         initialData={
           selectedTask
             ? {
@@ -222,18 +236,9 @@ export default function TaskDashboard({
                 deadline: selectedTask.deadline,
                 assignee: selectedTask.assignedTo || "",
               }
-            : {
-                taskName: "",
-                taskDescription: "",
-                deliverableType: "",
-                deadline: "",
-                assignee: "",
-              }
+            : null
         }
-        onSubmit={(data) => {
-          console.log("Captured Modal Submission Data Form:", data);
-          setIsTaskModalOpen(false);
-        }}
+        onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
       />
     </div>
   );
