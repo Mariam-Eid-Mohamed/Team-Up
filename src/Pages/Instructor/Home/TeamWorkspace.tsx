@@ -421,7 +421,6 @@ export default function TeamWorkspace() {
 
       {activeTab === "Tasks" && (
         <TaskDashboard
-          tasks={tasks}
           onViewTask={(task) => {
             setSelectedTask(task);
             setIsSidebarOpen(true);

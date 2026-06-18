@@ -22,3 +22,37 @@ export const editTask = (teamId: string, token: string, formData: FormData) => {
     },
   });
 };
+
+export const getTeamTasks = (
+  teamId: string,
+  token: string,
+  params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  },
+) => {
+  return Api.get(`${API_BASE}/team/${teamId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    params,
+  });
+};
+
+export const getTaskDetails = (taskId: string, token: string) => {
+  return Api.get(`${API_BASE}/${taskId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const uploadDeliverable = (taskId: string, token: string, file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return Api.patch(`${API_BASE}/${taskId}/deliverable`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+

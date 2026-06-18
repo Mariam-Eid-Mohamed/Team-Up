@@ -142,6 +142,6 @@ export interface Task {
 }
 
 export interface TaskDashboardProps {
-  tasks: Task[];
+  tasks?: Task[];
   onViewTask: (task: Task) => void;
 }
