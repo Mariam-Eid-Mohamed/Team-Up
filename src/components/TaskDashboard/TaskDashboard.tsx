@@ -13,26 +13,14 @@ import type {
   Task,
   TaskDashboardProps,
   TaskModalData,
+  TeamMember,
 } from "@/interfaces/interfaces";
 import toast from "react-hot-toast";
 import { createTask, getTeamTasks } from "@/Services/Task Endpoints/Endpoints";
 import { useParams } from "react-router-dom";
 import { useSessionStore } from "@/store/sessionStore";
-import { useTeamStore } from "@/store/TeamStore";
 import { getTeamMembers } from "@/Services/team Endpoints/Endpoints";
-interface TeamMember {
-  id: string;
-  role: string;
-  joined_at: string;
 
-  student: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    profile_picture: string | null;
-  };
-}
 export default function TaskDashboard({ onViewTask }: TaskDashboardProps) {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any | null>(null); // Tracks the task for view/edit mode
@@ -160,9 +148,12 @@ export default function TaskDashboard({ onViewTask }: TaskDashboardProps) {
 
   // Open modal in EDIT/VIEW mode
   const handleViewClick = (task: any) => {
+    onViewTask(task); // Optional: preserves your parent components action
+  };
+
+  const handleEditTask = (task: any) => {
     setSelectedTask(task);
     setIsTaskModalOpen(true);
-    onViewTask(task); // Optional: preserves your parent components action
   };
 
   const formatDate = (dateString: string) => {

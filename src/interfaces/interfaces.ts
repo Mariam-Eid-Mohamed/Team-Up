@@ -76,12 +76,18 @@ export interface StudentTeamItem {
   courseworkName: string;
 }
 
-interface TeamMember {
-  _id: string;
-  first_name: string;
-  last_name: string;
-  username: string;
+export interface TeamMember {
+  id: string;
   role: string;
+  joined_at: string;
+
+  student: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    profile_picture: string | null;
+  };
 }
 
 export interface ClassMember {

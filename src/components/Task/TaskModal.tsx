@@ -40,6 +40,9 @@ export default function TaskModal({
       reset(initialData);
     }
   }, [initialData, reset]);
+  useEffect(() => {
+    console.log("Modal members:", members);
+  }, [members]);
 
   if (!open) return null;
 
@@ -162,8 +165,8 @@ export default function TaskModal({
               <option value="">Unassigned</option>
 
               {members.map((member) => (
-                <option key={member._id} value={member._id}>
-                  {member.first_name} {member.last_name}
+                <option key={member.student.id} value={member.student.id}>
+                  {member.student.first_name} {member.student.last_name}
                 </option>
               ))}
             </select>
