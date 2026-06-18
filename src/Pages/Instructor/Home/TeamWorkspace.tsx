@@ -309,28 +309,28 @@ export default function TeamWorkspace() {
     );
   }
 
-  const handleUpdateStatus = (
-    taskId: string,
-    newStatus: "To Do" | "In Progress" | "Done",
-  ) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)),
-    );
-    if (selectedTask?.id === taskId) {
-      setSelectedTask((prev: any) => ({ ...prev, status: newStatus }));
-    }
-  };
+  // const handleUpdateStatus = (
+  //   taskId: string,
+  //   newStatus: "To Do" | "In Progress" | "Done",
+  // ) => {
+  //   setTasks((prev) =>
+  //     prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)),
+  //   );
+  //   if (selectedTask?.id === taskId) {
+  //     setSelectedTask((prev: any) => ({ ...prev, status: newStatus }));
+  //   }
+  // };
 
-  const handleUpdateAssignee = (taskId: string, newAssignee: string | null) => {
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId ? { ...t, assignedTo: newAssignee } : t,
-      ),
-    );
-    if (selectedTask?.id === taskId) {
-      setSelectedTask((prev: any) => ({ ...prev, assignedTo: newAssignee }));
-    }
-  };
+  // const handleUpdateAssignee = (taskId: string, newAssignee: string | null) => {
+  //   setTasks((prev) =>
+  //     prev.map((t) =>
+  //       t.id === taskId ? { ...t, assignedTo: newAssignee } : t,
+  //     ),
+  //   );
+  //   if (selectedTask?.id === taskId) {
+  //     setSelectedTask((prev: any) => ({ ...prev, assignedTo: newAssignee }));
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
