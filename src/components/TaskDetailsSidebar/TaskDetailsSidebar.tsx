@@ -79,7 +79,7 @@ export default function TaskDetailsSidebar({
     return (
       <>
         {/* Dim Overlay Backdrop */}
-        <div className="fixed inset-0 bg-black/20 z-[999]" onClick={onClose} />
+        <div className="fixed inset-0 " onClick={onClose} />
         {/* Sidebar Drawer Container (Loading Mode) */}
         <div className="fixed right-0 top-0 h-screen w-full max-w-[500px] bg-white z-[1000] shadow-2xl flex flex-col items-center justify-center font-sans border-l border-gray-100">
           <Loader2 className="w-8 h-8 animate-spin text-[#2D7A78] mb-2" />
