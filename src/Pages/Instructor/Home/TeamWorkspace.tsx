@@ -427,7 +427,9 @@ export default function TeamWorkspace() {
         ))}
       </div>
 
+{activeTab === "Tasks" && (
     <TaskDashboard tasks={tasks} />
+  )}
 
       {/* Content Area */}
       {activeTab === "Members" && (
