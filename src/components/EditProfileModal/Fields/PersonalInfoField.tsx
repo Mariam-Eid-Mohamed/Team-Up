@@ -1,12 +1,6 @@
 import { Input } from "../../ui/input";
 import { Field, FieldLabel } from "../../ui/field";
-import type { UseFormRegister, FieldErrors } from "react-hook-form";
-import type { EditProfileInputs } from "@/utilis/Validations/Validations";
-
-interface PersonalInfoFieldsProps {
-  register: UseFormRegister<EditProfileInputs>;
-  errors: FieldErrors<EditProfileInputs>;
-}
+import type { PersonalInfoFieldsProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 
 export default function PersonalInfoFields({
   register,

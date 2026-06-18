@@ -1,22 +1,7 @@
 import { Minus, Plus } from "lucide-react";
 import { Field, FieldLabel } from "../../ui/field";
 import { Input } from "../../ui/input";
-import type {
-  UseFormRegister,
-  FieldErrors,
-  UseFieldArrayAppend,
-  UseFieldArrayRemove,
-  FieldArrayWithId,
-} from "react-hook-form";
-import type { EditProfileInputs } from "@/utilis/Validations/Validations";
-
-interface LinksFieldProps {
-  register: UseFormRegister<EditProfileInputs>;
-  errors: FieldErrors<EditProfileInputs>;
-  linkFields: FieldArrayWithId<EditProfileInputs, "links", "id">[];
-  appendLink: UseFieldArrayAppend<EditProfileInputs, "links">;
-  removeLink: UseFieldArrayRemove;
-}
+import type { LinksFieldProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 
 export default function LinksField({
   register,

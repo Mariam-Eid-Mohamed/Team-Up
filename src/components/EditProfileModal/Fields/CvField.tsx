@@ -2,17 +2,8 @@ import { useRef, useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Field, FieldLabel } from "../../ui/field";
 import { Button } from "../../ui/button";
+import type { CvState, CvFieldProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 
-interface CvState {
-  file: File | null;       // new file chosen by user
-  filename: string | null; // display name (existing or new)
-  cleared: boolean;        // user explicitly removed the CV
-}
-
-interface CvFieldProps {
-  initialFilename?: string | null;
-  onChange: (state: CvState) => void;
-}
 
 export default function CvField({ initialFilename, onChange }: CvFieldProps) {
   const cvInputRef = useRef<HTMLInputElement | null>(null);

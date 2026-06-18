@@ -11,20 +11,10 @@ import {
 } from "../../ui/combobox";
 import { skills } from "@/data/skills";
 import type { Skill } from "@/interfaces/ProfileInterfaces/skillInterface";
-import type {
-  UseFormSetValue,
-  UseFormWatch,
-  FieldErrors,
-} from "react-hook-form";
-import type { EditProfileInputs } from "@/utilis/Validations/Validations";
-import { useProfileStore } from "@/store/ProfileStore/userProfileStore";
+import type { SkillsFieldProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 import { formatSkill } from "@/utilis/formatSkill";
 
-interface SkillsFieldProps {
-  setValue: UseFormSetValue<EditProfileInputs>;
-  watch: UseFormWatch<EditProfileInputs>;
-  errors: FieldErrors<EditProfileInputs>;
-}
+
 
 export default function SkillsField({
   setValue,

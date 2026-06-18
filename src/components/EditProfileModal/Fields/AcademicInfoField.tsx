@@ -8,15 +8,9 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Controller } from "react-hook-form";
-import type { Control, FieldErrors } from "react-hook-form";
-import type { EditProfileInputs } from "@/utilis/Validations/Validations";
+import type { AcademicInfoFieldsProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 import { availability } from "@/data/availability";
 
-interface AcademicInfoFieldsProps {
-  register: ReturnType<import("react-hook-form").UseFormRegister<EditProfileInputs>>;
-  control: Control<EditProfileInputs>;
-  errors: FieldErrors<EditProfileInputs>;
-}
 
 export default function AcademicInfoFields({
   register,
