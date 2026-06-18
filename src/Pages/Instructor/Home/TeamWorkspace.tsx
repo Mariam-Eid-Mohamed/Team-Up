@@ -56,8 +56,8 @@ export default function TeamWorkspace() {
   const isInstructorRoute = location.pathname.includes("/instructor");
   const [isAssignedInstructor, setIsAssignedInstructor] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const handleAssign = async (id: number | string) => {
     if (!teamId || !token) return;
     try {
@@ -427,14 +427,7 @@ export default function TeamWorkspace() {
         ))}
       </div>
 
-      {activeTab === "Tasks" && (
-        <TaskDashboard
-          onViewTask={(task) => {
-            setSelectedTask(task);
-            setIsSidebarOpen(true);
-          }}
-        />
-      )}
+    <TaskDashboard tasks={tasks} />
 
       {/* Content Area */}
       {activeTab === "Members" && (
@@ -555,7 +548,7 @@ export default function TeamWorkspace() {
 
       {activeTab === "Insights" && <InsightsDashboard />}
 
-      <TaskDetailsSidebar
+      {/* <TaskDetailsSidebar
         isOpen={isSidebarOpen}
         onClose={() => {
           setIsSidebarOpen(false);
@@ -566,7 +559,7 @@ export default function TeamWorkspace() {
         onUpdateStatus={handleUpdateStatus}
         onUpdateAssignee={handleUpdateAssignee}
         onEdit={handleEditTask}
-      />
+      /> */}
       <AssignInstructorMenu
         isOpen={showModal}
         onClose={() => setShowModal(false)}

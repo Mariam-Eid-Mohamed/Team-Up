@@ -19,8 +19,9 @@ import { createTask, getTeamTasks } from "@/Services/Task Endpoints/Endpoints";
 import { useParams } from "react-router-dom";
 import { useSessionStore } from "@/store/sessionStore";
 import { getTeamMembers } from "@/Services/team Endpoints/Endpoints";
+import TaskDetailsSidebar from "../TaskDetailsSidebar/TaskDetailsSidebar";
 
-export default function TaskDashboard({ onViewTask }: TaskDashboardProps) {
+export default function TaskDashboard() {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any | null>(null); // Tracks the task for view/edit mode
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,6 +38,8 @@ export default function TaskDashboard({ onViewTask }: TaskDashboardProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalTasks, setTotalTasks] = useState(0);
+  // const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const fetchMembers = async () => {
     if (!teamId || !token) return;
 
@@ -146,9 +149,10 @@ export default function TaskDashboard({ onViewTask }: TaskDashboardProps) {
   };
 
   // Open modal in EDIT/VIEW mode
-  const handleViewClick = (task: any) => {
-    onViewTask(task); // Optional: preserves your parent components action
-  };
+ const handleViewClick = (task: Task) => {
+  setSelectedTask(task);
+  setIsSidebarOpen(true);
+};
 
   const handleEditTask = (task: any) => {
     setSelectedTask(task);
@@ -390,6 +394,17 @@ export default function TaskDashboard({ onViewTask }: TaskDashboardProps) {
           </button>
         </div>
       )}
+
+
+      <TaskDetailsSidebar
+  isOpen={isSidebarOpen}
+  onClose={() => {
+    setIsSidebarOpen(false);
+    setSelectedTask(null);
+  }}
+  task={selectedTask}
+  members={members}
+/>
 
       {/* Dynamic TaskModal Injection Integration */}
       <TaskModal
