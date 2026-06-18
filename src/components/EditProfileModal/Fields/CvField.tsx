@@ -37,7 +37,7 @@ export default function CvField({ initialFilename, onChange }: CvFieldProps) {
         <Button
           type="button"
           onClick={() => cvInputRef.current?.click()}
-          className="rounded-none bg-primary hover:bg-primary-dark transition-colors text-white cursor-pointer"
+          className="rounded-none bg-[#2D7A78] hover:bg-[#23615f] transition-colors text-white cursor-pointer"
         >
           Upload file
         </Button>

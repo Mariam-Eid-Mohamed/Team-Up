@@ -17,7 +17,8 @@ export function StudentProfile() {
   const { token, userId } = useSessionStore((state) => state);
   const { profile, isLoading, error } = useProfileStore();
 
-  const [visitedProfile, setVisitedProfile] = useState<StudentProfileData | null>(null);
+  const [visitedProfile, setVisitedProfile] =
+    useState<StudentProfileData | null>(null);
   const [visitedLoading, setVisitedLoading] = useState(false);
   const [visitedError, setVisitedError] = useState<string | null>(null);
 
@@ -37,7 +38,11 @@ export function StudentProfile() {
       setVisitedError(null);
       getStudentProfile(id, token)
         .then((res) => setVisitedProfile(res.data.data))
-        .catch((err) => setVisitedError(err?.response?.data?.message ?? "Failed to load profile."))
+        .catch((err) =>
+          setVisitedError(
+            err?.response?.data?.message ?? "Failed to load profile.",
+          ),
+        )
         .finally(() => setVisitedLoading(false));
     }
   }, [id, token, isOwnProfile]);
@@ -69,7 +74,8 @@ export function StudentProfile() {
                 <div className="rounded-full overflow-hidden w-30 h-30 sm:w-40 sm:h-40 shrink-0">
                   <img
                     src={
-                      displayProfile.profile_picture?.storagePath ?? profilePlaceholder
+                      displayProfile.profile_picture?.storagePath ??
+                      profilePlaceholder
                     }
                     alt="profile-pic"
                     className="h-full w-full object-cover"
@@ -95,7 +101,7 @@ export function StudentProfile() {
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-1">
                     {isOwnProfile && (
                       <Dialog>
-                        <DialogTrigger className="w-full sm:w-auto px-4 py-2 border bg-primary  text-white hover:bg-primary-dark rounded-lg cursor-pointer shadow-sm  transition-colors text-sm">
+                        <DialogTrigger className="w-full sm:w-auto px-6 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 text-sm">
                           Edit Profile
                         </DialogTrigger>
                         <DialogContent>
@@ -151,7 +157,7 @@ export function StudentProfile() {
                           displayProfile?.skills.map((skill, i) => (
                             <p
                               key={i}
-                              className="text-sm text-white bg-[#8c80d9] px-3 py-1.5 rounded-md"
+                              className="text-sm text-white bg-accent px-3 py-1.5 rounded-md"
                             >
                               {skillMap[skill] ?? formatSkill(skill)}
                             </p>
@@ -208,7 +214,7 @@ export function StudentProfile() {
 
                           <a
                             href={displayProfile.cv.storagePath || "#"}
-                            className="bg-primary text-white p-2 rounded-md shrink-0 hover:bg-primary-dark transition-colors"
+                            className="bg-[#2D7A78] hover:bg-[#23615f] text-white p-2 rounded-lg shrink-0 transition-all shadow-md active:scale-95 cursor-pointer flex items-center justify-center"
                             target="_blank"
                             rel="noopener noreferrer"
                           >

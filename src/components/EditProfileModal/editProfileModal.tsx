@@ -251,7 +251,7 @@ export default function EditProfileModal({
             <button
               ref={closeRef}
               type="button"
-              className="flex-1 px-6 py-2 text-sm rounded-md border border-primary text-primary cursor-pointer transition-all duration-200 hover:bg-primary hover:text-white active:scale-95"
+              className="flex-1 py-2.5 border border-purple-200 text-gray-700 rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer hover:bg-gray-50 active:scale-95"
             >
               Cancel
             </button>
@@ -260,7 +260,7 @@ export default function EditProfileModal({
           <button
             type="submit"
             disabled={isSaving}
-            className="w-full sm:w-auto px-6 py-2  bg-primary text-sm text-white rounded-md hover:bg-primary-dark transition-colors shadow-sm cursor-pointer flex-1 active:scale-95 disabled:opacity-50"
+            className="flex-1 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSaving ? "Saving…" : "Save"}
           </button>
