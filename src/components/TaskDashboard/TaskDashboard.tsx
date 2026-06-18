@@ -19,10 +19,21 @@ import { createTask, getTeamTasks } from "@/Services/Task Endpoints/Endpoints";
 import { useParams } from "react-router-dom";
 import { useSessionStore } from "@/store/sessionStore";
 import { useTeamStore } from "@/store/TeamStore";
+import { getTeamMembers } from "@/Services/team Endpoints/Endpoints";
+interface TeamMember {
+  id: string;
+  role: string;
+  joined_at: string;
 
-export default function TaskDashboard({
-  onViewTask,
-}: TaskDashboardProps) {
+  student: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    profile_picture: string | null;
+  };
+}
+export default function TaskDashboard({ onViewTask }: TaskDashboardProps) {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any | null>(null); // Tracks the task for view/edit mode
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,14 +43,27 @@ export default function TaskDashboard({
   const { teamId } = useParams();
 
   const token = useSessionStore((state) => state.token);
-  const members = useTeamStore((s) => s.members);
+  const [members, setMembers] = useState<TeamMember[]>([]);
 
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalTasks, setTotalTasks] = useState(0);
+  const fetchMembers = async () => {
+    if (!teamId || !token) return;
 
+    try {
+      const response = await getTeamMembers(teamId, token);
+
+      if (response.data.success) {
+        setMembers(response.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load team members");
+    }
+  };
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -52,6 +76,9 @@ export default function TaskDashboard({
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch]);
+  useEffect(() => {
+    fetchMembers();
+  }, [teamId, token]);
 
   const fetchTasks = async (page = currentPage, query = debouncedSearch) => {
     if (!teamId || !token) return;
@@ -72,11 +99,15 @@ export default function TaskDashboard({
           description: t.description || "",
           assignedTo: t.assignee ? t.assignee.name : null,
           assigneeId: t.assignee ? t.assignee.id : null,
-          assigneeProfilePicture: t.assignee ? t.assignee.profile_picture : null,
-          deliverable: t.deliverable_url ? {
-            name: t.deliverable_url.split("/").pop() || "Deliverable",
-            size: "Unknown Size",
-          } : null,
+          assigneeProfilePicture: t.assignee
+            ? t.assignee.profile_picture
+            : null,
+          deliverable: t.deliverable_url
+            ? {
+                name: t.deliverable_url.split("/").pop() || "Deliverable",
+                size: "Unknown Size",
+              }
+            : null,
         }));
         setTasks(mapped);
         setTotalPages(pagination.totalPages || 1);
@@ -158,9 +189,24 @@ export default function TaskDashboard({
       if (currentPage <= 3) {
         range.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        range.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        range.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages,
+        );
       } else {
-        range.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+        range.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages,
+        );
       }
     }
     return range;
@@ -235,7 +281,9 @@ export default function TaskDashboard({
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12 gap-2">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <p className="text-sm text-gray-500 font-medium">Loading tasks...</p>
+            <p className="text-sm text-gray-500 font-medium">
+              Loading tasks...
+            </p>
           </div>
         ) : (
           filteredTasks.map((task) => (
@@ -314,11 +362,14 @@ export default function TaskDashboard({
           >
             <ChevronLeft size={16} />
           </button>
-          
+
           {getPageNumbers().map((page, idx) => {
             if (page === "...") {
               return (
-                <span key={`dots-${idx}`} className="text-gray-400 text-sm px-1">
+                <span
+                  key={`dots-${idx}`}
+                  className="text-gray-400 text-sm px-1"
+                >
                   ...
                 </span>
               );
@@ -328,9 +379,10 @@ export default function TaskDashboard({
                 key={page}
                 onClick={() => setCurrentPage(Number(page))}
                 className={`w-8 h-8 rounded-lg text-sm font-bold cursor-pointer transition-colors
-                  ${currentPage === page
-                    ? "bg-primary text-white"
-                    : "text-gray-500 hover:bg-gray-100"
+                  ${
+                    currentPage === page
+                      ? "bg-primary text-white"
+                      : "text-gray-500 hover:bg-gray-100"
                   }
                 `}
               >
@@ -361,7 +413,9 @@ export default function TaskDashboard({
                 taskName: selectedTask.name,
                 taskDescription: selectedTask.description,
                 deliverableType: selectedTask.deliverable?.name || "",
-                deadline: selectedTask.deadline ? selectedTask.deadline.split("T")[0] : "",
+                deadline: selectedTask.deadline
+                  ? selectedTask.deadline.split("T")[0]
+                  : "",
                 assignee: selectedTask.assigneeId || "",
               }
             : null
