@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import TaskModal from "../Task/TaskModal";
 import type {
+  Task,
   TaskDashboardProps,
   TaskModalData,
   TeamMember,
@@ -39,7 +40,7 @@ export default function TaskDashboard() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalTasks, setTotalTasks] = useState(0);
   // const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const fetchMembers = async () => {
     if (!teamId || !token) return;
 
@@ -148,14 +149,15 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     setIsTaskModalOpen(true);
   };
 
-  // Open modal in EDIT/VIEW mode
- const handleViewClick = (task: Task) => {
-  setSelectedTask(task);
-  setIsSidebarOpen(true);
-};
-
-  const handleEditTask = (task: any) => {
+  const handleViewClick = (task: Task) => {
+    // fix: any instead of Task
     setSelectedTask(task);
+    setIsSidebarOpen(true);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setSelectedTask(task);
+    setIsSidebarOpen(false); // close the sidebar so it doesn't sit open behind the modal
     setIsTaskModalOpen(true);
   };
 
@@ -395,16 +397,16 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(false);
         </div>
       )}
 
-
       <TaskDetailsSidebar
-  isOpen={isSidebarOpen}
-  onClose={() => {
-    setIsSidebarOpen(false);
-    setSelectedTask(null);
-  }}
-  task={selectedTask}
-  members={members}
-/>
+        isOpen={isSidebarOpen}
+        onClose={() => {
+          setIsSidebarOpen(false);
+          setSelectedTask(null);
+        }}
+        task={selectedTask}
+        teamMembers={members}
+        onEdit={handleEditTask}
+      />
 
       {/* Dynamic TaskModal Injection Integration */}
       <TaskModal
