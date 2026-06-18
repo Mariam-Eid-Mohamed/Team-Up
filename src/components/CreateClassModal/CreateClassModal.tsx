@@ -393,7 +393,7 @@ export function CreateClassModal({
           <div className="flex justify-center gap-6 px-6 py-4 border-t">
             <button
               onClick={onClose}
-              className="px-4 py-2 border rounded-lg text-gray-700 flex items-center gap-1 hover:bg-gray-50"
+              className="px-4 py-2 flex items-center gap-2 border border-purple-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
             >
               <X size={16} />
               Cancel
@@ -402,7 +402,7 @@ export function CreateClassModal({
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="px-4 py-2 bg-[#1B4D49] hover:bg-[#2D7A74] text-white rounded-lg flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting
                 ? isEditMode

@@ -253,31 +253,31 @@ export default function CourseworkModal({
               {apiError}
             </div>
           )}
-          {mode === "delete" ? (
-            <div className="space-y-5">
-              <p className="text-sm text-gray-700">
-                Are you sure you want to delete this coursework?
-              </p>
+         {mode === "delete" ? (
+  <div className="space-y-5">
+    <p className="text-sm text-gray-700">
+      Are you sure you want to delete this coursework?
+    </p>
 
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={onClose}
-                  className="px-4 py-2 rounded-md border border-purple-500 text-purple-600"
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </button>
+    <div className="flex gap-3">
+      <button
+        onClick={onClose}
+        disabled={isSubmitting}
+        className="flex-1 px-2 py-2.5 border border-purple-200 text-gray-700 rounded-md hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
+      >
+        Cancel
+      </button>
 
-                <button
-                  onClick={handleDelete}
-                  disabled={isSubmitting}
-                  className="px-6 py-2 rounded-md bg-red-600 text-white disabled:opacity-50"
-                >
-                  {isSubmitting ? "Deleting..." : "Delete"}
-                </button>
-              </div>
-            </div>
-          ) : (
+      <button
+        onClick={handleDelete}
+        disabled={isSubmitting}
+        className="flex-1 px-4 py-2.5 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 transition-colors shadow-sm shadow-red-200 disabled:opacity-50"
+      >
+        {isSubmitting ? "Deleting..." : "Delete"}
+      </button>
+    </div>
+  </div>
+): (
             <>
               <div>
                 <label className="block text-sm font-medium mb-1">
