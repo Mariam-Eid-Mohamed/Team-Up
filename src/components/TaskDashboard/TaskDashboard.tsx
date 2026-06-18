@@ -236,7 +236,7 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(false);
           <div className="relative">
             <button
               onClick={() => setIsFilterDropdownOpen(!isFilterDropdownOpen)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-medium hover:bg-primary-dark transition-colors shadow-xs cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-xl text-sm font-medium transition-colors shadow-xs"
             >
               <span>{statusFilter}</span>
               <ChevronDown size={16} />
@@ -330,7 +330,7 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(false);
               {/* View Open Trigger Drawer Button linked to handleViewClick */}
               <button
                 onClick={() => handleViewClick(task)}
-                className="flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2 bg-[#2D7A78]  hover:bg-[#23615f] text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
               >
                 <span>View</span>
                 <span>➔</span>
