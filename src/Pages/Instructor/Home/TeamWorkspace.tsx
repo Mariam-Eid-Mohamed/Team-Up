@@ -57,6 +57,7 @@ export default function TeamWorkspace() {
   const [isAssignedInstructor, setIsAssignedInstructor] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const handleAssign = async (id: number | string) => {
     if (!teamId || !token) return;
     try {
@@ -72,6 +73,13 @@ export default function TeamWorkspace() {
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to assign instructor");
     }
+  };
+  const handleEditTask = (task: any) => {
+    setSelectedTask(task);
+
+    setIsSidebarOpen(false);
+
+    setIsTaskModalOpen(true);
   };
 
   const fetchInstructors = async () => {
@@ -557,6 +565,7 @@ export default function TeamWorkspace() {
         teamMembers={teamData?.teamMembers || []}
         onUpdateStatus={handleUpdateStatus}
         onUpdateAssignee={handleUpdateAssignee}
+        onEdit={handleEditTask}
       />
       <AssignInstructorMenu
         isOpen={showModal}

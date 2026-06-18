@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import TaskModal from "../Task/TaskModal";
 import type {
-  Task,
   TaskDashboardProps,
   TaskModalData,
   TeamMember,
