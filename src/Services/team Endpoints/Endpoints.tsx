@@ -140,4 +140,10 @@ export const kickStudentFromTeam = async (
     headers: { Authorization: `Bearer ${token}` },
   });
 };
-
+export const getTeamMembers = (teamId: string, token: string) => {
+  return Api.get(`${API_BASE}/${teamId}/members`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
