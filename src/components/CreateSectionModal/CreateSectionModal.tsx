@@ -172,7 +172,7 @@ export default function CreateSectionModal({
         <div className="flex gap-4 mt-8">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+            className="flex-1 px-4 py-2 border border-purple-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>

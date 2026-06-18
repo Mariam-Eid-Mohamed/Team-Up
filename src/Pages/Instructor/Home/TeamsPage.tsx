@@ -88,7 +88,7 @@ const TeamsPage: React.FC = () => {
   const [className, setClassName] = useState<string>("Class");
   const [isJoining, setIsJoining] = useState(false);
   const [pendingTeams, setPendingTeams] = useState<Set<string>>(new Set());
-  const setMembers = useTeamStore((state) => state.setMembers);
+  // const setMembers = useTeamStore((state) => state.setMembers);
   const fetchTeams = useCallback(async () => {
     if (!classId || !courseworkId) return;
     const token = getToken();

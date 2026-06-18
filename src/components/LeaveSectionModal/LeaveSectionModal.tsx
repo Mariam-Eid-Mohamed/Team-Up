@@ -20,7 +20,7 @@ export default function LeaveSectionModal({ isOpen, onClose, onConfirm, sectionN
         <div className="flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 border border-[#2f6f73] text-[#2f6f73] rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-2.5 border border-purple-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>

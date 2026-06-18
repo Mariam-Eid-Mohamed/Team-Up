@@ -139,7 +139,7 @@ export default function JoinSectionModal({
         <div className="flex justify-center gap-3 mt-5">
           <button
             onClick={onClose}
-            className="px-5 py-1.5 border border-gray-300 rounded-md text-sm text-gray-600 hover:bg-gray-100"
+            className="px-5 py-1.5 border border-purple-200 text-gray-700 rounded-lg  hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>
@@ -170,7 +170,7 @@ export default function JoinSectionModal({
               void doJoin();
             }}
             disabled={!selected || loading || isJoining}
-            className="px-5 py-1.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-md text-sm ] disabled:opacity-60 disabled:cursor-not-allowed"
+            className="px-5 py-1.5 border bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] rounded-lg transition-colors text-white"
           >
             {isJoining ? "Joining..." : "Done"}
           </button>

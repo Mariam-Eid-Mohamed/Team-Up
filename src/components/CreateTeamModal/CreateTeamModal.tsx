@@ -100,7 +100,7 @@ const CreateTeamModal: React.FC<CreateTeamModalProps> = ({
         <div className="flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 border border-gray-200 rounded-lg font-bold"
+            className="flex-1 py-2.5 border border-purple-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>

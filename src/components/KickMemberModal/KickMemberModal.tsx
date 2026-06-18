@@ -27,7 +27,7 @@ export default function KickMemberModal({ isOpen, onClose, onConfirm, memberName
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-2.5 border border-purple-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>

@@ -587,7 +587,7 @@ export default function CourseworkModal({
   <div className="flex justify-center items-center gap-12 w-full pt-6">
   <button
     onClick={onClose}
-    className="w-44 px-6 py-2.5 rounded-md border cursor-pointer border-purple-500 text-purple-600 hover:bg-purple-50 transition-colors"
+    className="w-44 px-6 py-2.5 rounded-md border border-purple-200 text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
     disabled={isSubmitting}
   >
     Cancel

@@ -300,7 +300,7 @@ export function CreateClassForm({
        <div className="flex justify-center items-center gap-12 w-full px-6 py-6 border-t">
   <button
     onClick={onCancel}
-    className="px-6 py-2.5 border rounded-lg cursor-pointer text-gray-700 flex items-center gap-2 hover:bg-gray-50 transition-colors"
+    className="px-6 py-2.5 flex items-center gap-2 border  border-purple-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
   >
     <X size={16} />
     Cancel
@@ -311,7 +311,7 @@ export function CreateClassForm({
     disabled={isSubmitting}
     className="px-6 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
   >
-    <Save size={16} />
+    <Save size={15} />
     {isSubmitting ? "Creating..." : "Create Class"}
   </button>
 </div>

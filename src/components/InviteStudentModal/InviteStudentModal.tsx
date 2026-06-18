@@ -272,7 +272,7 @@ export const InviteStudentsModal: React.FC<InviteStudentsModalProps> = ({ isOpen
             <p className="text-xs text-center text-gray-500 pt-4">Select a class to generate an invite code</p>
             
             <div className="flex gap-3 mt-6">
-              <button onClick={handleClose} className="flex-1 py-2.5 border border-purple-200 text-gray-700 rounded-lg font-bold cursor-pointer">
+              <button onClick={handleClose} className="flex-1 py-2.5 border border-purple-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                 Cancel
               </button>
               <button 

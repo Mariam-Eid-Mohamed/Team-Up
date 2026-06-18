@@ -29,7 +29,7 @@ const JoinTeamModal: React.FC<JoinModalProps> = ({ isOpen, onClose, onConfirm, t
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 py-2.5 border border-gray-200 rounded-xl font-semibold text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-2.5 border border-purple-200 text-gray-700 rounded-lg  hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>
