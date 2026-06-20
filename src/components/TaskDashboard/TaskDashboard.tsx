@@ -9,14 +9,13 @@ import {
   Loader2,
 } from "lucide-react";
 import TaskModal from "../Task/TaskModal";
-import type {
-  Task,
-  TaskDashboardProps,
-  TaskModalData,
-  TeamMember,
-} from "@/interfaces/interfaces";
+import type { Task, TaskModalData, TeamMember } from "@/interfaces/interfaces";
 import toast from "react-hot-toast";
-import { createTask, getTeamTasks } from "@/Services/Task Endpoints/Endpoints";
+import {
+  createTask,
+  getTeamTasks,
+  getTaskDetails,
+} from "@/Services/Task Endpoints/Endpoints";
 import { useParams } from "react-router-dom";
 import { useSessionStore } from "@/store/sessionStore";
 import { getTeamMembers } from "@/Services/team Endpoints/Endpoints";
@@ -82,17 +81,24 @@ export default function TaskDashboard() {
       });
       if (response.data?.success) {
         const { tasks: fetchedTasks, pagination } = response.data.data;
+        console.log("API TASKS", fetchedTasks);
         const mapped = fetchedTasks.map((t: any) => ({
           id: t.id,
           name: t.task_name,
           status: t.status,
           deadline: t.deadline,
+
           description: t.description || "",
+
+          // ADD THIS
+          deliverableType: t.deliverable_type || "",
+
           assignedTo: t.assignee ? t.assignee.name : null,
           assigneeId: t.assignee ? t.assignee.id : null,
           assigneeProfilePicture: t.assignee
             ? t.assignee.profile_picture
             : null,
+
           deliverable: t.deliverable_url
             ? {
                 name: t.deliverable_url.split("/").pop() || "Deliverable",
@@ -100,6 +106,7 @@ export default function TaskDashboard() {
               }
             : null,
         }));
+
         setTasks(mapped);
         setTotalPages(pagination.totalPages || 1);
         setTotalTasks(pagination.total || 0);
@@ -155,10 +162,18 @@ export default function TaskDashboard() {
     setIsSidebarOpen(true);
   };
 
-  const handleEditTask = (task: Task) => {
-    setSelectedTask(task);
-    setIsSidebarOpen(false); // close the sidebar so it doesn't sit open behind the modal
-    setIsTaskModalOpen(true);
+  const handleEditTask = async (task: any) => {
+    try {
+      const response = await getTaskDetails(task.id, token!);
+
+      setSelectedTask(response.data.data);
+
+      setIsSidebarOpen(false); // close sidebar
+      setIsTaskModalOpen(true); // open edit modal
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to load task details");
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -414,19 +429,14 @@ export default function TaskDashboard() {
         onClose={() => setIsTaskModalOpen(false)}
         mode={selectedTask ? "edit" : "create"}
         members={members}
-        initialData={
-          selectedTask
-            ? {
-                taskName: selectedTask.name,
-                taskDescription: selectedTask.description,
-                deliverableType: selectedTask.deliverable?.name || "",
-                deadline: selectedTask.deadline
-                  ? selectedTask.deadline.split("T")[0]
-                  : "",
-                assignee: selectedTask.assigneeId || "",
-              }
-            : null
-        }
+        initialData={{
+          taskName: selectedTask?.name,
+          taskDescription: selectedTask?.description,
+          deliverableType: selectedTask?.deliverableType || "",
+          deadline: selectedTask?.deadline
+            ? selectedTask?.deadline?.split("T")[0]
+            : "",
+        }}
         onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
       />
     </div>

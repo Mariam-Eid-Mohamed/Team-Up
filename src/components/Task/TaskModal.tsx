@@ -154,23 +154,26 @@ export default function TaskModal({
           </div>
 
           {/* Assignee */}
-          <div>
-            <label className="mb-1.5 block text-sm font-semibold text-gray-700">
-              Assignee (optional)
-            </label>
-            <select
-              {...register("assignee")}
-              className="w-full rounded-xl border border-gray-200 px-3 py-2"
-            >
-              <option value="">Unassigned</option>
+          {mode === "create" && (
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                Assignee (optional)
+              </label>
 
-              {members.map((member) => (
-                <option key={member.student.id} value={member.student.id}>
-                  {member.student.first_name} {member.student.last_name}
-                </option>
-              ))}
-            </select>
-          </div>
+              <select
+                {...register("assignee")}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2"
+              >
+                <option value="">Unassigned</option>
+
+                {members.map((member) => (
+                  <option key={member.student.id} value={member.student.id}>
+                    {member.student.first_name} {member.student.last_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         {/* Action Button Row Footer (Fixed at the bottom) */}
