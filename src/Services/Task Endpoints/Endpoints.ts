@@ -15,8 +15,9 @@ export const createTask = (
     },
   );
 };
-export const editTask = (teamId: string, token: string, formData: FormData) => {
-  return Api.put(`${API_BASE}/${teamId}`, formData, {
+
+export const editTask = (taskId: string, token: string, data: any) => {
+  return Api.put(`${API_BASE}/${taskId}`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -44,7 +45,11 @@ export const getTaskDetails = (taskId: string, token: string) => {
   });
 };
 
-export const uploadDeliverable = (taskId: string, token: string, file: File) => {
+export const uploadDeliverable = (
+  taskId: string,
+  token: string,
+  file: File,
+) => {
   const formData = new FormData();
   formData.append("file", file);
   return Api.patch(`${API_BASE}/${taskId}/deliverable`, formData, {
@@ -54,5 +59,3 @@ export const uploadDeliverable = (taskId: string, token: string, file: File) => 
     },
   });
 };
-
-

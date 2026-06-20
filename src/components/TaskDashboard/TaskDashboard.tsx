@@ -15,6 +15,7 @@ import {
   createTask,
   getTeamTasks,
   getTaskDetails,
+  editTask,
 } from "@/Services/Task Endpoints/Endpoints";
 import { useParams } from "react-router-dom";
 import { useSessionStore } from "@/store/sessionStore";
@@ -128,7 +129,25 @@ export default function TaskDashboard() {
   });
 
   const handleUpdateTask = async (data: TaskModalData) => {
-    console.log("Update task:", data);
+    if (!selectedTask || !token) return;
+
+    try {
+      await editTask(selectedTask.id, token, {
+        name: data.taskName,
+        description: data.taskDescription,
+        deadline: data.deadline,
+        deliverable_type: data.deliverableType,
+      });
+
+      toast.success("Task updated successfully");
+
+      setIsTaskModalOpen(false);
+
+      fetchTasks(currentPage, debouncedSearch);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update task");
+    }
   };
 
   const handleCreateTask = async (data: TaskModalData) => {
