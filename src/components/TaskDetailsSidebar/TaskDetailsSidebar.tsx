@@ -19,6 +19,7 @@ interface TaskDetailsSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onEdit: (task: any) => void;
+  onDelete?: (task: any) => void;
   task: any;
   teamMembers?: any[];
   onUpdateStatus?: (taskId: string, newStatus: any) => void;
@@ -29,6 +30,7 @@ export default function TaskDetailsSidebar({
   isOpen,
   onClose,
   onEdit,
+  onDelete,
   task,
   teamMembers = [],
   onUpdateStatus,
@@ -232,7 +234,10 @@ export default function TaskDetailsSidebar({
               <Edit2 size={18} className="stroke-[2.5]" />
             </button>
             <div className="w-[1px] h-4 bg-gray-200 mx-0.5" />
-            <button className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors cursor-pointer">
+            <button
+              onClick={() => onDelete?.(task)}
+              className="p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+            >
               <Trash2 size={18} className="stroke-[2.5]" />
             </button>
             <div className="w-[1px] h-4 bg-gray-200 mx-0.5" />

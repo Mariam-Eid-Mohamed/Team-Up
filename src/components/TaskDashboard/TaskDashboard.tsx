@@ -16,13 +16,16 @@ import {
   getTeamTasks,
   getTaskDetails,
   editTask,
+  deleteTask,
 } from "@/Services/Task Endpoints/Endpoints";
 import { useParams } from "react-router-dom";
 import { useSessionStore } from "@/store/sessionStore";
 import { getTeamMembers } from "@/Services/team Endpoints/Endpoints";
 import TaskDetailsSidebar from "../TaskDetailsSidebar/TaskDetailsSidebar";
+import DeleteTaskModal from "../Task/DeleteTaskModal";
 
 export default function TaskDashboard() {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any | null>(null); // Tracks the task for view/edit mode
   const [searchQuery, setSearchQuery] = useState("");
@@ -168,13 +171,32 @@ export default function TaskDashboard() {
       toast.error("Failed to create task");
     }
   };
+  const handleDeleteTask = async () => {
+    if (!selectedTask || !token) return;
 
+    try {
+      await deleteTask(selectedTask.id, token);
+
+      toast.success("Task deleted successfully");
+
+      setIsDeleteModalOpen(false);
+      setIsSidebarOpen(false);
+      setSelectedTask(null);
+
+      fetchTasks(currentPage, debouncedSearch);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to delete task");
+    }
+  };
   // Open modal in CREATE mode
   const handleCreateClick = () => {
     setSelectedTask(null); // Clear selected task so it's fresh
     setIsTaskModalOpen(true);
   };
-
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+    setIsSidebarOpen(false);
+  };
   const handleViewClick = (task: Task) => {
     // fix: any instead of Task
     setSelectedTask(task);
@@ -440,6 +462,7 @@ export default function TaskDashboard() {
         task={selectedTask}
         teamMembers={members}
         onEdit={handleEditTask}
+        onDelete={openDeleteModal}
       />
 
       {/* Dynamic TaskModal Injection Integration */}
@@ -457,6 +480,11 @@ export default function TaskDashboard() {
             : "",
         }}
         onSubmit={selectedTask ? handleUpdateTask : handleCreateTask}
+      />
+      <DeleteTaskModal
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteTask}
       />
     </div>
   );

@@ -24,7 +24,7 @@ export const editTask = (taskId: string, token: string, data: any) => {
   });
 };
 export const deleteTask = (taskId: string, token: string) => {
-  return Api.put(`${API_BASE}/delete/${taskId}`, {
+  return Api.delete(`${API_BASE}/${taskId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
