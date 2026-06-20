@@ -12,12 +12,14 @@ import {
 
 import { isTeamInvitation, isTeamJoinRequest } from "@/utilis/notifications";
 import TeamRow from "../Notifications/TeamRow";
+import TaskRow from "../Notifications/TaskRow";
 type Grouped = {
   invitations: NotificationItem[];
   coursework: NotificationItem[];
   announcements: NotificationItem[];
   chat: NotificationItem[];
   teams: NotificationItem[];
+  tasks: NotificationItem[];
 };
 
 function groupByType(items: NotificationItem[]): Grouped {
@@ -27,6 +29,7 @@ function groupByType(items: NotificationItem[]): Grouped {
     announcements: [],
     chat: [],
     teams: [],
+    tasks: [],
   };
 
   for (const n of items) {
@@ -57,6 +60,12 @@ function groupByType(items: NotificationItem[]): Grouped {
       grouped.announcements.push(n);
     } else if (t === "CHAT") {
       grouped.chat.push(n);
+    } else if (
+      t === "TASK_CREATED" ||
+      t === "TASK_ASSIGNED" ||
+      t === "TASK_UPDATED"
+    ) {
+      grouped.tasks.push(n);
     } else {
       grouped.coursework.push(n);
     }
@@ -82,6 +91,7 @@ export default function NotificationsDropdown({
     announcements: true,
     chat: false,
     teams: false,
+    tasks: true,
   });
   const removeNotificationLocally = (notificationId: string) => {
     setAll((prev) => prev.filter((item) => item._id !== notificationId));
@@ -330,6 +340,23 @@ export default function NotificationsDropdown({
                     onApprove={() => onApproveTeam(n)}
                     onReject={() => onRejectTeam(n)}
                   />
+                ))}
+              </div>
+            )}
+          </AccordionSection>
+          <AccordionSection
+            title="Tasks"
+            open={expanded.tasks}
+            onToggle={() => setExpanded((p) => ({ ...p, tasks: !p.tasks }))}
+          >
+            {loading ? (
+              <LoadingRow />
+            ) : grouped.tasks.length === 0 ? (
+              <EmptyRow text="No task notifications" />
+            ) : (
+              <div className="max-h-[300px] overflow-y-auto">
+                {grouped.tasks.map((n) => (
+                  <TaskRow key={(n as any)._id} n={n} />
                 ))}
               </div>
             )}
