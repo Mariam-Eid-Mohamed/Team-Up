@@ -23,6 +23,7 @@ import { useSessionStore } from "@/store/sessionStore";
 import { getTeamMembers } from "@/Services/team Endpoints/Endpoints";
 import TaskDetailsSidebar from "../TaskDetailsSidebar/TaskDetailsSidebar";
 import DeleteTaskModal from "../Task/DeleteTaskModal";
+import profilePlaceholder from "@/assets/images/profile-placeholder.png";
 
 export default function TaskDashboard() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -352,12 +353,12 @@ export default function TaskDashboard() {
                       alt={task.assignedTo || ""}
                       className="w-full h-full object-cover"
                     />
-                  ) : task.assignedTo ? (
-                    <div className="w-full h-full bg-secondary/30 flex items-center justify-center font-bold text-xs text-primary-dark">
-                      {task.assignedTo.charAt(0)}
-                    </div>
                   ) : (
-                    <span className="text-sm">👤</span>
+                    <img
+                      src={profilePlaceholder}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   )}
                 </div>
 
@@ -458,6 +459,7 @@ export default function TaskDashboard() {
         onClose={() => {
           setIsSidebarOpen(false);
           setSelectedTask(null);
+          fetchTasks(currentPage, debouncedSearch);
         }}
         task={selectedTask}
         teamMembers={members}

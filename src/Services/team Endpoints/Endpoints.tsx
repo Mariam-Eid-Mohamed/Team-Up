@@ -147,3 +147,10 @@ export const getTeamMembers = (teamId: string, token: string) => {
     },
   });
 };
+
+export const getTeamInsights = async (teamId: string, token: string) => {
+  return Api.get(`${API_BASE}/${teamId}/insights`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+

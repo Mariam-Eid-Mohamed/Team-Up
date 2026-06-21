@@ -31,11 +31,11 @@ export const insightsSubTabs = [
 ];
 
 export const workDistributionData = [
-  { name: "Sarah Chen", tasks: 27, bio: "Frontend Developer", share: "30.6%" },
-  { name: "Alex Rivard", tasks: 24, bio: "Backend Developer", share: "27.2%" },
-  { name: "Mia Wong", tasks: 19, bio: "UI/UX Designer", share: "21.5%" },
-  { name: "Jordan Smith", tasks: 16, bio: "QA Engineer", share: "18.1%" },
-  { name: "Unassigned", tasks: 0, bio: "Unallocated Tasks", share: "2.6%" },
+  { name: "Sarah Chen", tasks: 27, share: "30.6%" },
+  { name: "Alex Rivard", tasks: 24, share: "27.2%" },
+  { name: "Mia Wong", tasks: 19, share: "21.5%" },
+  { name: "Jordan Smith", tasks: 16, share: "18.1%" },
+  { name: "Unassigned", tasks: 0, share: "2.6%" },
 ];
 
 export const tasksOverviewData = [
@@ -101,7 +101,6 @@ export const CustomWorkDistributionTooltip = ({ active, payload }: any) => {
           </div>
           <div>
             <h4 className="text-xs font-bold text-gray-900 leading-tight">{data.name}</h4>
-            <p className="text-[10px] font-medium text-gray-500 mt-0.5">{data.bio || "Team Member"}</p>
           </div>
         </div>
         <div className="pt-2 space-y-1.5 text-xs text-[#1B4D49] font-medium">
@@ -160,21 +159,18 @@ export const CustomActivityTimelineTooltip = ({ active, payload, label }: any) =
     const name = activeLine.name;
 
     // Mapping contextual profiles to fit your design specs perfectly
-    const profileMeta: Record<string, { role: string; task: string; completedOn: string; daysBefore: number }> = {
+    const profileMeta: Record<string, { task: string; completedOn: string; daysBefore: number }> = {
       "Sarah Chen": {
-        role: "FRONTEND DEVELOPER",
         task: "Frontend Implementation",
         completedOn: "Oct 17, 2026",
         daysBefore: 20,
       },
       "Alex Rivera": {
-        role: "BACKEND DEVELOPER",
         task: "Database Optimization Cluster",
         completedOn: "Oct 24, 2026",
         daysBefore: 12,
       },
       "Jordan Yeoh": {
-        role: "QA ENGINEER",
         task: "Integration Automation Pipeline",
         completedOn: "Nov 02, 2026",
         daysBefore: 3,
@@ -182,7 +178,6 @@ export const CustomActivityTimelineTooltip = ({ active, payload, label }: any) =
     };
 
     const userMeta = profileMeta[name] || {
-      role: "CONTRIBUTOR",
       task: "Workspace Core Operations",
       completedOn: "Oct 15, 2026",
       daysBefore: 21
@@ -190,17 +185,14 @@ export const CustomActivityTimelineTooltip = ({ active, payload, label }: any) =
 
     return (
       <div className="relative bg-[#f4f9f9]/95 backdrop-blur-sm border border-gray-100 rounded-xl p-4 shadow-xl w-[250px] text-left mb-4 animate-in fade-in-50 slide-in-from-bottom-2 duration-150">
-        
+
         {/* Profile Card Header Segment */}
         <div className="flex items-center gap-3 pb-2">
           {/* Empty gray placeholder circle instead of Unsplash image URL */}
           <div className="w-9 h-9 rounded-full bg-gray-300 border border-gray-200 shrink-0" />
-          
+
           <div className="min-w-0">
             <h4 className="text-xs font-bold text-gray-900 leading-tight truncate">{name}</h4>
-            <p className="text-[9px] font-extrabold text-gray-400 tracking-wider mt-0.5 uppercase truncate">
-              {userMeta.role}
-            </p>
           </div>
         </div>
 

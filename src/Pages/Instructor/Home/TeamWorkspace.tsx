@@ -19,7 +19,6 @@ import {
 import toast from "react-hot-toast";
 import AssignInstructorMenu from "@/components/AssignInstructor/AssignInstructorMenu";
 import TaskDashboard from "@/components/TaskDashboard/TaskDashboard";
-import TaskDetailsSidebar from "@/components/TaskDetailsSidebar/TaskDetailsSidebar";
 interface Instructor {
   id: string | number;
   name: string;
@@ -55,9 +54,6 @@ export default function TeamWorkspace() {
 
   const isInstructorRoute = location.pathname.includes("/instructor");
   const [isAssignedInstructor, setIsAssignedInstructor] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<any>(null);
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const handleAssign = async (id: number | string) => {
     if (!teamId || !token) return;
     try {
@@ -74,13 +70,7 @@ export default function TeamWorkspace() {
       toast.error(err.response?.data?.message || "Failed to assign instructor");
     }
   };
-  const handleEditTask = (task: any) => {
-    setSelectedTask(task);
 
-    setIsSidebarOpen(false);
-
-    setIsTaskModalOpen(true);
-  };
 
   const fetchInstructors = async () => {
     const classIdToUse = teamData?.classId;
@@ -232,56 +222,7 @@ export default function TeamWorkspace() {
     (m: any) => m.id === userId && m.role === "LEADER",
   );
 
-  const [tasks, setTasks] = useState([
-    {
-      id: "1",
-      name: "Backend - API Get",
-      status: "To Do" as const,
-      deadline: "25/6/2026",
-      createdBy: "Nada Mohammed",
-      assignedTo: null,
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pretium tellus duis convallis tempus leo eu aenean.",
-      deliverable: null,
-    },
-    {
-      id: "2",
-      name: "Analysis",
-      status: "In Progress" as const,
-      deadline: "25/6/2026",
-      createdBy: "Nada Mohammed",
-      assignedTo: "Nada Mohammed",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pretium tellus duis convallis tempus leo eu aenean. Iaculis massa nisl malesuada lacinia integer nunc posuere. Conubia nostra inceptos himenaeos orci varius natoque penatibus. Nulla molestie mattis scelerisque maximus eget fermentum odio. Blandit quis suspendisse aliquet nisi sodales consequat magna.",
-      deliverable: {
-        name: "Final_Report.pdf",
-        size: "1.2 MB",
-        uploadedAt: "on 15 Jun 2026, 11:45 AM",
-      },
-    },
-    {
-      id: "3",
-      name: "Frontend - UI Implementation",
-      status: "Done" as const,
-      deadline: "25/6/2026",
-      createdBy: "Nada Mohammed",
-      assignedTo: "Dalia Adel",
-      description:
-        "Implement user-facing components based on approved system interface guidelines.",
-      deliverable: null,
-    },
-    {
-      id: "4",
-      name: "Frontend - API Integration",
-      status: "Done" as const,
-      deadline: "25/6/2026",
-      createdBy: "Nada Mohammed",
-      assignedTo: "Helana Nemr",
-      description:
-        "Connect core logic elements to handle application response payloads.",
-      deliverable: null,
-    },
-  ]);
+
 
   if (loading) {
     return (
@@ -309,28 +250,6 @@ export default function TeamWorkspace() {
     );
   }
 
-  // const handleUpdateStatus = (
-  //   taskId: string,
-  //   newStatus: "To Do" | "In Progress" | "Done",
-  // ) => {
-  //   setTasks((prev) =>
-  //     prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)),
-  //   );
-  //   if (selectedTask?.id === taskId) {
-  //     setSelectedTask((prev: any) => ({ ...prev, status: newStatus }));
-  //   }
-  // };
-
-  // const handleUpdateAssignee = (taskId: string, newAssignee: string | null) => {
-  //   setTasks((prev) =>
-  //     prev.map((t) =>
-  //       t.id === taskId ? { ...t, assignedTo: newAssignee } : t,
-  //     ),
-  //   );
-  //   if (selectedTask?.id === taskId) {
-  //     setSelectedTask((prev: any) => ({ ...prev, assignedTo: newAssignee }));
-  //   }
-  // };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
@@ -427,9 +346,9 @@ export default function TeamWorkspace() {
         ))}
       </div>
 
-{activeTab === "Tasks" && (
-    <TaskDashboard tasks={tasks} />
-  )}
+      {activeTab === "Tasks" && (
+        <TaskDashboard />
+      )}
 
       {/* Content Area */}
       {activeTab === "Members" && (
@@ -548,20 +467,9 @@ export default function TeamWorkspace() {
         </div>
       )}
 
-      {activeTab === "Insights" && <InsightsDashboard />}
+      {activeTab === "Insights" && <InsightsDashboard teamId={teamId} />}
 
-      {/* <TaskDetailsSidebar
-        isOpen={isSidebarOpen}
-        onClose={() => {
-          setIsSidebarOpen(false);
-          setSelectedTask(null);
-        }}
-        task={selectedTask}
-        teamMembers={teamData?.teamMembers || []}
-        onUpdateStatus={handleUpdateStatus}
-        onUpdateAssignee={handleUpdateAssignee}
-        onEdit={handleEditTask}
-      /> */}
+
       <AssignInstructorMenu
         isOpen={showModal}
         onClose={() => setShowModal(false)}

@@ -11,9 +11,13 @@ import {
 import {
   getTaskDetails,
   uploadDeliverable,
+  updateTaskStatus,
+  assignTask,
+  unassignTask,
 } from "@/Services/Task Endpoints/Endpoints";
 import { useSessionStore } from "@/store/sessionStore";
 import toast from "react-hot-toast";
+import profilePlaceholder from "@/assets/images/profile-placeholder.png";
 
 interface TaskDetailsSidebarProps {
   isOpen: boolean;
@@ -94,47 +98,125 @@ export default function TaskDetailsSidebar({
   }
 
   const creatorName = taskDetails.creator
-    ? `${taskDetails.creator.firstName || ""} ${taskDetails.creator.lastName || ""}`.trim() ||
-      "Unknown"
+    ? `${taskDetails.creator.firstName || taskDetails.creator.first_name || ""} ${taskDetails.creator.lastName || taskDetails.creator.last_name || ""}`.trim() ||
+    taskDetails.creator.email ||
+    "Unknown"
     : "Unknown";
 
   const assigneeName = taskDetails.assignee
-    ? `${taskDetails.assignee.firstName || ""} ${taskDetails.assignee.lastName || ""}`.trim() ||
-      "Unassigned"
+    ? `${taskDetails.assignee.firstName || taskDetails.assignee.first_name || ""} ${taskDetails.assignee.lastName || taskDetails.assignee.last_name || ""}`.trim() ||
+    taskDetails.assignee.email ||
+    "Unassigned"
     : "Unassigned";
 
-  const isAssignee = taskDetails.assignee && taskDetails.assignee.id === userId;
+  const creatorProfilePicture =
+    taskDetails.creator?.profilePicture ||
+    taskDetails.creator?.profile_picture ||
+    null;
+
+  const assigneeProfilePicture =
+    taskDetails.assignee?.profilePicture ||
+    taskDetails.assignee?.profile_picture ||
+    null;
+
+  const getMemberName = (m: any) => {
+    if (!m) return "";
+    if (m.name) return m.name;
+    if (m.student) {
+      return `${m.student.first_name || ""} ${m.student.last_name || ""}`.trim() || m.student.email || "";
+    }
+    return m.email || "Unknown";
+  };
+
+  const getMemberId = (m: any) => {
+    if (!m) return "";
+    if (m.student) {
+      return m.student.id || m.student._id || m.id;
+    }
+    return m.id || m._id;
+  };
+
+  const getMemberInitial = (m: any) => {
+    const name = getMemberName(m);
+    return name ? name.charAt(0) : "👤";
+  };
+
+  const getMemberProfilePicture = (m: any) => {
+    if (!m) return null;
+    if (m.student) {
+      return m.student.profile_picture || m.student.profilePicture || null;
+    }
+    return m.profilePicture || m.profile_picture || null;
+  };
+
+  const currentAssigneeObj = taskDetails.assignee || taskDetails.assignee_id;
+  const currentAssigneeId = typeof currentAssigneeObj === "string"
+    ? currentAssigneeObj
+    : (currentAssigneeObj?.id || currentAssigneeObj?._id || currentAssigneeObj?.student?.id);
+
+  const isAssignee = currentAssigneeId === userId;
   const hasUploadedFile = !!(
     taskDetails.deliverableFileUrl || taskDetails.deliverable_file_url
   );
 
-  const handleStatusChange = (newStatus: string) => {
-    setTaskDetails((prev: any) => ({ ...prev, status: newStatus }));
-    if (onUpdateStatus && task?.id) {
-      onUpdateStatus(task.id, newStatus);
+  const handleStatusChange = async (newStatus: string) => {
+    if (!taskDetails._id && !taskDetails.id) return;
+    const tid = taskDetails.id || taskDetails._id;
+    try {
+      const response = await updateTaskStatus(tid, token!, newStatus);
+      if (response.data?.success) {
+        toast.success("Status updated successfully");
+        fetchDetails();
+        if (onUpdateStatus) {
+          onUpdateStatus(tid, newStatus);
+        }
+      } else {
+        toast.error(response.data?.message || "Failed to update status");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Error updating task status");
     }
   };
 
-  const handleAssigneeChange = (newAssigneeName: string) => {
-    // Basic mapping back to object structure
-    const names = newAssigneeName.split(" ");
-    const firstName = names[0] || "";
-    const lastName = names.slice(1).join(" ") || "";
+  const handleAssigneeChange = async (newAssigneeId: string | null) => {
+    if (!taskDetails._id && !taskDetails.id) return;
+    const tid = taskDetails.id || taskDetails._id;
+    try {
+      if (newAssigneeId === null) {
+        const response = await unassignTask(tid, token!);
+        if (response.data?.success) {
+          toast.success("Task unassigned successfully");
+          fetchDetails();
+          if (onUpdateAssignee) {
+            onUpdateAssignee(tid, null);
+          }
+        } else {
+          toast.error(response.data?.message || "Failed to unassign task");
+        }
+      } else {
+        const currentAssignee = taskDetails.assignee || taskDetails.assignee_id;
+        if (currentAssignee) {
+          toast.error("Task is already assigned. Please unassign it first.");
+          return;
+        }
 
-    setTaskDetails((prev: any) => ({
-      ...prev,
-      assignee:
-        newAssigneeName === "Unassigned"
-          ? null
-          : {
-              ...prev.assignee,
-              firstName,
-              lastName,
-              profilePicture: null,
-            },
-    }));
-    if (onUpdateAssignee && task?.id) {
-      onUpdateAssignee(task.id, newAssigneeName);
+        const response = await assignTask(tid, token!, newAssigneeId);
+        if (response.data?.success) {
+          toast.success("Task assigned successfully");
+          fetchDetails();
+          const m = teamMembers.find((member) => (member.id === newAssigneeId || member.student?.id === newAssigneeId));
+          const name = m ? (m.name || `${m.student?.first_name || ""} ${m.student?.last_name || ""}`.trim()) : newAssigneeId;
+          if (onUpdateAssignee) {
+            onUpdateAssignee(tid, name);
+          }
+        } else {
+          toast.error(response.data?.message || "Failed to assign task");
+        }
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Error updating task assignee");
     }
   };
 
@@ -196,8 +278,6 @@ export default function TaskDetailsSidebar({
         return "bg-amber-50 text-amber-600 border border-amber-200/60";
       case "Done":
         return "bg-emerald-50 text-emerald-600 border border-emerald-200/60";
-      case "Blocked":
-        return "bg-red-50 text-red-600 border border-red-200/60";
       default:
         return "bg-gray-100 text-gray-600 border border-gray-200/80";
     }
@@ -275,7 +355,7 @@ export default function TaskDetailsSidebar({
 
               {isStatusDropdownOpen && (
                 <div className="absolute right-0 mt-1.5 w-32 bg-white border border-gray-200 rounded-lg shadow-xl z-50 py-1 overflow-hidden">
-                  {["To Do", "In Progress", "Done", "Blocked"].map((opt) => (
+                  {["To Do", "In Progress", "Done"].map((opt) => (
                     <button
                       key={opt}
                       onClick={() => {
@@ -313,16 +393,18 @@ export default function TaskDetailsSidebar({
               <span className="text-gray-500 font-medium">Created by</span>
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-full border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
-                  {taskDetails.creator?.profilePicture ? (
+                  {creatorProfilePicture ? (
                     <img
-                      src={taskDetails.creator.profilePicture}
+                      src={creatorProfilePicture}
                       alt=""
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span className="text-[10px] text-gray-400 font-bold">
-                      {taskDetails.creator?.firstName?.charAt(0) || "👤"}
-                    </span>
+                    <img
+                      src={profilePlaceholder}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   )}
                 </div>
                 <span className="text-gray-800 font-medium">{creatorName}</span>
@@ -341,16 +423,18 @@ export default function TaskDetailsSidebar({
                   className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50/80 transition-colors cursor-pointer bg-white"
                 >
                   <div className="w-5 h-5 rounded-full border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
-                    {taskDetails.assignee?.profilePicture ? (
+                    {assigneeProfilePicture ? (
                       <img
-                        src={taskDetails.assignee.profilePicture}
+                        src={assigneeProfilePicture}
                         alt=""
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-[9px] text-gray-400 font-bold">
-                        {taskDetails.assignee?.firstName?.charAt(0) || "👤"}
-                      </span>
+                      <img
+                        src={profilePlaceholder}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
                     )}
                   </div>
                   <span className="text-gray-800 font-medium text-sm">
@@ -363,35 +447,56 @@ export default function TaskDetailsSidebar({
                   <div className="absolute right-0 mt-1.5 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 py-1.5 overflow-hidden">
                     <button
                       onClick={() => {
-                        handleAssigneeChange("Unassigned");
+                        handleAssigneeChange(null);
                         setIsAssigneeDropdownOpen(false);
                       }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left cursor-pointer"
                     >
-                      <div className="w-6 h-6 rounded-full border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center">
-                        <span className="text-[10px] text-gray-400">👤</span>
+                      <div className="w-6 h-6 rounded-full border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
+                        <img
+                          src={profilePlaceholder}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <span className="text-sm font-medium text-gray-700">
                         Unassigned
                       </span>
                     </button>
-                    {teamMembers.map((member) => (
-                      <button
-                        key={member.id}
-                        onClick={() => {
-                          handleAssigneeChange(member.name);
-                          setIsAssigneeDropdownOpen(false);
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left cursor-pointer"
-                      >
-                        <div className="w-6 h-6 rounded-full bg-secondary/30 flex items-center justify-center font-bold text-[10px] text-primary-dark">
-                          {member.name.charAt(0)}
-                        </div>
-                        <span className="text-sm font-medium text-gray-700">
-                          {member.name}
-                        </span>
-                      </button>
-                    ))}
+                    {teamMembers.map((member) => {
+                      const mId = getMemberId(member);
+                      const mName = getMemberName(member);
+                      const mPic = getMemberProfilePicture(member);
+                      return (
+                        <button
+                          key={mId}
+                          onClick={() => {
+                            handleAssigneeChange(mId);
+                            setIsAssigneeDropdownOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left cursor-pointer"
+                        >
+                          <div className="w-6 h-6 rounded-full border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
+                            {mPic ? (
+                              <img
+                                src={mPic}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <img
+                                src={profilePlaceholder}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">
+                            {mName}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>

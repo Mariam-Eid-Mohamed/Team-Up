@@ -66,3 +66,41 @@ export const uploadDeliverable = (
     },
   });
 };
+
+export const updateTaskStatus = (
+  taskId: string,
+  token: string,
+  status: string,
+) => {
+  return Api.patch(
+    `${API_BASE}/${taskId}/status`,
+    { status },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+};
+
+export const assignTask = (
+  taskId: string,
+  token: string,
+  assigneeId: string,
+) => {
+  return Api.patch(
+    `${API_BASE}/${taskId}/assign`,
+    { assigneeId },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+};
+
+export const unassignTask = (taskId: string, token: string) => {
+  return Api.patch(
+    `${API_BASE}/${taskId}/unassign`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+};

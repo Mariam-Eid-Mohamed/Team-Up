@@ -149,5 +149,6 @@ export interface Task {
 
 export interface TaskDashboardProps {
   tasks?: Task[];
-  // onViewTask: (task: Task) => void;
+  onViewTask?: (task: any) => void;
+  refreshTrigger?: number;
 }
