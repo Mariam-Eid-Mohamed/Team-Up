@@ -7,10 +7,10 @@ import AIHelper from "@/assets/images/bot-image.png";
 import profilePlaceholder from "@/assets/images/profile-placeholder.png";
 import { getToken, getUserId } from "@/utilis/token";
 import { useProfileStore } from "@/store/ProfileStore/userProfileStore";
-import { suggestTeamMembers, suggestTeamMembersForTeam } from "@/Services/ai Endpoints/Endpoints";
-import { sendTeamInvitation } from "@/Services/team Endpoints/Endpoints";
+import { suggestTeamMembers, suggestTeamMembersForTeam, suggestTeams } from "@/Services/ai Endpoints/Endpoints";
+import { sendTeamInvitation, sendJoinRequest } from "@/Services/team Endpoints/Endpoints";
 import CreateTeamModal from "@/components/CreateTeamModal/CreateTeamModal";
-import type { SuggestedStudent, TeamSuggestionResponse } from "@/Types/aiTeamSuggestion";
+import type { SuggestedStudent, TeamSuggestionResponse, SuggestTeamsResponse } from "@/Types/aiTeamSuggestion";
 
 type ChatView = 'empty' | 'teammates' | 'teams';
 type ChatAction = 'create-team' | 'suggest-members' | 'suggest-teams';
@@ -36,7 +36,7 @@ const ChatBot: React.FC = () => {
 
   const [view, setView] = useState<ChatView>('empty');
   const [isSidebarOpen] = useState(true);
-  const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
+  const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
 
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -46,6 +46,7 @@ const ChatBot: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [suggestionData, setSuggestionData] = useState<TeamSuggestionResponse | null>(null);
+  const [teamSuggestionData, setTeamSuggestionData] = useState<SuggestTeamsResponse | null>(null);
   const [activeAction, setActiveAction] = useState<ChatAction | null>(null);
 
   const [createdTeamId, setCreatedTeamId] = useState<string | null>(null);
@@ -53,6 +54,8 @@ const ChatBot: React.FC = () => {
   const [pendingInviteStudent, setPendingInviteStudent] = useState<SuggestedStudent | null>(null);
   const [invitingStudentId, setInvitingStudentId] = useState<string | null>(null);
   const [invitedStudentIds, setInvitedStudentIds] = useState<Set<string>>(new Set());
+  const [joiningTeamId, setJoiningTeamId] = useState<string | null>(null);
+  const [joinedTeamIds, setJoinedTeamIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const userId = getUserId();
@@ -102,6 +105,7 @@ const ChatBot: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setActiveAction('create-team');
+    setTeamSuggestionData(null);
     setView('teammates');
     setMessages((prev) => [
       ...prev,
@@ -175,6 +179,7 @@ const ChatBot: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setActiveAction('suggest-members');
+    setTeamSuggestionData(null);
     setView('teammates');
     setMessages((prev) => [
       ...prev,
@@ -211,6 +216,66 @@ const ChatBot: React.FC = () => {
     }
   };
 
+  const fetchSuggestTeamsSuggestions = async () => {
+    const userId = getUserId();
+    const token = getToken();
+
+    if (!courseworkId) {
+      const message = "Please open AI Chat from a coursework card to get team suggestions.";
+      setError(message);
+      setMessages((prev) => [...prev, { role: 'bot', text: message }]);
+      setView('teams');
+      return;
+    }
+
+    if (!userId || !token) {
+      const message = "You must be logged in to get team suggestions.";
+      setError(message);
+      setMessages((prev) => [...prev, { role: 'bot', text: message }]);
+      setView('teams');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setActiveAction('suggest-teams');
+    setSuggestionData(null);
+    setView('teams');
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', text: 'Suggest teams' },
+      { role: 'bot', text: 'Finding teams that match your skills and this coursework...' },
+    ]);
+
+    try {
+      const response = await suggestTeams(userId, courseworkId, token);
+      const data = response.data;
+      setTeamSuggestionData(data);
+      setMessages((prev) => [
+        ...prev.slice(0, -1),
+        { role: 'bot', text: data.suggestionStatus?.message || "Here are some recommended teams." },
+      ]);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { message?: string } } };
+      let message =
+        axiosErr?.response?.data?.message ??
+        "Failed to suggest teams. Please try again.";
+
+      if (axiosErr?.response?.status === 401) {
+        message = "Your session has expired or is invalid. Please log in again.";
+      }
+
+      setError(message);
+      setTeamSuggestionData(null);
+      setMessages((prev) => [
+        ...prev.slice(0, -1),
+        { role: 'bot', text: message },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleQuickAction = (label: string, actionView: ChatView, action: ChatAction) => {
     if (action === 'create-team') {
       fetchCreateTeamSuggestions();
@@ -218,6 +283,10 @@ const ChatBot: React.FC = () => {
     }
     if (action === 'suggest-members') {
       fetchSuggestMembersSuggestions();
+      return;
+    }
+    if (action === 'suggest-teams') {
+      fetchSuggestTeamsSuggestions();
       return;
     }
 
@@ -231,6 +300,8 @@ const ChatBot: React.FC = () => {
       fetchCreateTeamSuggestions();
     } else if (activeAction === 'suggest-members') {
       fetchSuggestMembersSuggestions();
+    } else if (activeAction === 'suggest-teams') {
+      fetchSuggestTeamsSuggestions();
     }
   };
 
@@ -238,11 +309,15 @@ const ChatBot: React.FC = () => {
     setView('empty');
     setError(null);
     setSuggestionData(null);
+    setTeamSuggestionData(null);
     setActiveAction(null);
     setCreatedTeamId(null);
     setPendingInviteStudent(null);
     setInvitingStudentId(null);
     setInvitedStudentIds(new Set());
+    setJoiningTeamId(null);
+    setJoinedTeamIds(new Set());
+    setExpandedTeam(null);
   };
 
   const sendInvitation = async (teamId: string, student: SuggestedStudent) => {
@@ -327,31 +402,43 @@ const ChatBot: React.FC = () => {
     ]);
   };
 
-  const teams = [
-    {
-      name: 'Robots',
-      project: 'Web development',
-      lookingFor: 'Frontend Developer',
-      membersCount: '3 out of 4',
-      matchScore: 89,
-      members: [
-        { name: 'Ahmed Ali', role: 'Lead Dev', image: 'https://i.pravatar.cc/150?u=ahmed' },
-        { name: 'Sara John', role: 'Backend', image: 'https://i.pravatar.cc/150?u=sara' },
-        { name: 'Omar Zeyad', role: 'QA Engineeer', image: 'https://i.pravatar.cc/150?u=omar' },
-      ]
-    },
-    {
-      name: 'Geeks',
-      project: 'Web development',
-      lookingFor: 'UI/UX Designer',
-      membersCount: '2 out of 4',
-      matchScore: 70,
-      members: [
-        { name: 'Laila Khaled', role: 'Project Manager', image: 'https://i.pravatar.cc/150?u=laila' },
-        { name: 'Youssef M.', role: 'Full Stack', image: 'https://i.pravatar.cc/150?u=yousef' },
-      ]
-    },
-  ];
+  const handleJoinTeam = async (teamId: string, teamName: string) => {
+    if (joinedTeamIds.has(teamId)) return;
+
+    const token = getToken();
+    if (!token) {
+      toast.error("You must be logged in to send a join request.");
+      return;
+    }
+
+    setJoiningTeamId(teamId);
+
+    try {
+      await sendJoinRequest(teamId, token);
+      setJoinedTeamIds((prev) => new Set(prev).add(teamId));
+      const message = `Join request sent to team "${teamName}"!`;
+      toast.success("Join request sent successfully.");
+      setMessages((prev) => [...prev, { role: 'bot', text: message }]);
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        "Failed to send join request.";
+
+      if (errorMessage.toLowerCase().includes("already pending") || errorMessage.toLowerCase().includes("already sent")) {
+        setJoinedTeamIds((prev) => new Set(prev).add(teamId));
+        toast.success("Join request is already pending for this team.");
+        setMessages((prev) => [
+          ...prev,
+          { role: 'bot', text: `A join request to "${teamName}" is already pending.` },
+        ]);
+      } else {
+        toast.error(errorMessage);
+        setMessages((prev) => [...prev, { role: 'bot', text: errorMessage }]);
+      }
+    } finally {
+      setJoiningTeamId(null);
+    }
+  };
 
   const suggestedStudents = suggestionData?.suggestedStudents ?? [];
   const skillsStillNeeded = suggestionData?.skillsStillNeeded ?? [];
@@ -606,69 +693,146 @@ const ChatBot: React.FC = () => {
           </div>
         )}
 
-        {view === 'teams' && (
+        {view === 'teams' && activeAction === 'suggest-teams' && (
           <div className="max-w-4xl mx-auto pb-10">
             <h2 className="text-2xl font-bold">Recommended Teams</h2>
-            <p className="mb-8 text-sm text-slate-500">Based on your profile skills and project requirements.</p>
-            <div className="grid gap-6">
-              {teams.map((team, idx) => (
-                <div key={idx} className="relative overflow-hidden rounded-2xl border-l-4 border-l-teal-500 border border-slate-100 bg-white shadow-sm p-6">
-                  <div className="flex justify-between items-start mb-4 gap-2">
-                    <div className="min-w-0">
-                      <h3 className="text-lg font-bold flex items-center gap-2 ">Team: {team.name}</h3>
-                      <p className="text-xs text-slate-400 flex items-center gap-1 uppercase font-semibold "><Rocket size={12} /> Project: {team.project}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-teal-500 font-bold flex items-center gap-1 text-sm">⚡ {team.matchScore}%</span>
-                      <p className="text-[10px] text-slate-400 font-bold uppercase">Match Score</p>
-                    </div>
-                  </div>
+            <p className="mb-8 text-sm text-slate-500">
+              {teamSuggestionData?.coursework?.name ?? courseworkName ?? "Based on your profile skills and project requirements."}
+            </p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div className="bg-[#F5F2FE] p-3 rounded-xl border border-indigo-50">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Looking For</p>
-                      <p className="text-sm font-semibold text-indigo-600 truncate">{team.lookingFor}</p>
-                    </div>
-                    <div className="bg-[#F5F2FE] p-3 rounded-xl">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Members</p>
-                      <p className="text-sm font-semibold">{team.membersCount}</p>
-                    </div>
-                  </div>
+            {isLoading && (
+              <div className="flex flex-col items-center justify-center py-16 text-slate-500">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-500 mb-3" />
+                <p className="text-sm">Finding the best teams for you...</p>
+              </div>
+            )}
 
-                  <button
-                    onClick={() => setExpandedTeam(expandedTeam === idx ? null : idx)}
-                    className="w-full flex items-center justify-between p-3 border border-slate-300 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 transition-colors mb-4 group"
-                  >
-                    View Team Members
-                    <ChevronDown size={14} className={`transition-transform ${expandedTeam === idx ? 'rotate-180' : ''}`} />
-                  </button>
+            {!isLoading && error && (
+              <div className="rounded-2xl border border-red-100 bg-red-50 p-6 text-sm text-red-700">
+                {error}
+              </div>
+            )}
 
-                  {expandedTeam === idx && (
-                    <div className="mb-6 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                      {team.members.map((member, midx) => (
-                        <div key={midx} className="flex items-center gap-3 p-2 rounded-lg bg-slate-50/50">
-                          <img src={member.image} className="h-8 w-8 rounded-full border border-white shadow-sm" alt={member.name} />
-                          <div>
-                            <p className="text-xs font-bold text-slate-700">{member.name}</p>
-                            <p className="text-[10px] text-slate-400 font-medium">{member.role}</p>
-                          </div>
+            {!isLoading && !error && teamSuggestionData && teamSuggestionData.suggestedTeams.length === 0 && (
+              <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-sm text-slate-500">
+                {teamSuggestionData.suggestionStatus.message || "No available teams were found for this coursework."}
+              </div>
+            )}
+
+            {!isLoading && !error && teamSuggestionData && teamSuggestionData.suggestedTeams.length > 0 && (
+              <div className="grid gap-6">
+                {teamSuggestionData.suggestedTeams.map((team) => {
+                  const maxTeamSize = teamSuggestionData.coursework?.maxTeamSize ?? team.memberCount + team.openSlots;
+                  const displaySkills = team.combinedSkills.slice(0, 4);
+
+                  return (
+                    <div key={team.teamId} className="relative overflow-hidden rounded-2xl border-l-4 border-l-teal-500 border border-slate-100 bg-white shadow-sm p-6">
+                      <div className="flex justify-between items-start mb-4 gap-2">
+                        <div className="min-w-0">
+                          <h3 className="text-lg font-bold flex items-center gap-2 ">Team: {team.name}</h3>
+                          <p className="text-xs text-slate-400 flex items-center gap-1 uppercase font-semibold ">
+                            <Rocket size={12} /> Project: {teamSuggestionData.coursework?.name ?? courseworkName}
+                          </p>
+                          {team.reason && (
+                            <p className="mt-1 text-xs text-slate-500 line-clamp-2">{team.reason}</p>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  )}
+                        <div className="text-right shrink-0">
+                          <span className="text-teal-500 font-bold flex items-center gap-1 text-sm">⚡ {team.score.toFixed(0)}%</span>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase">Match Score</p>
+                        </div>
+                      </div>
 
-                  <button className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 flex items-center justify-center gap-2">
-                    Join Team <span className="text-lg">→</span>
-                  </button>
-                </div>
-              ))}
-            </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="bg-[#F5F2FE] p-3 rounded-xl border border-indigo-50">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Skills</p>
+                          {displaySkills.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {displaySkills.map((skill) => (
+                                <span key={skill} className="rounded bg-white px-2 py-0.5 text-[10px] font-bold text-indigo-600 uppercase">
+                                  {skill}
+                                </span>
+                              ))}
+                              {team.combinedSkills.length > displaySkills.length && (
+                                <span className="text-[10px] font-semibold text-slate-400">
+                                  +{team.combinedSkills.length - displaySkills.length} more
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-sm font-semibold text-slate-400">No skills listed</p>
+                          )}
+                        </div>
+                        <div className="bg-[#F5F2FE] p-3 rounded-xl">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Members</p>
+                          <p className="text-sm font-semibold">{team.memberCount} out of {maxTeamSize}</p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => setExpandedTeam(expandedTeam === team.teamId ? null : team.teamId)}
+                        className="w-full flex items-center justify-between p-3 border border-slate-300 rounded-lg text-xs font-bold text-slate-500 hover:bg-slate-50 transition-colors mb-4 group"
+                      >
+                        View Team Members
+                        <ChevronDown size={14} className={`transition-transform ${expandedTeam === team.teamId ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {expandedTeam === team.teamId && (
+                        <div className="mb-6 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                          {team.memberEvaluations.map((member) => (
+                            <div key={member.studentId} className="flex items-center gap-3 p-2 rounded-lg bg-slate-50/50">
+                              <img
+                                src={member.profilePicture ?? profilePlaceholder}
+                                className="h-8 w-8 rounded-full border border-white shadow-sm object-cover"
+                                alt={member.name}
+                              />
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-bold text-slate-700">{member.name}</p>
+                                <p className="text-[10px] text-slate-400 font-medium">@{member.username}</p>
+                                {member.skills.length > 0 && (
+                                  <div className="mt-1 flex flex-wrap gap-1">
+                                    {member.skills.slice(0, 3).map((skill) => (
+                                      <span key={skill} className="rounded bg-teal-50 px-1.5 py-0.5 text-[9px] font-bold text-teal-700 uppercase">
+                                        {skill}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <button
+                        onClick={() => handleJoinTeam(team.teamId, team.name)}
+                        disabled={joinedTeamIds.has(team.teamId) || joiningTeamId === team.teamId}
+                        className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {joiningTeamId === team.teamId ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Sending...
+                          </>
+                        ) : joinedTeamIds.has(team.teamId) ? (
+                          "Request Sent"
+                        ) : (
+                          <>
+                            Join Team <span className="text-lg">→</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
         {view !== 'empty' && (
           <div className=" flex justify-center pb-12 gap-4">
-            {(activeAction === 'create-team' || activeAction === 'suggest-members') && (
+            {(activeAction === 'create-team' || activeAction === 'suggest-members' || activeAction === 'suggest-teams') && (
               <button
                 onClick={handleRegenerate}
                 disabled={isLoading}

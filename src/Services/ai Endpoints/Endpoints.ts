@@ -1,6 +1,5 @@
 import Api from "../Api";
-import type { TeamSuggestionResponse } from "@/Types/aiTeamSuggestion";
-import { normalizeTeamSuggestionResponse } from "./helpers";
+import { normalizeTeamSuggestionResponse, normalizeSuggestTeamsResponse } from "./helpers";
 
 const API_BASE = "/ai";
 
@@ -34,5 +33,22 @@ export const suggestTeamMembersForTeam = async (
   return {
     ...response,
     data: normalizeTeamSuggestionResponse(response.data),
+  };
+};
+
+export const suggestTeams = async (
+  studentId: string,
+  courseworkId: string,
+  token: string,
+) => {
+  const response = await Api.post(
+    `${API_BASE}/suggest-teams`,
+    { studentId, courseworkId },
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+
+  return {
+    ...response,
+    data: normalizeSuggestTeamsResponse(response.data),
   };
 };
