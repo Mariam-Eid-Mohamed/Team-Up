@@ -285,8 +285,8 @@ export default function InsightsDashboard({ teamId }: InsightsDashboardProps) {
               url: t.deliverable_url,
             }
             : null,
-          completedAt: t.marked_as_done_at
-            ? formatDate(t.marked_as_done_at)
+          completedAt: (t.completed_at || t.completedAt || t.marked_as_done_at)
+            ? formatDate(t.completed_at || t.completedAt || t.marked_as_done_at)
             : t.status === "Done" && t.updatedAt
               ? formatDate(t.updatedAt)
               : null,
