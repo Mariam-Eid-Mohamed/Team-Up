@@ -96,10 +96,10 @@ export function ClassDetails({
               {/* Role-based buttons */}
               {role === "instructor" ? (
                 <>
-                  <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#084a49] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
+                  {/* <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#084a49] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
                     <Layers size={18} />
                     View Sections
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setShowEditModal(true)}
                     className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
@@ -117,13 +117,13 @@ export function ClassDetails({
                 </>
               ) : (
                 <>
-                  <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#084a49] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
+                  {/* <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#084a49] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
                     <Layers size={18} />
                     Class Stream
                   </button>
                   <button className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-[#313a3a] hover:bg-[#063a39] text-white rounded-lg flex items-center gap-2">
                     <Layers size={18} />+ Join Section
-                  </button>
+                  </button> */}
                 </>
               )}
 
@@ -244,7 +244,7 @@ export function ClassDetails({
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200 p-4 sm:p-6">
+            {/* <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200 p-4 sm:p-6">
               <h3 className="text-gray-900 mb-3 text-base sm:text-lg">
                 Quick Actions
               </h3>
@@ -259,7 +259,7 @@ export function ClassDetails({
                   Class Analytics
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </main>

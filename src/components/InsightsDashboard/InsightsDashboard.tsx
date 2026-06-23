@@ -630,7 +630,7 @@ export default function InsightsDashboard({ teamId }: InsightsDashboardProps) {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={activityTimelineChartData}
-                  margin={{ top: 20, right: 20, left: -20, bottom: 10 }}
+                  margin={{ top: 30, right: 60, left: -20, bottom: 10 }}
                 >
                   <CartesianGrid strokeDasharray="0" vertical={false} stroke="#f8fafc" />
                   <XAxis
@@ -653,11 +653,11 @@ export default function InsightsDashboard({ teamId }: InsightsDashboardProps) {
                       stroke="#ef4444"
                       strokeDasharray="3 3"
                       label={{
-                        value: `PROJECT DEADLINE (${formattedDeadline.toUpperCase()})`,
+                        value: `DEADLINE (${formattedDeadline.toUpperCase()})`,
                         position: "top",
                         fill: "#b91c1c",
-                        fontSize: 9,
-                        fontWeight: 800,
+                        fontSize: 10,
+                        fontWeight: 600,
                         offset: 10,
                       }}
                     />

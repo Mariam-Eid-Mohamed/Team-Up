@@ -135,7 +135,7 @@ export default function ActionButtons({
             </button>
 
             {/* Create Section Option */}
-            {(role === "instructor" || role === "admin") && (
+            {/* {(role === "instructor" || role === "admin") && (
               <button
                 onClick={() => executeAction(() => setIsCreateSectionOpen(true))}
                 className="flex items-center gap-3 w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors text-left"
@@ -143,13 +143,13 @@ export default function ActionButtons({
                 <UserPlus size={16} className="text-slate-400" />
                 <span>Create Section</span>
               </button>
-            )}
+            )} */}
 
             {/* Divider */}
             <hr className="my-1 border-slate-100" />
 
             {/* Conditional Handle Join/Leave Section Option */}
-            {sectionId ? (
+            {/* {sectionId ? (
               <button
                 onClick={() => executeAction(() => setIsLeaveModalOpen(true))}
                 className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50/50 transition-colors text-left font-medium"
@@ -165,7 +165,7 @@ export default function ActionButtons({
                 <UserPlus size={16} className="text-teal-500" />
                 <span>Join Section</span>
               </button>
-            )}
+            )} */}
           </div>
         )}
       </div>
