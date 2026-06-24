@@ -6,10 +6,15 @@ import {
   ArrowLeft,
   UserPlus,
 } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import JoinTeamModal from "../../../components/JoinTeamModal/JoinTeamModal";
-import { getToken } from "@/utilis/token";
-import { getCourseworkTeams } from "@/Services/class Endpoints/Endpoints";
+import { getToken, getUserId } from "@/utilis/token";
+import {
+  getCourseworkTeams,
+  getUserClasses,
+  GetClassPosts,
+} from "@/Services/class Endpoints/Endpoints";
+import type { Post } from "@/Types/posts";
 import { sendJoinRequest } from "@/Services/team Endpoints/Endpoints";
 import toast from "react-hot-toast";
 
@@ -72,8 +77,22 @@ function mapApiTeamToTeam(apiTeam: ApiTeam): Team {
   };
 }
 
+function formatClassName(classItem: {
+  course_code?: string;
+  course_name?: string;
+}): string {
+  return classItem.course_code && classItem.course_name
+    ? `${classItem.course_code} - ${classItem.course_name}`
+    : classItem.course_name || classItem.course_code || "Class";
+}
+
 const TeamsPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const navState = (location.state || {}) as {
+    courseworkName?: string;
+    className?: string;
+  };
   const { id: classId, courseworkId } = useParams<{
     id: string;
     courseworkId: string;
@@ -84,8 +103,12 @@ const TeamsPage: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [courseworkName, setCourseworkName] = useState<string>("Coursework");
-  const [className, setClassName] = useState<string>("Class");
+  const [courseworkName, setCourseworkName] = useState<string>(
+    navState.courseworkName ?? "Coursework",
+  );
+  const [className, setClassName] = useState<string>(
+    navState.className ?? "Class",
+  );
   const [isJoining, setIsJoining] = useState(false);
   const [pendingTeams, setPendingTeams] = useState<Set<string>>(new Set());
 
@@ -100,16 +123,62 @@ const TeamsPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await getCourseworkTeams(classId, courseworkId, token, {
-        locked: false,
-      });
-      const { data } = response.data as CourseworkTeamsResponse;
+      const userId = getUserId();
+      const [teamsResult, classesResult, postsResult] =
+        await Promise.allSettled([
+          getCourseworkTeams(classId, courseworkId, token, { locked: false }),
+          userId ? getUserClasses(userId, token) : Promise.reject(),
+          GetClassPosts(classId, token),
+        ]);
+
+      if (teamsResult.status === "rejected") {
+        throw teamsResult.reason;
+      }
+
+      const { data } = teamsResult.value.data as CourseworkTeamsResponse;
       const list = Array.isArray(data) ? data : [];
       setTeams(list.map(mapApiTeamToTeam));
+
+      let resolvedClassName = navState.className ?? "Class";
+      let resolvedCourseworkName = navState.courseworkName ?? "Coursework";
+
       if (list.length > 0) {
-        setCourseworkName(list[0].courseworkName ?? "Coursework");
-        setClassName(list[0].className ?? "Class");
+        resolvedClassName = list[0].className ?? resolvedClassName;
+        resolvedCourseworkName =
+          list[0].courseworkName ?? resolvedCourseworkName;
+      } else {
+        if (
+          classesResult.status === "fulfilled" &&
+          classesResult.value.data?.success &&
+          classesResult.value.data.data
+        ) {
+          const classItem = classesResult.value.data.data.find(
+            (c: { _id: string }) => c._id === classId,
+          );
+          if (classItem) {
+            resolvedClassName = formatClassName(classItem);
+          }
+        }
+
+        if (
+          postsResult.status === "fulfilled" &&
+          postsResult.value.data?.posts
+        ) {
+          const posts: Post[] = postsResult.value.data.posts;
+          const courseworkPost = posts.find(
+            (post): post is Extract<Post, { type: "COURSEWORK" }> =>
+              post.type === "COURSEWORK" &&
+              post.courseworkId._id === courseworkId,
+          );
+          if (courseworkPost) {
+            resolvedCourseworkName =
+              courseworkPost.courseworkId.name ?? resolvedCourseworkName;
+          }
+        }
       }
+
+      setClassName(resolvedClassName);
+      setCourseworkName(resolvedCourseworkName);
     } catch (err: unknown) {
       const message =
         err && typeof err === "object" && "response" in err
@@ -121,7 +190,7 @@ const TeamsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [classId, courseworkId]);
+  }, [classId, courseworkId, navState.className, navState.courseworkName]);
 
   useEffect(() => {
     fetchTeams();
