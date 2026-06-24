@@ -12,7 +12,7 @@ import { getToken } from "@/utilis/token";
 import { getCourseworkTeams } from "@/Services/class Endpoints/Endpoints";
 import { sendJoinRequest } from "@/Services/team Endpoints/Endpoints";
 import toast from "react-hot-toast";
-// import { useTeamStore } from "@/store/TeamStore";
+
 interface TeamMember {
   id: string;
   name: string;
@@ -88,7 +88,7 @@ const TeamsPage: React.FC = () => {
   const [className, setClassName] = useState<string>("Class");
   const [isJoining, setIsJoining] = useState(false);
   const [pendingTeams, setPendingTeams] = useState<Set<string>>(new Set());
-  // const setMembers = useTeamStore((state) => state.setMembers);
+
   const fetchTeams = useCallback(async () => {
     if (!classId || !courseworkId) return;
     const token = getToken();
@@ -105,10 +105,6 @@ const TeamsPage: React.FC = () => {
       });
       const { data } = response.data as CourseworkTeamsResponse;
       const list = Array.isArray(data) ? data : [];
-      if (list.length > 0) {
-        setMembers(list[0].teamMembers);
-      }
-      console.log("API teams:", list);
       setTeams(list.map(mapApiTeamToTeam));
       if (list.length > 0) {
         setCourseworkName(list[0].courseworkName ?? "Coursework");

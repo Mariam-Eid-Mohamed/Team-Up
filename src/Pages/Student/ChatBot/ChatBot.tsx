@@ -483,8 +483,8 @@ const ChatBot: React.FC = () => {
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex items-start gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                 {msg.role === 'bot' && (
-                  <div className="h-8 w-8 rounded-full border border-emerald-50 flex items-center justify-center bg-transparent shrink-0">
-                    <img src={Bot} className="bg-cover bg-center h-auto" alt="bot" />
+                  <div className="h-8 w-8 rounded-full border border-emerald-50 flex items-center justify-center bg-purple-100 shrink-0">
+                    <img src={Bot} className="bg-fill bg-center h-auto" alt="bot" />
                   </div>
                 )}
                 <div className={`max-w-[85%] rounded-2xl p-4 text-sm leading-relaxed break-words shadow-sm
