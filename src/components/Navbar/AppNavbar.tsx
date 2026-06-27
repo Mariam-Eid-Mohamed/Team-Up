@@ -43,7 +43,6 @@ export default function AppNavbar({
           Home
         </a>
 
-        <MessageCircle className="w-5 h-5 cursor-pointer hover:opacity-70 transition-opacity" />
 
         <NotificationsDropdown onJoinedClass={onClassListChanged} />
 
@@ -57,9 +56,9 @@ export default function AppNavbar({
             />
           </Link>
 
-          <ChevronDown
+          {/* <ChevronDown
             className={`w-5 h-5 cursor-pointer transition-transform`}
-          />
+          /> */}
         </div>
       </div>
     </nav>

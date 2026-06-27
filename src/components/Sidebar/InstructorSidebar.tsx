@@ -101,28 +101,16 @@ export default function Sidebar() {
         />
 
         <SidebarItem
-          icon={<BookOpen size={20} />}
-          label="My Classes"
-          to="/classes"
-        />
-
-        <SidebarItem
-          icon={<Bell size={20} />}
-          label="Notifications"
-          to="/notifications"
-        />
-
-        <SidebarItem
           icon={<Users size={20} />}
           label="Teams"
           to={role === "student" ? "/student/teams" : "/instructor/teams"}
         />
 
-        <SidebarItem
+        {/* <SidebarItem
           icon={<UsersRound size={20} />}
           label="Students"
           to="/students"
-        />
+        /> */}
 
         {/* {role === "student" && (
           <SidebarItem

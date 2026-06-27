@@ -8,7 +8,7 @@ import { useSessionStore } from "@/store/sessionStore";
 interface StudentTeamItem {
   teamId: string;
   courseworkId: string;
-  classCode: string;
+  courseCode: string;
   classColor: string;
   teamName: string;
   courseworkName: string;
@@ -75,7 +75,7 @@ const Teams: React.FC = () => {
 
   const classOptions = useMemo(() => {
     const uniqueCodes = Array.from(
-      new Set(teams.map((team) => team.classCode)),
+      new Set(teams.map((team) => team.courseCode)),
     );
     return ["All Classes", ...uniqueCodes];
   }, [teams]);
@@ -85,12 +85,12 @@ const Teams: React.FC = () => {
       const q = searchQuery.toLowerCase().trim();
 
       const matchesSearch =
-        team.classCode.toLowerCase().includes(q) ||
+        team.courseCode.toLowerCase().includes(q) ||
         team.teamName.toLowerCase().includes(q) ||
         team.courseworkName.toLowerCase().includes(q);
 
       const matchesClass =
-        selectedClass === "All Classes" || team.classCode === selectedClass;
+        selectedClass === "All Classes" || team.courseCode === selectedClass;
 
       return matchesSearch && matchesClass;
     });
@@ -187,7 +187,7 @@ const Teams: React.FC = () => {
             paginatedTeams.map((team, index) => (
               <TeamCard
                 key={`${team.teamId}-${index}`}
-                courseCode={team.classCode}
+                courseCode={team.courseCode}
                 teamName={team.teamName}
                 courseName={team.courseworkName}
                 classColor={team.classColor}
