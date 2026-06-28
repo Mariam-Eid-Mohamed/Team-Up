@@ -26,6 +26,7 @@ interface Instructor {
 }
 import { getClassInstructors } from "../../../Services/class Endpoints/Endpoints";
 import InsightsDashboard from "@/components/InsightsDashboard/InsightsDashboard";
+import SubmissionTab from "@/components/SubmissionSection/SubmissionTab";
 
 export default function TeamWorkspace() {
   const navigate = useNavigate();
@@ -36,8 +37,9 @@ export default function TeamWorkspace() {
   const userId = useSessionStore((state) => state.userId);
 
   const [activeTab, setActiveTab] = useState("Members");
-  const tabs = ["Tasks", "Summary", "Members", "Insights"];
-
+  const tabs = ["Tasks", "Submission", "Members", "Insights"];
+const handleFileUpload = async (file: File) => { /* call your API endpoint */ };
+const handleFileDownload = () => { /* logic to trigger download */ };
   const [teamData, setTeamData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isLocking, setIsLocking] = useState(false);
@@ -349,6 +351,15 @@ export default function TeamWorkspace() {
       {activeTab === "Tasks" && (
         <TaskDashboard />
       )}
+
+      {activeTab === "Submission" && (
+  <SubmissionTab 
+    teamData={teamData} 
+    isInstructor={isInstructorRoute}
+    onUpload={handleFileUpload}
+    onDownload={handleFileDownload}
+  />
+)}
 
       {/* Content Area */}
       {activeTab === "Members" && (
