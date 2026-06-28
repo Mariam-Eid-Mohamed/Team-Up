@@ -129,7 +129,7 @@ export function ClassDetails({
 
               <button
                 onClick={() => setShowLeaveModal(true)}
-                className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm border rounded-md bg-red-600 hover:bg-red-700 text-white text-sm flex items-center gap-2"
+                className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm border border-red-600 rounded-md bg-transparent hover:bg-red-50 hover:cursor-pointer text-red-600 text-sm flex items-center gap-2"
               >
                 <LogOut size={18} />
                 Leave Class

@@ -11,6 +11,13 @@ export interface Rating {
   createdAt: string;
 }
 
+export interface Ratings {
+  raterName: string;
+  raterImage?: string;
+  stars: number;
+   comment: string | null;
+}
+
 export interface StudentProfileData {
   _id: string;
   user_id: string;
@@ -33,5 +40,5 @@ export interface StudentProfileData {
     storagePath: string | null;
     uploadedAt: string | null;
   };
-  ratings: Rating[];
+  ratings: Ratings[];
 }

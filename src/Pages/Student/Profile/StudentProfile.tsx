@@ -5,6 +5,7 @@ import profilePlaceholder from "../../../assets/images/profile-placeholder.png";
 import { useSessionStore } from "@/store/sessionStore";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import EditProfileModal from "@/components/EditProfileModal/editProfileModal";
+import { RatingsSection } from "@/components/EditProfileModal/Ratings"; 
 import { getStudentProfile } from "@/Services/profile Endpoints/Endpoints";
 import { useProfileStore } from "@/store/ProfileStore/userProfileStore";
 import { skillMap } from "@/data/skills";
@@ -16,7 +17,7 @@ export function StudentProfile() {
   const { id } = useParams<{ id: string }>();
   const { token, userId } = useSessionStore((state) => state);
   const { profile, isLoading, error } = useProfileStore();
-
+const [currentPage, setCurrentPage] = useState(1);
   const [visitedProfile, setVisitedProfile] =
     useState<StudentProfileData | null>(null);
   const [visitedLoading, setVisitedLoading] = useState(false);
@@ -232,40 +233,15 @@ export function StudentProfile() {
               </div>
 
               {/* Ratings */}
-              <div className="bg-white shadow-sm border border-gray-100 rounded-lg p-4 lg:col-span-2 min-w-0">
-                <div className="flex flex-col gap-4 h-full">
-                  <h2 className="text-xl text-[#1F6B6B]">Ratings</h2>
-                  {(displayProfile?.ratings ?? []).length > 0 ? (
-                    <div className="flex flex-col gap-4">
-                      {displayProfile?.ratings.map((rating, i) => (
-                        <div
-                          key={i}
-                          className="border rounded-lg p-4 flex flex-col gap-2"
-                        >
-                          <div className="flex justify-between items-center gap-2">
-                            <p className="font-medium text-gray-800 truncate">
-                              {rating.raterName}
-                            </p>
-                            <p className="text-sm text-gray-400 shrink-0">
-                              {"★".repeat(rating.stars)}
-                              {"☆".repeat(5 - rating.stars)}
-                            </p>
-                          </div>
-                          {rating.comment && (
-                            <p className="text-gray-500 text-sm">
-                              {rating.comment}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="min-h-[400px] flex items-center justify-center text-gray-500">
-                      Student has no ratings yet
-                    </div>
-                  )}
-                </div>
-              </div>
+             
+<div className="bg-white shadow-sm border border-gray-100 rounded-lg p-4 lg:col-span-2 min-w-0">
+  <RatingsSection 
+    // ratings={MOCK_RATINGS}
+    currentPage={currentPage}
+    totalPages={5} // Pass your dynamic total pages here
+    onPageChange={(page) => setCurrentPage(page)}
+  />
+</div>
             </div>
           </main>
         </div>
