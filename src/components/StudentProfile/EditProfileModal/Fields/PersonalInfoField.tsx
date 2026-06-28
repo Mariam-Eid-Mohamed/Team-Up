@@ -1,5 +1,5 @@
-import { Input } from "../../ui/input";
-import { Field, FieldLabel } from "../../ui/field";
+import { Input } from "../../../ui/input";
+import { Field, FieldLabel } from "../../../ui/field";
 import type { PersonalInfoFieldsProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 
 export default function PersonalInfoFields({

@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 import placeholder from "@/assets/images/profile-placeholder.png";
-import { Pagination } from "../Pagination/Pagination"; // Adjust path as needed
+import { Pagination } from "@/components/Pagination/Pagination";
 import type { Ratings } from "@/interfaces/ProfileInterfaces/profileInterface";
 
 // interface Rating {

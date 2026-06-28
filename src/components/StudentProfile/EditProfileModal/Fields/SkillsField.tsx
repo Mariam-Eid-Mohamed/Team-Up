@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
-import { Field, FieldLabel } from "../../ui/field";
+import { Field, FieldLabel } from "../../../ui/field";
 import {
   Combobox,
   ComboboxContent,
@@ -8,7 +8,7 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from "../../ui/combobox";
+} from "../../../ui/combobox";
 import { skills } from "@/data/skills";
 import type { Skill } from "@/interfaces/ProfileInterfaces/skillInterface";
 import type { SkillsFieldProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";

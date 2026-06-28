@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { Field, FieldLabel } from "../../ui/field";
-import { Button } from "../../ui/button";
+import { Field, FieldLabel } from "../../../ui/field";
+import { Button } from "../../../ui/button";
 import type { CvState, CvFieldProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 
 

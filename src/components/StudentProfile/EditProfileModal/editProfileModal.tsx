@@ -8,8 +8,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Field } from "../ui/field";
+} from "../../ui/dialog";
+import { Field } from "../../ui/field";
 import { Pencil } from "lucide-react";
 import {
   EditProfileSchema,

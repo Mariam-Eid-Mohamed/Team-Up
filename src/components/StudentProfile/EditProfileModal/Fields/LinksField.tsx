@@ -1,6 +1,6 @@
 import { Minus, Plus } from "lucide-react";
-import { Field, FieldLabel } from "../../ui/field";
-import { Input } from "../../ui/input";
+import { Field, FieldLabel } from "../../../ui/field";
+import { Input } from "../../../ui/input";
 import type { LinksFieldProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 
 export default function LinksField({

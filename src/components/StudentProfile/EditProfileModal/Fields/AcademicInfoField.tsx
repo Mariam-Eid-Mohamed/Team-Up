@@ -1,12 +1,12 @@
-import { Input } from "../../ui/input";
-import { Field, FieldLabel } from "../../ui/field";
+import { Input } from "../../../ui/input";
+import { Field, FieldLabel } from "../../../ui/field";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../ui/select";
+} from "../../../ui/select";
 import { Controller } from "react-hook-form";
 import type { AcademicInfoFieldsProps } from "@/interfaces/ProfileInterfaces/profileEditInterfaces";
 import { availability } from "@/data/availability";
