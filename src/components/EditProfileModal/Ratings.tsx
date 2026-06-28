@@ -31,8 +31,8 @@ export const RatingsSection = ({
 }: RatingsSectionProps) => {
   return (
     <div >
-      <h2 className="text-xl text-[#639A98] font-normal mb-2">Ratings</h2>
-      <hr className="border-gray-200 mb-4" />
+      <h2 className="text-xl text-[#1F6B6B] font-normal mb-2">Ratings</h2>
+      <hr className="bg-gray-500" />
 
       {ratings.length > 0 ? (
         <div className="flex flex-col">
@@ -46,20 +46,20 @@ export const RatingsSection = ({
                     className="w-10 h-10 rounded-full object-cover border border-gray-100"
                   />
                   <div className="flex flex-col">
-                    <span className="font-semibold text-gray-900 text-sm">{rating.raterName}</span>
+                    <span className="font-semibold text-sm">{rating.raterName}</span>
                     <div className="flex items-center gap-0.5">
                       {[...Array(5)].map((_, idx) => (
                         <Star 
                           key={idx} 
                           size={14} 
-                          className={idx < rating.stars ? "fill-[#F9D034] text-[#F9D034]" : "text-gray-300"} 
+                          className={idx < rating.stars ? "fill-[#F9D034] text-[#F9D034]" : "text-[#F9D034]"} 
                         />
                       ))}
                     </div>
                   </div>
                 </div>
                 {rating.comment && (
-                  <p className="text-gray-400 text-sm leading-relaxed pl-13">
+                  <p className="text-gray-500 text-sm leading-relaxed pl-13">
                     {rating.comment}
                   </p>
                 )}

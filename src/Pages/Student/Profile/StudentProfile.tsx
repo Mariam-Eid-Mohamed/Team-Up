@@ -5,7 +5,7 @@ import profilePlaceholder from "../../../assets/images/profile-placeholder.png";
 import { useSessionStore } from "@/store/sessionStore";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import EditProfileModal from "@/components/EditProfileModal/editProfileModal";
-import { RatingsSection } from "@/components/EditProfileModal/Ratings"; 
+import { RatingsSection } from "@/components/EditProfileModal/Ratings";
 import { getStudentProfile } from "@/Services/profile Endpoints/Endpoints";
 import { useProfileStore } from "@/store/ProfileStore/userProfileStore";
 import { skillMap } from "@/data/skills";
@@ -17,9 +17,8 @@ export function StudentProfile() {
   const { id } = useParams<{ id: string }>();
   const { token, userId } = useSessionStore((state) => state);
   const { profile, isLoading, error } = useProfileStore();
-const [currentPage, setCurrentPage] = useState(1);
-  const [visitedProfile, setVisitedProfile] =
-    useState<StudentProfileData | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [visitedProfile, setVisitedProfile] = useState<StudentProfileData | null>(null);
   const [visitedLoading, setVisitedLoading] = useState(false);
   const [visitedError, setVisitedError] = useState<string | null>(null);
 
@@ -102,7 +101,7 @@ const [currentPage, setCurrentPage] = useState(1);
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-1">
                     {isOwnProfile && (
                       <Dialog>
-                        <DialogTrigger className="w-full sm:w-auto px-6 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 text-sm">
+                        <DialogTrigger className="w-full sm:w-auto px-6 py-2.5 bg-[#2D7A78] cursor-pointer hover:bg-[#23615f] text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95">
                           Edit Profile
                         </DialogTrigger>
                         <DialogContent>
@@ -140,7 +139,7 @@ const [currentPage, setCurrentPage] = useState(1);
                       <p className="text-sm text-gray-500 text-right truncate">
                         {displayProfile?.availability
                           ? availabilityMap[displayProfile.availability] ||
-                            displayProfile.availability
+                          displayProfile.availability
                           : "Not set"}
                       </p>
                     </div>
@@ -233,15 +232,15 @@ const [currentPage, setCurrentPage] = useState(1);
               </div>
 
               {/* Ratings */}
-             
-<div className="bg-white shadow-sm border border-gray-100 rounded-lg p-4 lg:col-span-2 min-w-0">
-  <RatingsSection 
-    // ratings={MOCK_RATINGS}
-    currentPage={currentPage}
-    totalPages={5} // Pass your dynamic total pages here
-    onPageChange={(page) => setCurrentPage(page)}
-  />
-</div>
+
+              <div className="bg-white shadow-sm border border-gray-100 rounded-lg p-4 lg:col-span-2 min-w-0">
+                <RatingsSection
+                  // ratings={MOCK_RATINGS}
+                  currentPage={currentPage}
+                  totalPages={5} // Pass your dynamic total pages here
+                  onPageChange={(page) => setCurrentPage(page)}
+                />
+              </div>
             </div>
           </main>
         </div>
