@@ -169,7 +169,7 @@ export default function SubmissionTab({ teamData, isInstructor }: SubmissionTabP
             
             <button 
               onClick={handleDownload}
-              className="w-full max-w-[240px] py-2.5 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors font-medium"
+              className="w-full max-w-[240px] py-2.5 bg-[#2D7A78] text-white rounded-lg hover:bg-[#23615f] transition-colors font-medium"
             >
               Download
             </button>
@@ -285,7 +285,7 @@ export default function SubmissionTab({ teamData, isInstructor }: SubmissionTabP
         </button>
         <button 
           onClick={handleDownload} 
-          className="w-full py-2.5 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors font-medium"
+          className="w-full py-2.5 bg-[#2D7A78] text-white rounded-lg hover:bg-[#23615f] transition-colors font-medium"
         >
           Download
         </button>
