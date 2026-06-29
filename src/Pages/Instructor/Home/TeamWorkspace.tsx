@@ -6,6 +6,8 @@ import {
   Loader2,
   ArrowLeft,
   UserMinus,
+  Star,
+  Users,
 } from "lucide-react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useSessionStore } from "../../../store/sessionStore";
@@ -27,6 +29,7 @@ interface Instructor {
 import { getClassInstructors } from "../../../Services/class Endpoints/Endpoints";
 import InsightsDashboard from "@/components/InsightsDashboard/InsightsDashboard";
 import SubmissionTab from "@/components/SubmissionSection/SubmissionTab";
+import PeerEvaluationModal from "@/components/PeerEvaluation/PeerEvaluationModal";
 
 export default function TeamWorkspace() {
   const navigate = useNavigate();
@@ -54,6 +57,20 @@ export default function TeamWorkspace() {
 
   const isInstructorRoute = location.pathname.includes("/instructor");
   const [isAssignedInstructor, setIsAssignedInstructor] = useState(false);
+
+  // Simple clean toggler state parameter tracking for the peer evaluation module
+  const [isEvaluationOpen, setIsEvaluationOpen] = useState(false);
+
+  // Helper calculation to isolate teammates to rate
+  const teammatesToRate = teamData?.teamMembers?.filter((m: any) => m.id !== userId) || [];
+
+  const handleStartRatingClick = () => {
+    if (teammatesToRate.length === 0) {
+      toast.error("There are no other teammates to evaluate.");
+      return;
+    }
+    setIsEvaluationOpen(true);
+  };
   const handleAssign = async (id: number | string) => {
     if (!teamId || !token) return;
     try {
@@ -360,6 +377,26 @@ export default function TeamWorkspace() {
       {/* Content Area */}
       {activeTab === "Members" && (
         <div className="space-y-6 md:space-y-8">
+
+      {/* Peer Evaluation Banner */}
+          {!isInstructorRoute && (
+            <div className="bg-[#ebf5f4] border border-[#c1e0dc] rounded-xl p-4 md:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
+              <div className="flex gap-3 items-start">
+                <div className="mt-0.5"><Users className="text-[#2D7A78] w-5 h-5" /></div>
+                <div>
+                  <h3 className="text-gray-900 font-bold text-base">Peer Evaluation is Open!</h3>
+                  <p className="text-gray-500 text-sm mt-0.5">Please rate your teammates fairly. Your feedback helps everyone grow.</p>
+                </div>
+              </div>
+              <button 
+                onClick={handleStartRatingClick}
+                className="flex-shrink-0 flex items-center justify-center gap-2 px-5 py-2.5 bg-[#4B8C8A] hover:bg-[#3D716F] text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer w-full sm:w-auto shadow-sm"
+              >
+                <Star size={18} className="text-white" />
+                Start rating
+              </button>
+            </div>
+          )}
           {/* Instructors Section */}
           <section>
             <h2 className="text-[#1B4D49] font-bold text-lg mb-4">
@@ -530,6 +567,13 @@ export default function TeamWorkspace() {
           </div>
         </div>
       )}
+
+      <PeerEvaluationModal 
+        isOpen={isEvaluationOpen}
+        onClose={() => setIsEvaluationOpen(false)}
+        teammates={teammatesToRate}
+        classColor={teamData?.classColor}
+      />
     </div>
   );
 }
