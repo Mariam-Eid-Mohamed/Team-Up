@@ -31,7 +31,7 @@ export default function PostCard({
 }) {
   const [modalMode, setModalMode] = useState<"edit" | "delete" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const first = post.authorId?.first_name?.trim() || "Unknown";
   const last = post.authorId?.last_name?.trim() || "";
   const authorName = `${first} ${last}`.trim();
@@ -58,7 +58,7 @@ const navigate = useNavigate();
       console.error("Failed to update announcement:", error);
       alert(
         error?.response?.data?.message ||
-          "Failed to update announcement. Please try again.",
+        "Failed to update announcement. Please try again.",
       );
     } finally {
       setIsProcessing(false);
@@ -84,7 +84,7 @@ const navigate = useNavigate();
       console.error("Failed to delete announcement:", error);
       alert(
         error?.response?.data?.message ||
-          "Failed to delete announcement. Please try again.",
+        "Failed to delete announcement. Please try again.",
       );
     } finally {
       setIsProcessing(false);
@@ -94,16 +94,16 @@ const navigate = useNavigate();
   // Placeholder functions for the new buttons
   const handleJoinTeam = () => {
     navigate(`/student/classes/${classId}/coursework/${post.courseworkId._id}/teams`, {
-    state: { courseworkName: post.courseworkId.name }
-  });
+      state: { courseworkName: post.courseworkId.name }
+    });
     // Add your navigation or logic here
   };
-const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
+  const [isCreateTeamOpen, setIsCreateTeamOpen] = useState(false);
 
-// Update your handleCreateTeam function
-const handleCreateTeam = () => {
-  setIsCreateTeamOpen(true);
-};
+  // Update your handleCreateTeam function
+  const handleCreateTeam = () => {
+    setIsCreateTeamOpen(true);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow p-5">
@@ -133,23 +133,23 @@ const handleCreateTeam = () => {
         )}
 
         {/* Student Chatbot Icon */}
-{role === "student" && post.type === "COURSEWORK" && (
-  <button
-    onClick={() =>
-      navigate("/student/AI-Chat", {
-        state: {
-          courseworkId: post.courseworkId._id,
-          courseworkName: post.courseworkId.name,
-        },
-      })
-    }
-    title="AI Chat"
-    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
-  >
-    <MessageSquareCode size={16} />
-    <span className="text-xs font-semibold">AI Chat</span>
-  </button>
-)}
+        {role === "student" && post.type === "COURSEWORK" && (
+          <button
+            onClick={() =>
+              navigate("/student/AI-Chat", {
+                state: {
+                  courseworkId: post.courseworkId._id,
+                  courseworkName: post.courseworkId.name,
+                },
+              })
+            }
+            title="AI Chat"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-500 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+          >
+            <MessageSquareCode size={16} />
+            <span className="text-xs font-semibold">Ask AI</span>
+          </button>
+        )}
 
       </div>
 
@@ -211,11 +211,11 @@ const handleCreateTeam = () => {
             </div>
           )}
 
-          <CreateTeamModal 
-      isOpen={isCreateTeamOpen} 
-      onClose={() => setIsCreateTeamOpen(false)} 
-      courseworkId={post.courseworkId._id}
-    />
+          <CreateTeamModal
+            isOpen={isCreateTeamOpen}
+            onClose={() => setIsCreateTeamOpen(false)}
+            courseworkId={post.courseworkId._id}
+          />
           {post.courseworkId.files?.length > 0 && (
             <div className="mt-3 space-y-2">
               {post.courseworkId.files.map((f) => (
@@ -260,7 +260,7 @@ const handleCreateTeam = () => {
               ? handleEditAnnouncement
               : modalMode === "delete"
                 ? handleDeleteAnnouncement
-                : () => {}
+                : () => { }
           }
         />
       )}

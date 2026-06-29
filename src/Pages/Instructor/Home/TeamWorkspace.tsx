@@ -38,8 +38,6 @@ export default function TeamWorkspace() {
 
   const [activeTab, setActiveTab] = useState("Members");
   const tabs = ["Tasks", "Submission", "Members", "Insights"];
-const handleFileUpload = async (file: File) => { /* call your API endpoint */ };
-const handleFileDownload = () => { /* logic to trigger download */ };
   const [teamData, setTeamData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isLocking, setIsLocking] = useState(false);
@@ -353,13 +351,11 @@ const handleFileDownload = () => { /* logic to trigger download */ };
       )}
 
       {activeTab === "Submission" && (
-  <SubmissionTab 
-    teamData={teamData} 
-    isInstructor={isInstructorRoute}
-    onUpload={handleFileUpload}
-    onDownload={handleFileDownload}
-  />
-)}
+        <SubmissionTab 
+          teamData={teamData} 
+          isInstructor={isInstructorRoute}
+        />
+      )}
 
       {/* Content Area */}
       {activeTab === "Members" && (

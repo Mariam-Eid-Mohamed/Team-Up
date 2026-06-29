@@ -154,3 +154,26 @@ export const getTeamInsights = async (teamId: string, token: string) => {
   });
 };
 
+// Submit Team Coursework Submission
+export const submitCoursework = async (
+  teamId: string,
+  file: File,
+  token: string
+) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return Api.patch(`${API_BASE}/${teamId}/submit-coursework`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+// Get Team Coursework Submission
+export const getTeamSubmission = async (teamId: string, token: string) => {
+  return Api.get(`${API_BASE}/${teamId}/submission`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
