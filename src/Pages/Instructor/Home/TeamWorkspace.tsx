@@ -390,7 +390,7 @@ export default function TeamWorkspace() {
               </div>
               <button 
                 onClick={handleStartRatingClick}
-                className="flex-shrink-0 flex items-center justify-center gap-2 px-5 py-2.5 bg-[#4B8C8A] hover:bg-[#3D716F] text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer w-full sm:w-auto shadow-sm"
+                className="flex-shrink-0 flex items-center justify-center gap-2 px-5 py-2.5 bg-[#2D7A78] hover:bg-[#23615f] text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer w-full sm:w-auto shadow-sm"
               >
                 <Star size={18} className="text-white" />
                 Start rating
