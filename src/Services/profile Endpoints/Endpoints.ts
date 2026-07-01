@@ -22,3 +22,11 @@ export const editStudentProfile = (
     },
   });
 };
+
+export const getStudentRatings = (userId: string, token: string) => {
+  return Api.get(`${API_BASE}/${userId}/ratings`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

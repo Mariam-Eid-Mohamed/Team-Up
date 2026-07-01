@@ -6,7 +6,7 @@ import { useSessionStore } from "@/store/sessionStore";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import EditProfileModal from "@/components/StudentProfile/EditProfileModal/editProfileModal";
 import { RatingsSection } from "@/components/StudentProfile/Ratings";
-import { getStudentProfile } from "@/Services/profile Endpoints/Endpoints";
+import { getStudentProfile, getStudentRatings } from "@/Services/profile Endpoints/Endpoints";
 import { useProfileStore } from "@/store/ProfileStore/userProfileStore";
 import { skillMap } from "@/data/skills";
 import { availabilityMap } from "@/data/availability";
@@ -21,6 +21,10 @@ export function StudentProfile() {
   const [visitedProfile, setVisitedProfile] = useState<StudentProfileData | null>(null);
   const [visitedLoading, setVisitedLoading] = useState(false);
   const [visitedError, setVisitedError] = useState<string | null>(null);
+
+  const [ratings, setRatings] = useState<any[]>([]);
+  const [ratingsLoading, setRatingsLoading] = useState(false);
+  const [ratingsError, setRatingsError] = useState<string | null>(null);
 
   const isOwnProfile = id === userId;
   const displayProfile = isOwnProfile ? profile : visitedProfile;
@@ -46,6 +50,45 @@ export function StudentProfile() {
         .finally(() => setVisitedLoading(false));
     }
   }, [id, token, isOwnProfile]);
+
+  useEffect(() => {
+    if (!id || !token) return;
+
+    setRatingsLoading(true);
+    setRatingsError(null);
+    getStudentRatings(id, token)
+      .then((res) => {
+        if (res.data?.success) {
+          setRatings(res.data.data.ratings || []);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load ratings:", err);
+        setRatingsError(err?.response?.data?.message || "Failed to load ratings.");
+      })
+      .finally(() => {
+        setRatingsLoading(false);
+      });
+  }, [id, token]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [id]);
+
+  // Format ratings for presentation
+  const formattedRatings = ratings.map((r: any) => ({
+    raterName: r.rater ? `${r.rater.firstName} ${r.rater.lastName}`.trim() : "Anonymous",
+    raterImage: r.rater?.profilePicture || undefined,
+    stars: r.stars,
+    comment: r.comment,
+  }));
+
+  const ITEMS_PER_PAGE = 5;
+  const totalPages = Math.max(1, Math.ceil(formattedRatings.length / ITEMS_PER_PAGE));
+  const activePage = Math.min(currentPage, totalPages);
+  
+  const startIndex = (activePage - 1) * ITEMS_PER_PAGE;
+  const paginatedRatings = formattedRatings.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <>
@@ -234,12 +277,23 @@ export function StudentProfile() {
               {/* Ratings */}
 
               <div className="bg-white shadow-sm border border-gray-100 rounded-lg p-4 lg:col-span-2 min-w-0">
-                <RatingsSection
-                  // ratings={MOCK_RATINGS}
-                  currentPage={currentPage}
-                  totalPages={5} // Pass your dynamic total pages here
-                  onPageChange={(page) => setCurrentPage(page)}
-                />
+                {ratingsLoading ? (
+                  <div className="flex flex-col items-center justify-center min-h-[200px] gap-2">
+                    <Loader2 className="animate-spin text-[#2D7A78]" size={24} />
+                    <p className="text-gray-500 text-sm">Loading ratings...</p>
+                  </div>
+                ) : ratingsError ? (
+                  <div className="flex items-center justify-center min-h-[200px] text-red-500 text-sm">
+                    {ratingsError}
+                  </div>
+                ) : (
+                  <RatingsSection
+                    ratings={paginatedRatings}
+                    currentPage={activePage}
+                    totalPages={totalPages}
+                    onPageChange={(page) => setCurrentPage(page)}
+                  />
+                )}
               </div>
             </div>
           </main>

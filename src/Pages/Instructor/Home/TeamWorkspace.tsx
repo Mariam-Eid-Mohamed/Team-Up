@@ -64,6 +64,10 @@ export default function TeamWorkspace() {
   // Helper calculation to isolate teammates to rate
   const teammatesToRate = teamData?.teamMembers?.filter((m: any) => m.id !== userId) || [];
 
+  const isDeadlinePassed = teamData?.courseworkDeadline
+    ? new Date() > new Date(teamData.courseworkDeadline)
+    : false;
+
   const handleStartRatingClick = () => {
     if (teammatesToRate.length === 0) {
       toast.error("There are no other teammates to evaluate.");
@@ -379,7 +383,7 @@ export default function TeamWorkspace() {
         <div className="space-y-6 md:space-y-8">
 
       {/* Peer Evaluation Banner */}
-          {!isInstructorRoute && (
+          {!isInstructorRoute && isDeadlinePassed && (
             <div className="bg-[#ebf5f4] border border-[#c1e0dc] rounded-xl p-4 md:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
               <div className="flex gap-3 items-start">
                 <div className="mt-0.5"><Users className="text-[#2D7A78] w-5 h-5" /></div>
@@ -573,6 +577,8 @@ export default function TeamWorkspace() {
         onClose={() => setIsEvaluationOpen(false)}
         teammates={teammatesToRate}
         classColor={teamData?.classColor}
+        teamId={teamId}
+        token={token}
       />
     </div>
   );

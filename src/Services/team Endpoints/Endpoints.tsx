@@ -177,3 +177,19 @@ export const getTeamSubmission = async (teamId: string, token: string) => {
   });
 };
 
+// Rate Team Members after deadline
+export const rateTeamMembers = async (
+  teamId: string,
+  ratings: Array<{ ratedUserId: string; stars: number; comment: string | null }>,
+  token: string
+) => {
+  return Api.patch(
+    `${API_BASE}/teams/${teamId}/ratings`,
+    { ratings },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+};
+
+

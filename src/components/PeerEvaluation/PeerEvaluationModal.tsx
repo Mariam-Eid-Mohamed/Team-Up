@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Crown, Star, Loader2, Check } from "lucide-react";
 import toast from "react-hot-toast";
+import { rateTeamMembers } from "../../Services/team Endpoints/Endpoints";
 
 interface Member {
   id: string | number;
@@ -13,6 +14,8 @@ interface PeerEvaluationModalProps {
   onClose: () => void;
   teammates: Member[];
   classColor?: string;
+  teamId?: string;
+  token?: string | null;
 }
 
 export default function PeerEvaluationModal({
@@ -20,6 +23,8 @@ export default function PeerEvaluationModal({
   onClose,
   teammates,
   classColor = "#2D7A78",
+  teamId,
+  token,
 }: PeerEvaluationModalProps) {
   const [ratingStep, setRatingStep] = useState<"rating" | "success">("rating");
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
@@ -53,18 +58,31 @@ export default function PeerEvaluationModal({
       setCurrentComment("");
     } else {
       // Last member evaluated -> Handle submit
+      if (!teamId || !token) {
+        toast.error("Authentication details are missing.");
+        return;
+      }
       setSubmittingRatings(true);
       try {
-        // Replace this with your actual API submission callback if needed
-        // await onSubmit(updatedResults);
-        setRatingStep("success");
-      } catch (err) {
-        toast.error("Failed to submit peer evaluations.");
+        const formattedRatings = updatedResults.map((r) => ({
+          ratedUserId: String(r.memberId),
+          stars: Number(r.rating),
+          comment: r.comment.trim() || null,
+        }));
+        const response = await rateTeamMembers(teamId, formattedRatings, token);
+        if (response.data?.success) {
+          setRatingStep("success");
+        } else {
+          toast.error(response.data?.message || "Failed to submit peer evaluations.");
+        }
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || "Failed to submit peer evaluations.");
       } finally {
         setSubmittingRatings(false);
       }
     }
   };
+
 
   const handleResetAndClose = () => {
     // Reset states back to initial before closing down completely

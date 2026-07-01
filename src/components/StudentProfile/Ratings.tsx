@@ -11,7 +11,7 @@ import type { Ratings } from "@/interfaces/ProfileInterfaces/profileInterface";
 // }
 
 const MOCK_RATINGS: Ratings[] = [
-  { raterName: "Sarah Jenkins", stars: 5, comment: "Exceptional developer! Very communicative." },
+  { raterName: "Jenkins", stars: 5, comment: "Exceptional developer! Very communicative." },
   { raterName: "Mark Thompson", stars: 4, comment: "Great team player." },
   { raterName: "Elena Rodriguez", stars: 5, comment: "Fantastic to work with!" }
 ];
@@ -23,11 +23,11 @@ interface RatingsSectionProps {
   onPageChange: (page: number) => void;
 }
 
-export const RatingsSection = ({ 
-  ratings=MOCK_RATINGS, 
-  currentPage, 
-  totalPages, 
-  onPageChange 
+export const RatingsSection = ({
+  ratings = MOCK_RATINGS,
+  currentPage,
+  totalPages,
+  onPageChange
 }: RatingsSectionProps) => {
   return (
     <div >
@@ -40,19 +40,19 @@ export const RatingsSection = ({
             <div key={i} className="flex flex-col">
               <div className="py-4 flex flex-col gap-2">
                 <div className="flex items-center gap-3">
-                  <img 
-                    src={rating.raterImage ?? placeholder} 
-                    alt={rating.raterName} 
+                  <img
+                    src={rating.raterImage ?? placeholder}
+                    alt={rating.raterName}
                     className="w-10 h-10 rounded-full object-cover border border-gray-100"
                   />
                   <div className="flex flex-col">
                     <span className="font-semibold text-sm">{rating.raterName}</span>
                     <div className="flex items-center gap-0.5">
                       {[...Array(5)].map((_, idx) => (
-                        <Star 
-                          key={idx} 
-                          size={14} 
-                          className={idx < rating.stars ? "fill-[#F9D034] text-[#F9D034]" : "text-[#F9D034]"} 
+                        <Star
+                          key={idx}
+                          size={14}
+                          className={idx < rating.stars ? "fill-[#F9D034] text-[#F9D034]" : "text-[#F9D034]"}
                         />
                       ))}
                     </div>
@@ -67,8 +67,8 @@ export const RatingsSection = ({
               {i < ratings.length - 1 && <hr className="border-gray-100" />}
             </div>
           ))}
-          
-          <Pagination 
+
+          <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={onPageChange}
