@@ -50,6 +50,13 @@ export default function TaskModal({
     onSubmit(data);
   };
 
+    const getTomorrow = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate());
+  return tomorrow.toISOString().split("T")[0]; // YYYY-MM-DD
+};
+const minAllowedDate = getTomorrow();
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
       {/*  Added max-h-[90vh] and flex flex-col so the modal card can manage internal heights */}
@@ -143,6 +150,7 @@ export default function TaskModal({
             <input
               {...register("deadline")}
               type="date"
+              min={minAllowedDate}
               className="w-full rounded-xl border border-gray-200 px-3 py-2"
             />
 

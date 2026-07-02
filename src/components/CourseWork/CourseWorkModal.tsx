@@ -227,6 +227,14 @@ export default function CourseworkModal({
     }
   };
 
+  const getTomorrow = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate());
+  return tomorrow.toISOString().split("T")[0]; // YYYY-MM-DD
+};
+
+const minAllowedDate = getTomorrow();
+
   if (!open) return null;
 
   return (
@@ -473,6 +481,7 @@ export default function CourseworkModal({
                 </label>
                 <input
                   type="date"
+                    min={minAllowedDate}
                   className={`w-full border rounded-md p-2 ${
                     errors.deadline ? "border-red-500" : ""
                   }`}
@@ -504,6 +513,7 @@ export default function CourseworkModal({
                   </label>
                   <input
                     type="date"
+                      min={minAllowedDate}
                     className="w-full border rounded-md p-2"
                     value={form.discussionDate || ""}
                     onChange={(e) =>
