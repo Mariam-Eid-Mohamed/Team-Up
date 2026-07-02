@@ -122,12 +122,12 @@ export default function Sidebar() {
       </div>
 
       <div className="space-y-2 border-t mt-2 pt-2">
-        <SidebarItem icon={<Info size={20} />} label="About us" to="/about" />
+        {/* <SidebarItem icon={<Info size={20} />} label="About us" to="/about" />
         <SidebarItem
           icon={<Settings size={20} />}
           label="Settings"
           to="/settings"
-        />
+        /> */}
         <SidebarItem
           icon={<LogOut size={20} />}
           label="Log Out"

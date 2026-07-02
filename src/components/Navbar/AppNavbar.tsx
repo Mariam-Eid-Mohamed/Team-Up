@@ -36,12 +36,12 @@ export default function AppNavbar({
       </div>
 
       <div className="flex items-center gap-3 sm:gap-6 text-black relative">
-        <a
+        {/* <a
           href="/home"
           className="text-sm font-medium hover:underline whitespace-nowrap"
         >
           Home
-        </a>
+        </a> */}
 
 
         <NotificationsDropdown onJoinedClass={onClassListChanged} />
